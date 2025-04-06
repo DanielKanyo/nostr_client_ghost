@@ -5,10 +5,10 @@ import { Button, Container, Flex } from "@mantine/core";
 import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
 
 const navItems = [
-    { icon: IconHome, label: "Home", to: "/feed" },
+    { icon: IconHome, label: "Home", to: "/home" },
     { icon: IconBell, label: "Notifications", to: "/notifications" },
     { icon: IconMail, label: "Messages", to: "/messages" },
-    { icon: IconSettings, label: "Settings", to: "/settings" },
+    { icon: IconSettings, label: "Settings", to: "/home/settings" },
 ];
 
 export default function Navigation() {
@@ -22,13 +22,12 @@ export default function Navigation() {
             fullWidth
             component={Link}
             to={item.to}
-            variant={active === index ? "gradient" : "subtle"}
+            variant={active === index ? "filled" : "subtle"}
             color={active === index ? "violet" : "gray"}
-            radius="md"
-            leftSection={<item.icon size={25} style={{ marginRight: 8 }} />}
+            radius="xl"
+            leftSection={<item.icon size={25} style={{ marginRight: 6 }} />}
             onClick={() => setActive(index)}
             mb="xs"
-            gradient={{ from: "violet", to: "grape", deg: 65 }}
         >
             {item.label}
         </Button>
@@ -42,7 +41,7 @@ export default function Navigation() {
                     size="xl"
                     variant="subtle"
                     color="gray"
-                    leftSection={<IconGhost size={28} style={{ marginRight: 8 }} />}
+                    leftSection={<IconGhost size={28} style={{ marginRight: 6 }} />}
                     mb="xl"
                     style={{ pointerEvents: "none" }}
                 >
