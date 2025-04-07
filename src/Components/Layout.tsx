@@ -3,18 +3,22 @@ import { Outlet } from "react-router-dom";
 import { Box, Center, Flex, Loader } from "@mantine/core";
 
 import { useAuth } from "../Auth/AuthProvider";
-import { LoadingStateEnum } from "../Util/util";
+import GetStarted from "./GetStarted";
 import Navigation from "./Navigation";
 
 export default function Layout() {
-    const { loadingState, userMetadata } = useAuth();
+    const { loading, userAuthenticated, userMetadata } = useAuth();
 
-    if (loadingState !== LoadingStateEnum.IDLE) {
+    if (loading) {
         return (
             <Center style={{ height: "100vh" }}>
                 <Loader size={40} color="var(--mantine-color-dark-0)" type="dots" />
             </Center>
         );
+    }
+
+    if (!userAuthenticated) {
+        return <GetStarted />;
     }
 
     return (

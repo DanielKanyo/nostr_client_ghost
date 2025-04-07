@@ -1,11 +1,11 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, CloseButton, Flex, Input, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
+import { useAuth } from "../Auth/AuthProvider";
 import { authenticate, fetchUserMetadata } from "../Service/service";
 
 interface LoginModalProps {
@@ -17,7 +17,7 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
     const [privateKey, setPrivateKey] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const navigate = useNavigate();
+    const { updateAuthenticatedState } = useAuth();
 
     const handleLogin = async (event: FormEvent) => {
         event.preventDefault();
@@ -26,14 +26,20 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
 
         try {
             const pool = new SimplePool();
-
             const publicKey = await authenticate(privateKey, pool);
             const metadata = await fetchUserMetadata(publicKey, pool);
 
-            if (metadata) {
-                navigate("/home");
-            }
+            localStorage.setItem("nostrPrivateKey", privateKey);
+            localStorage.setItem("nostrPublicKey", publicKey);
+
+            // TODO: Revice this
+            // Maybe the boolean value is not needed
+            // Maybe it's useful for the logout
+            updateAuthenticatedState(true, metadata);
         } catch (err) {
+            localStorage.removeItem("nostrPrivateKey");
+            localStorage.removeItem("nostrPublicKey");
+
             setError(err instanceof Error ? err.message : "Authentication failed...");
         } finally {
             setLoading(false);

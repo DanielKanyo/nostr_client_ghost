@@ -1,25 +1,27 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
 import { authenticate, fetchUserMetadata, UserMetadata } from "../Service/service";
-import { LoadingStateEnum, LoadingStates } from "../Util/util";
 
 type AuthContextType = {
-    loadingState: LoadingStates;
+    loading: boolean;
+    userAuthenticated: boolean;
     userMetadata: UserMetadata | null;
+    updateAuthenticatedState: (state: boolean, metadata: UserMetadata | null) => Promise<void>; // Add login function
 };
 
 const AuthContext = createContext<AuthContextType>({
-    loadingState: LoadingStateEnum.LOADING,
+    loading: true,
     userMetadata: null,
+    userAuthenticated: false,
+    updateAuthenticatedState: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [loadingState, setLoadingState] = useState<LoadingStates>(LoadingStateEnum.LOADING);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [userAuthenticated, setUserAuthenticated] = useState<boolean>(false);
     const [userMetadata, setUserMetadata] = useState<UserMetadata | null>(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const authenticateUser = async () => {
@@ -34,28 +36,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     if (publicKey === storedPublicKey) {
                         const metadata = await fetchUserMetadata(publicKey, pool);
 
+                        setUserAuthenticated(true);
                         setUserMetadata(metadata);
-                        setLoadingState(LoadingStateEnum.IDLE);
+                        setLoading(false);
                     } else {
-                        throw new Error("Public key mismatch");
+                        throw new Error("Public key mismatch...");
                     }
                 } catch {
                     localStorage.removeItem("nostrPrivateKey");
                     localStorage.removeItem("nostrPublicKey");
 
-                    setLoadingState(LoadingStateEnum.REDIRECTING);
-                    navigate("/");
+                    setLoading(false);
                 }
             } else {
-                setLoadingState(LoadingStateEnum.REDIRECTING);
-                navigate("/");
+                setLoading(false);
             }
         };
 
         authenticateUser();
     }, []);
 
-    return <AuthContext.Provider value={{ loadingState, userMetadata }}>{children}</AuthContext.Provider>;
+    const updateAuthenticatedState = async (state: boolean, metadata: UserMetadata | null) => {
+        setLoading(true);
+
+        setUserAuthenticated(state);
+        setUserMetadata(metadata);
+
+        setLoading(false);
+    };
+
+    return (
+        <AuthContext.Provider value={{ loading, userAuthenticated, userMetadata, updateAuthenticatedState }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = () => useContext(AuthContext);

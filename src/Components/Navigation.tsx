@@ -7,10 +7,10 @@ import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/i
 import { UserMetadata } from "../Service/service";
 
 const navItems = [
-    { icon: IconHome, label: "Home", to: "/home" },
+    { icon: IconHome, label: "Home", to: "/" },
     { icon: IconBell, label: "Notifications", to: "/notifications" },
     { icon: IconMail, label: "Messages", to: "/messages" },
-    { icon: IconSettings, label: "Settings", to: "/home/settings" },
+    { icon: IconSettings, label: "Settings", to: "/settings" },
 ];
 
 interface NavigationProps {
@@ -55,27 +55,25 @@ export default function Navigation({ userMetadata }: NavigationProps) {
                 </Button>
                 {items}
             </Container>
-            {userMetadata && (
-                <Button
-                    component={Link}
-                    to="/home/profile"
-                    justify="flex-start"
-                    size="xl"
-                    radius={80}
-                    variant="subtle"
-                    color="gray"
-                    leftSection={<Avatar src={userMetadata.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
-                    h={80}
-                    onClick={() => setActive(-1)}
-                >
-                    <Flex direction="column" align="flex-start" justify="center">
-                        <Text size="xl">{userMetadata.display_name}</Text>
-                        <Text c="dimmed" size="sm">
-                            @{userMetadata.name}
-                        </Text>
-                    </Flex>
-                </Button>
-            )}
+            <Button
+                component={Link}
+                to="/profile"
+                justify="flex-start"
+                size="xl"
+                radius={80}
+                variant="subtle"
+                color="gray"
+                leftSection={<Avatar src={userMetadata?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
+                h={80}
+                onClick={() => setActive(-1)}
+            >
+                <Flex direction="column" align="flex-start" justify="center">
+                    <Text size="xl">{userMetadata ? userMetadata?.display_name : "Undefined"}</Text>
+                    <Text c="dimmed" size="sm">
+                        @{userMetadata ? userMetadata.name : "Undefined"}
+                    </Text>
+                </Flex>
+            </Button>
         </Flex>
     );
 }

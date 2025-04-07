@@ -55,7 +55,7 @@ export const authenticate = async (privateKey: string, pool: SimplePool): Promis
 
         return signedEvent.pubkey;
     } catch (err) {
-        throw new Error(err instanceof Error ? err.message : "Authentication failed...");
+        throw new Error(err instanceof Error ? err.message : "Authentication failed! Please try again later...");
     }
 };
 
