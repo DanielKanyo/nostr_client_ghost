@@ -1,45 +1,13 @@
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-
-import { SimplePool } from "nostr-tools";
+import { Outlet } from "react-router-dom";
 
 import { Box, Center, Flex, Loader } from "@mantine/core";
 
-import { authUser, fetchUserMetadata, UserMetadata } from "../Service/service";
-import { LoadingStateEnum, LoadingStates } from "../Util/util";
+import { useAuth } from "../Auth/AuthProvider";
+import { LoadingStateEnum } from "../Util/util";
 import Navigation from "./Navigation";
 
 export default function Layout() {
-    const [loadingState, setLoadingState] = useState<LoadingStates>(LoadingStateEnum.LOADING);
-    const [userMetadata, setUserMetadata] = useState<UserMetadata | null>(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const authUserAndFetchUserMetadata = async () => {
-            const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
-            const storedPublicKey = localStorage.getItem("nostrPublicKey");
-
-            if (storedPrivateKey && storedPublicKey) {
-                try {
-                    const pool = new SimplePool();
-                    const publicKey = await authUser(storedPrivateKey, pool);
-
-                    if (publicKey === storedPublicKey) {
-                        setUserMetadata(await fetchUserMetadata(publicKey, pool));
-                        setLoadingState(LoadingStateEnum.IDLE);
-                    }
-                } catch {
-                    setLoadingState(LoadingStateEnum.REDIRECTING);
-                    navigate("/");
-                }
-            } else {
-                setLoadingState(LoadingStateEnum.REDIRECTING);
-                navigate("/");
-            }
-        };
-
-        authUserAndFetchUserMetadata();
-    }, []);
+    const { loadingState, userMetadata } = useAuth();
 
     if (loadingState !== LoadingStateEnum.IDLE) {
         return (

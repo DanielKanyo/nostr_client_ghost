@@ -6,7 +6,7 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, CloseButton, Flex, Input, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { authUser, fetchUserMetadata } from "../Service/service";
+import { authenticate, fetchUserMetadata } from "../Service/service";
 
 interface LoginModalProps {
     opened: boolean;
@@ -27,7 +27,7 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
         try {
             const pool = new SimplePool();
 
-            const publicKey = await authUser(privateKey, pool);
+            const publicKey = await authenticate(privateKey, pool);
             const metadata = await fetchUserMetadata(publicKey, pool);
 
             if (metadata) {

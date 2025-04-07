@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Avatar, Button, Container, Flex } from "@mantine/core";
+import { Avatar, Button, Container, Flex, Text } from "@mantine/core";
 import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
 
 import { UserMetadata } from "../Service/service";
@@ -57,14 +57,23 @@ export default function Navigation({ userMetadata }: NavigationProps) {
             </Container>
             {userMetadata && (
                 <Button
+                    component={Link}
+                    to="/home/profile"
                     justify="flex-start"
                     size="xl"
-                    radius="xl"
+                    radius={80}
                     variant="subtle"
                     color="gray"
-                    leftSection={<Avatar src={userMetadata.picture} size={40} style={{ marginRight: 6 }} />}
+                    leftSection={<Avatar src={userMetadata.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
+                    h={80}
+                    onClick={() => setActive(-1)}
                 >
-                    {userMetadata.display_name}
+                    <Flex direction="column" align="flex-start" justify="center">
+                        <Text size="xl">{userMetadata.display_name}</Text>
+                        <Text c="dimmed" size="sm">
+                            @{userMetadata.name}
+                        </Text>
+                    </Flex>
                 </Button>
             )}
         </Flex>

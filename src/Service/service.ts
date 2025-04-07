@@ -13,7 +13,7 @@ export interface UserMetadata {
 // Common Nostr relays
 const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
-export const authUser = async (privateKey: string, pool: SimplePool): Promise<string> => {
+export const authenticate = async (privateKey: string, pool: SimplePool): Promise<string> => {
     try {
         let privateKeyBytes: Uint8Array;
 
