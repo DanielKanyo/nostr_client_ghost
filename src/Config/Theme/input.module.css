@@ -1,0 +1,9 @@
+.input {
+    &:focus {
+        --input-bd: var(--mantine-color-violet-filled);
+    }
+
+    &:focus-within {
+        --input-bd: var(--mantine-color-violet-filled);
+    }
+}
