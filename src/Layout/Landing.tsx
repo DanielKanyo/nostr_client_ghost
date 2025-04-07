@@ -6,11 +6,12 @@ import { SimplePool } from "nostr-tools";
 import { Button, Card, Center, Flex, Loader, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-import LoginModal from "../Components/LoginModal";
+import LoginModal from "../Component/LoginModal";
 import { authUser, fetchUserMetadata } from "../Service/service";
+import { LoadingStateEnum, LoadingStates } from "../Util/util";
 
 export default function Landing() {
-    const [status, setStatus] = useState<"loading" | "idle" | "redirecting">("loading");
+    const [loadingState, setLoadingState] = useState<LoadingStates>(LoadingStateEnum.LOADING);
     const [opened, { open, close }] = useDisclosure(false);
     const navigate = useNavigate();
 
@@ -28,14 +29,15 @@ export default function Landing() {
                         const metadata = await fetchUserMetadata(publicKey, pool);
 
                         if (metadata) {
-                            setStatus("redirecting");
+                            setLoadingState(LoadingStateEnum.REDIRECTING);
                             navigate("/home");
                         }
                     }
-                } finally {
+                } catch {
+                    console.log("Something went wrong...");
                 }
             } else {
-                setStatus("idle");
+                setLoadingState(LoadingStateEnum.IDLE);
             }
         };
 
@@ -45,7 +47,7 @@ export default function Landing() {
     return (
         <>
             <Center style={{ height: "100vh" }}>
-                {status !== "idle" ? (
+                {loadingState !== LoadingStateEnum.IDLE ? (
                     <Loader size={40} color="var(--mantine-color-dark-0)" type="dots" />
                 ) : (
                     <Flex direction="column" align="center">

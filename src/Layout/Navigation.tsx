@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Button, Container, Flex } from "@mantine/core";
+import { Avatar, Button, Container, Flex } from "@mantine/core";
 import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
+
+import { UserMetadata } from "../Service/service";
 
 const navItems = [
     { icon: IconHome, label: "Home", to: "/home" },
@@ -11,7 +13,11 @@ const navItems = [
     { icon: IconSettings, label: "Settings", to: "/home/settings" },
 ];
 
-export default function Navigation() {
+interface NavigationProps {
+    userMetadata: UserMetadata | null;
+}
+
+export default function Navigation({ userMetadata }: NavigationProps) {
     const [active, setActive] = useState(0);
 
     const items = navItems.map((item, index) => (
@@ -34,7 +40,7 @@ export default function Navigation() {
     ));
 
     return (
-        <Flex direction="column">
+        <Flex direction="column" justify="space-between" h="100%">
             <Container m={0} p={0}>
                 <Button
                     justify="flex-start"
@@ -49,6 +55,18 @@ export default function Navigation() {
                 </Button>
                 {items}
             </Container>
+            {userMetadata && (
+                <Button
+                    justify="flex-start"
+                    size="xl"
+                    radius="xl"
+                    variant="subtle"
+                    color="gray"
+                    leftSection={<Avatar src={userMetadata.picture} size={40} style={{ marginRight: 6 }} />}
+                >
+                    {userMetadata.display_name}
+                </Button>
+            )}
         </Flex>
     );
 }
