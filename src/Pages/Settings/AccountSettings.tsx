@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { ActionIcon, Alert, Container, CopyButton, Flex, PasswordInput, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Container, CopyButton, PasswordInput, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoCircle, IconUserCog } from "@tabler/icons-react";
 
+import PageTitle from "../../Components/PageTitle";
 import store from "../../Store/store";
 
 export default function AccountSettings() {
@@ -20,12 +21,7 @@ export default function AccountSettings() {
 
     return (
         <>
-            <Flex p="lg" align="center" justify="center">
-                <IconUserCog size={30} />
-                <Text ml={10} fz={26}>
-                    Account Settings
-                </Text>
-            </Flex>
+            <PageTitle title="Account Settings" icon={IconUserCog} />
             <Container mx="sm">
                 <Alert variant="light" color="violet" radius="md" icon={<IconInfoCircle />}>
                     You can improve your account security by installing a Nostr browser extension, like{" "}

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 
-import { Container, Divider, Flex, NavLink, Text } from "@mantine/core";
+import { Container, Divider, NavLink, Text } from "@mantine/core";
 import { IconUserCog, IconBrush, IconSettings, IconChevronRight } from "@tabler/icons-react";
 
+import PageTitle from "../Components/PageTitle";
 import { ROUTES } from "../Routes/routes";
 
 const settingsItems = [
@@ -27,12 +28,7 @@ export default function Settings() {
 
     return (
         <>
-            <Flex p="lg" align="center" justify="center">
-                <IconSettings size={30} />
-                <Text ml={10} fz={26}>
-                    Settings
-                </Text>
-            </Flex>
+            <PageTitle title="Settings" icon={IconSettings} />
             {items}
         </>
     );

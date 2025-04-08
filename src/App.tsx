@@ -1,8 +1,10 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import MainLayout from "./Components/MainLayout";
+import MainLayout from "./Layouts/MainLayout";
 import Home from "./Pages/Home";
+import Messages from "./Pages/Messages";
+import Notifications from "./Pages/Notifications";
 import Profile from "./Pages/Profile";
 import Settings from "./Pages/Settings";
 import AccountSettings from "./Pages/Settings/AccountSettings";
@@ -17,11 +19,12 @@ export default function App() {
                 <Routes>
                     <Route path={ROUTES.HOME} element={<MainLayout />}>
                         <Route index element={<Home />} />
-                        <Route path={ROUTES.PROFILE} element={<Profile />} />
-
+                        <Route path={ROUTES.NOTIFICATIONS} element={<Notifications />} />
+                        <Route path={ROUTES.MESSAGES} element={<Messages />} />
                         <Route path={ROUTES.SETTINGS} element={<Settings />} />
                         <Route path={ROUTES.SETTINGS_ACCOUNT} element={<AccountSettings />} />
                         <Route path={ROUTES.SETTINGS_APPEARANCE} element={<AppearanceSettings />} />
+                        <Route path={ROUTES.PROFILE} element={<Profile />} />
                     </Route>
                 </Routes>
             </Provider>

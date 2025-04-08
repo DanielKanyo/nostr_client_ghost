@@ -45,10 +45,12 @@ export default function Navigation() {
                     justify="flex-start"
                     size="xl"
                     variant="subtle"
+                    radius="xl"
                     color="gray"
                     leftSection={<IconGhost size={28} style={{ marginRight: 6 }} />}
                     mb="xl"
-                    style={{ pointerEvents: "none" }}
+                    component={Link}
+                    to={ROUTES.HOME}
                 >
                     _ghost
                 </Button>

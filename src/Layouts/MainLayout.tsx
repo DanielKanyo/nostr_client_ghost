@@ -4,17 +4,22 @@ import { Outlet } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { Box, Center, Flex, Loader } from "@mantine/core";
+import { Box, Flex, useComputedColorScheme, useMantineTheme } from "@mantine/core";
 
-import { authenticate, fetchUserMetadata } from "../Service/service";
+import GetStarted from "../Components/GetStarted";
+import Navigation from "../Components/Navigation";
+import PageLoader from "../Components/PageLoader";
+import { authenticate, fetchUserMetadata } from "../Services/service";
 import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/UserSlice";
 import store from "../Store/store";
-import GetStarted from "./GetStarted";
-import Navigation from "./Navigation";
 
 export default function MainLayout() {
     const user = useSelector((state: ReturnType<typeof store.getState>) => state.user);
+    const theme = useMantineTheme();
+    const computedColorScheme = useComputedColorScheme("light");
     const dispatch = useDispatch();
+
+    const borderColor = computedColorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3];
 
     useEffect(() => {
         const authenticateUser = async () => {
@@ -53,11 +58,7 @@ export default function MainLayout() {
     }, []);
 
     if (user.loading) {
-        return (
-            <Center style={{ height: "100vh" }}>
-                <Loader size={40} color="var(--mantine-color-dark-0)" type="dots" />
-            </Center>
-        );
+        return <PageLoader />;
     }
 
     if (!user.authenticated) {
@@ -67,13 +68,13 @@ export default function MainLayout() {
     return (
         <Box m="0 auto">
             <Flex mih="100vh" justify="center" direction="row">
-                <Box w={320} py="md" px="lg" style={{ borderRight: "1px solid var(--mantine-color-dark-4)" }}>
+                <Box w={320} py="md" px="lg" style={{ borderRight: `1px solid ${borderColor}` }}>
                     <Navigation />
                 </Box>
-                <Box w={680} bg="rgba(0, 0, 0, .2)">
+                <Box w={680}>
                     <Outlet />
                 </Box>
-                <Box w={320} p="md" style={{ borderLeft: "1px solid var(--mantine-color-dark-4)" }}>
+                <Box w={320} p="md" style={{ borderLeft: `1px solid ${borderColor}` }}>
                     c
                 </Box>
             </Flex>
