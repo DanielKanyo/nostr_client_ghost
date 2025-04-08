@@ -1,10 +1,11 @@
+import { useSelector } from "react-redux";
 import { useLocation, Link } from "react-router-dom";
 
 import { Avatar, Button, Container, Flex, Text } from "@mantine/core";
 import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
 
 import { ROUTES } from "../Routes/routes";
-import { UserMetadata } from "../Service/service";
+import store from "../Store/store";
 
 const navItems = [
     { icon: IconHome, label: "Home", to: ROUTES.HOME },
@@ -13,11 +14,8 @@ const navItems = [
     { icon: IconSettings, label: "Settings", to: ROUTES.SETTINGS },
 ];
 
-interface NavigationProps {
-    userMetadata: UserMetadata | null;
-}
-
-export default function Navigation({ userMetadata }: NavigationProps) {
+export default function Navigation() {
+    const user = useSelector((state: ReturnType<typeof store.getState>) => state.user).data;
     const location = useLocation();
 
     const activeIndex = navItems.findIndex((item) => location.pathname === item.to || location.pathname.startsWith(item.to + "/"));
@@ -64,13 +62,13 @@ export default function Navigation({ userMetadata }: NavigationProps) {
                 radius={80}
                 variant="subtle"
                 color="gray"
-                leftSection={<Avatar src={userMetadata?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
+                leftSection={<Avatar src={user?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
                 h={80}
             >
                 <Flex direction="column" align="flex-start" justify="center">
-                    <Text size="xl">{userMetadata ? userMetadata?.display_name : "Undefined"}</Text>
+                    <Text size="xl">{user ? user?.display_name : "Undefined"}</Text>
                     <Text c="dimmed" size="sm">
-                        @{userMetadata ? userMetadata.name : "Undefined"}
+                        @{user ? user.name : "Undefined"}
                     </Text>
                 </Flex>
             </Button>

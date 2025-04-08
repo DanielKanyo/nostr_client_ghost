@@ -1,12 +1,13 @@
 import { FormEvent, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, CloseButton, Flex, Input, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { useAuth } from "../Auth/AuthProvider";
 import { authenticate, fetchUserMetadata } from "../Service/service";
+import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/UserSlice";
 
 interface LoginModalProps {
     opened: boolean;
@@ -17,7 +18,7 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
     const [privateKey, setPrivateKey] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const { updateAuthenticatedState } = useAuth();
+    const dispatch = useDispatch();
 
     const handleLogin = async (event: FormEvent) => {
         event.preventDefault();
@@ -32,10 +33,12 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
             localStorage.setItem("nostrPrivateKey", privateKey);
             localStorage.setItem("nostrPublicKey", publicKey);
 
-            // TODO: Revice this
-            // Maybe the boolean value is not needed
-            // Maybe it's useful for the logout
-            updateAuthenticatedState(true, metadata);
+            if (metadata) {
+                dispatch(updateUser(metadata));
+            }
+
+            dispatch(updateAuthenticated(true));
+            dispatch(updateLoading(false));
         } catch (err) {
             localStorage.removeItem("nostrPrivateKey");
             localStorage.removeItem("nostrPublicKey");
