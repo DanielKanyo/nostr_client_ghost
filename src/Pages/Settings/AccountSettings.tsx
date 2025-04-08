@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { ActionIcon, Alert, Container, CopyButton, Flex, PasswordInput, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoCircle, IconUserCog } from "@tabler/icons-react";
 
-import { useAuth } from "../../Auth/AuthProvider";
+import store from "../../Store/store";
 
 export default function AccountSettings() {
+    const user = useSelector((state: ReturnType<typeof store.getState>) => state.user).data;
     const [privateKey, setPrivateKey] = useState<string>("");
-    const { userMetadata } = useAuth();
 
     useEffect(() => {
         const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
@@ -48,7 +49,7 @@ export default function AccountSettings() {
                     label="Public Key"
                     description="Anyone on Nostr can find you via your public key. Feel free to share anywhere."
                     rightSection={
-                        <CopyButton value={userMetadata?.npub} timeout={2000}>
+                        <CopyButton value={user?.npub} timeout={2000}>
                             {({ copied, copy }) => (
                                 <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
                                     <ActionIcon color={copied ? "violet" : "gray"} variant="light" radius="md" onClick={copy}>
@@ -58,7 +59,7 @@ export default function AccountSettings() {
                             )}
                         </CopyButton>
                     }
-                    value={userMetadata?.npub ?? ""}
+                    value={user?.npub ?? ""}
                     readOnly
                 />
                 <PasswordInput
