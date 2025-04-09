@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ActionIcon, Alert, Container, CopyButton, PasswordInput, TextInput, Tooltip } from "@mantine/core";
-import { IconCheck, IconCopy, IconInfoCircle, IconUserCog } from "@tabler/icons-react";
+import { IconCheck, IconCopy, IconInfoCircle } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
 import Content from "../../Layouts/Content";
@@ -25,8 +25,8 @@ export default function AccountSettings() {
     return (
         <Content>
             <MainBox width={680}>
-                <PageTitle title="Account Settings" icon={IconUserCog} />
-                <Container mx="sm">
+                <PageTitle title="Account Settings" withBackwards />
+                <Container mx={0} px="lg">
                     <Alert variant="light" color={primaryColor} radius="md" icon={<IconInfoCircle />}>
                         You can improve your account security by installing a Nostr browser extension, like{" "}
                         <a

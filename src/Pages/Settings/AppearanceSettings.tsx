@@ -12,7 +12,7 @@ import {
     useComputedColorScheme,
     useMantineColorScheme,
 } from "@mantine/core";
-import { IconBrush, IconMoon, IconSun } from "@tabler/icons-react";
+import { IconMoon, IconSun } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
 import Content from "../../Layouts/Content";
@@ -75,7 +75,7 @@ export default function AppearanceSettings() {
     return (
         <Content>
             <MainBox width={680}>
-                <PageTitle title="Appearance Settings" icon={IconBrush} />
+                <PageTitle title="Appearance Settings" withBackwards />
                 <Container p="lg">
                     <Flex justify="space-between" align="center">
                         <Text fz={20}>Theme</Text>

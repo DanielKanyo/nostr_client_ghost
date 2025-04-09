@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Container, Divider, NavLink, Text } from "@mantine/core";
-import { IconUserCog, IconBrush, IconSettings, IconChevronRight } from "@tabler/icons-react";
+import { IconUserCog, IconBrush, IconChevronRight } from "@tabler/icons-react";
 
 import PageTitle from "../Components/PageTitle";
 import Content from "../Layouts/Content";
@@ -32,7 +32,7 @@ export default function Settings() {
     return (
         <Content>
             <MainBox width={680}>
-                <PageTitle title="Settings" icon={IconSettings} />
+                <PageTitle title="Settings" />
                 {items}
             </MainBox>
             <SideBox width={320}>Side Box</SideBox>
