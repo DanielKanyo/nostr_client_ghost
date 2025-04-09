@@ -1,6 +1,7 @@
 import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent } from "nostr-tools";
 
 import { hexToBytes } from "@noble/hashes/utils";
+
 import { UserMetadata } from "../Types/UserMetadata";
 
 // Common Nostr relays

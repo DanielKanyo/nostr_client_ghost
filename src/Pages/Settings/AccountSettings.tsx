@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
-import { ActionIcon, Alert, Container, CopyButton, Flex, PasswordInput, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Container, CopyButton, PasswordInput, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoCircle, IconUserCog } from "@tabler/icons-react";
 
-import store from "../../Store/store";
+import PageTitle from "../../Components/PageTitle";
+import { useAppSelector } from "../../Store/hook";
 
 export default function AccountSettings() {
-    const user = useSelector((state: ReturnType<typeof store.getState>) => state.user).data;
+    const user = useAppSelector((state) => state.user).data;
+    const primaryColor = useAppSelector((state) => state.primaryColor);
     const [privateKey, setPrivateKey] = useState<string>("");
 
     useEffect(() => {
@@ -20,20 +21,15 @@ export default function AccountSettings() {
 
     return (
         <>
-            <Flex p="lg" align="center" justify="center">
-                <IconUserCog size={30} />
-                <Text ml={10} fz={26}>
-                    Account Settings
-                </Text>
-            </Flex>
+            <PageTitle title="Account Settings" icon={IconUserCog} />
             <Container mx="sm">
-                <Alert variant="light" color="violet" radius="md" icon={<IconInfoCircle />}>
+                <Alert variant="light" color={primaryColor} radius="md" icon={<IconInfoCircle />}>
                     You can improve your account security by installing a Nostr browser extension, like{" "}
                     <a
                         href="https://getalby.com/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: "var(--mantine-color-violet-3)" }}
+                        style={{ color: `var(--mantine-color-${primaryColor}-3)` }}
                     >
                         Alby
                     </a>
@@ -52,7 +48,7 @@ export default function AccountSettings() {
                         <CopyButton value={user?.npub} timeout={2000}>
                             {({ copied, copy }) => (
                                 <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
-                                    <ActionIcon color={copied ? "violet" : "gray"} variant="light" radius="md" onClick={copy}>
+                                    <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
                                         {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                                     </ActionIcon>
                                 </Tooltip>
@@ -73,7 +69,7 @@ export default function AccountSettings() {
                         <CopyButton value={privateKey} timeout={2000}>
                             {({ copied, copy }) => (
                                 <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
-                                    <ActionIcon color={copied ? "violet" : "gray"} variant="light" radius="md" onClick={copy}>
+                                    <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
                                         {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                                     </ActionIcon>
                                 </Tooltip>
