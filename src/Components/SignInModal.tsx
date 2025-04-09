@@ -9,12 +9,12 @@ import { IconExclamationCircle } from "@tabler/icons-react";
 import { authenticate, fetchUserMetadata } from "../Services/service";
 import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 
-interface LoginModalProps {
+interface SignInModalProps {
     opened: boolean;
     close: () => void;
 }
 
-export default function LoginModal({ opened, close }: LoginModalProps) {
+export default function SignInModal({ opened, close }: SignInModalProps) {
     const [privateKey, setPrivateKey] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);

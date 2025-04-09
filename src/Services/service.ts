@@ -2,7 +2,7 @@ import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent
 
 import { hexToBytes } from "@noble/hashes/utils";
 
-import { UserMetadata } from "../Types/UserMetadata";
+import { UserMetadata } from "../Types/userMetadata";
 
 // Common Nostr relays
 const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
@@ -79,3 +79,7 @@ export const fetchUserMetadata = async (publicKey: string, pool: SimplePool): Pr
         throw new Error("Failed to fetch metadata...");
     }
 };
+
+export const createAccount = () => {
+
+}
