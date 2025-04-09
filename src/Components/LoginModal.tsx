@@ -7,7 +7,7 @@ import { Alert, Button, CloseButton, Flex, Input, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
 import { authenticate, fetchUserMetadata } from "../Services/service";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/UserSlice";
+import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 
 interface LoginModalProps {
     opened: boolean;

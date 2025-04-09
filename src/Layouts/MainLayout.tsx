@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
@@ -10,16 +10,27 @@ import GetStarted from "../Components/GetStarted";
 import Navigation from "../Components/Navigation";
 import PageLoader from "../Components/PageLoader";
 import { authenticate, fetchUserMetadata } from "../Services/service";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/UserSlice";
-import store from "../Store/store";
+import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
+import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { useAppSelector } from "../Store/hook";
 
 export default function MainLayout() {
-    const user = useSelector((state: ReturnType<typeof store.getState>) => state.user);
+    const user = useAppSelector((state) => state.user);
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const dispatch = useDispatch();
 
-    const borderColor = computedColorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3];
+    const borderColor = useMemo(() => {
+        return computedColorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3];
+    }, [computedColorScheme, theme.colors]);
+
+    useEffect(() => {
+        const primaryColor = localStorage.getItem("nostrPrimaryColor");
+
+        if (primaryColor) {
+            dispatch(updatePrimaryColor(primaryColor));
+        }
+    }, [dispatch]);
 
     useEffect(() => {
         const authenticateUser = async () => {
@@ -55,7 +66,7 @@ export default function MainLayout() {
         };
 
         authenticateUser();
-    }, []);
+    }, [dispatch]);
 
     if (user.loading) {
         return <PageLoader />;

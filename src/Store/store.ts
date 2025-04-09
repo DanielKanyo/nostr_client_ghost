@@ -1,9 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import userReducer from "./Features/UserSlice";
+import primaryColorReducer from "./Features/primaryColorSlice";
+import userReducer from "./Features/userSlice";
 
-export default configureStore({
+const store = configureStore({
     reducer: {
         user: userReducer,
+        primaryColor: primaryColorReducer,
     },
 });
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export default store;
