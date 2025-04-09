@@ -4,6 +4,9 @@ import { Container, Divider, NavLink, Text } from "@mantine/core";
 import { IconUserCog, IconBrush, IconSettings, IconChevronRight } from "@tabler/icons-react";
 
 import PageTitle from "../Components/PageTitle";
+import Content from "../Layouts/Content";
+import MainBox from "../Layouts/MainBox";
+import SideBox from "../Layouts/SideBox";
 import { ROUTES } from "../Routes/routes";
 
 const settingsItems = [
@@ -27,9 +30,12 @@ export default function Settings() {
     ));
 
     return (
-        <>
-            <PageTitle title="Settings" icon={IconSettings} />
-            {items}
-        </>
+        <Content>
+            <MainBox width={680}>
+                <PageTitle title="Settings" icon={IconSettings} />
+                {items}
+            </MainBox>
+            <SideBox width={320}>Side Box</SideBox>
+        </Content>
     );
 }

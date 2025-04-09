@@ -1,7 +1,7 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import MainLayout from "./Layouts/MainLayout";
+import Layout from "./Layouts/Layout";
 import Home from "./Pages/Home";
 import Messages from "./Pages/Messages";
 import Notifications from "./Pages/Notifications";
@@ -17,7 +17,7 @@ export default function App() {
         <BrowserRouter>
             <Provider store={store}>
                 <Routes>
-                    <Route path={ROUTES.HOME} element={<MainLayout />}>
+                    <Route path={ROUTES.HOME} element={<Layout />}>
                         <Route index element={<Home />} />
                         <Route path={ROUTES.NOTIFICATIONS} element={<Notifications />} />
                         <Route path={ROUTES.MESSAGES} element={<Messages />} />

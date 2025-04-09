@@ -15,6 +15,9 @@ import {
 import { IconBrush, IconMoon, IconSun } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
+import Content from "../../Layouts/Content";
+import MainBox from "../../Layouts/MainBox";
+import SideBox from "../../Layouts/SideBox";
 import { updatePrimaryColor } from "../../Store/Features/primaryColorSlice";
 import { useAppSelector } from "../../Store/hook";
 
@@ -70,45 +73,48 @@ export default function AppearanceSettings() {
     };
 
     return (
-        <>
-            <PageTitle title="Appearance Settings" icon={IconBrush} />
-            <Container p="lg">
-                <Flex justify="space-between" align="center">
-                    <Text fz={20}>Theme</Text>
-                    <Tooltip label="Toggle Color Scheme" radius="md" withArrow>
-                        <Switch
-                            size="xl"
-                            color={primaryColor}
-                            onLabel={<IconSun size={22} />}
-                            offLabel={<IconMoon size={22} />}
-                            onClick={() => setColorScheme(computedColorScheme === "light" ? "dark" : "light")}
-                        />
-                    </Tooltip>
-                </Flex>
-            </Container>
-            <Divider />
-            <Container p="lg">
-                <Flex justify="space-between" align="center">
-                    <Text fz={20}>Primary Color</Text>
-                    <Flex gap={6}>
-                        {colors.map((c) => (
-                            <ColorSwatch
-                                key={c.id}
-                                withShadow={false}
-                                radius={32}
-                                size={32}
-                                component="button"
-                                color={c.color}
-                                onClick={() => handlePrimaryColorChange(c.id)}
-                                style={{ color: "#fff", cursor: "pointer" }}
-                            >
-                                {primaryColor === c.id && <CheckIcon size={12} />}
-                            </ColorSwatch>
-                        ))}
+        <Content>
+            <MainBox width={680}>
+                <PageTitle title="Appearance Settings" icon={IconBrush} />
+                <Container p="lg">
+                    <Flex justify="space-between" align="center">
+                        <Text fz={20}>Theme</Text>
+                        <Tooltip label="Toggle Color Scheme" radius="md" withArrow>
+                            <Switch
+                                size="xl"
+                                color={primaryColor}
+                                onLabel={<IconSun size={22} />}
+                                offLabel={<IconMoon size={22} />}
+                                onClick={() => setColorScheme(computedColorScheme === "light" ? "dark" : "light")}
+                            />
+                        </Tooltip>
                     </Flex>
-                </Flex>
-            </Container>
-            <Divider />
-        </>
+                </Container>
+                <Divider />
+                <Container p="lg">
+                    <Flex justify="space-between" align="center">
+                        <Text fz={20}>Primary Color</Text>
+                        <Flex gap={6}>
+                            {colors.map((c) => (
+                                <ColorSwatch
+                                    key={c.id}
+                                    withShadow={false}
+                                    radius={32}
+                                    size={32}
+                                    component="button"
+                                    color={c.color}
+                                    onClick={() => handlePrimaryColorChange(c.id)}
+                                    style={{ color: "#fff", cursor: "pointer" }}
+                                >
+                                    {primaryColor === c.id && <CheckIcon size={12} />}
+                                </ColorSwatch>
+                            ))}
+                        </Flex>
+                    </Flex>
+                </Container>
+                <Divider />
+            </MainBox>
+            <SideBox width={320}>Side Box</SideBox>
+        </Content>
     );
 }

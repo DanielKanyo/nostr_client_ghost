@@ -1,28 +1,22 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { Box, Flex, useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import { Box, Flex } from "@mantine/core";
 
 import GetStarted from "../Components/GetStarted";
-import Navigation from "../Components/Navigation";
 import PageLoader from "../Components/PageLoader";
 import { authenticate, fetchUserMetadata } from "../Services/service";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
 import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
+import Navigation from "./Navigation";
 
-export default function MainLayout() {
+export default function Layout() {
     const user = useAppSelector((state) => state.user);
-    const theme = useMantineTheme();
-    const computedColorScheme = useComputedColorScheme("light");
     const dispatch = useDispatch();
-
-    const borderColor = useMemo(() => {
-        return computedColorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3];
-    }, [computedColorScheme, theme.colors]);
 
     useEffect(() => {
         const primaryColor = localStorage.getItem("nostrPrimaryColor");
@@ -79,14 +73,11 @@ export default function MainLayout() {
     return (
         <Box m="0 auto">
             <Flex mih="100vh" justify="center" direction="row">
-                <Box w={320} py="md" px="lg" style={{ borderRight: `1px solid ${borderColor}` }}>
+                <Box w={320} py="md" px="lg">
                     <Navigation />
                 </Box>
-                <Box w={680}>
+                <Box>
                     <Outlet />
-                </Box>
-                <Box w={320} p="md" style={{ borderLeft: `1px solid ${borderColor}` }}>
-                    c
                 </Box>
             </Flex>
         </Box>
