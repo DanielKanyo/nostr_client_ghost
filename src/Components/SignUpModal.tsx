@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+
+import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Group, Modal, Textarea, TextInput } from "@mantine/core";
+import { IconExclamationCircle } from "@tabler/icons-react";
 
 import { authenticateUser, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/authService";
-import { IconExclamationCircle } from "@tabler/icons-react";
-import { SimplePool } from "nostr-tools";
-import { useDispatch } from "react-redux";
 import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 import { UserMetadata } from "../Types/userMetadata";
 
@@ -28,7 +29,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
 
     const handleSaveProfile = async () => {
         if (!displayName || !name) {
-            setWarning('Please fill the required fields!');
+            setWarning("Please fill the required fields!");
             return;
         }
 
