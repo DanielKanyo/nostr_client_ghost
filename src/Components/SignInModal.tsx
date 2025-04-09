@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, CloseButton, Flex, Modal, PasswordInput } from "@mantine/core";
+import { Alert, Button, Flex, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
 import { authenticateUser, fetchUserMetadata } from "../Services/authService";
@@ -49,27 +49,29 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
         }
     };
 
+    const handleClose = () => {
+        setPrivateKey("");
+        setError("");
+
+        close();
+    };
+
     return (
-        <Modal opened={opened} onClose={close} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="md">
+        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="md" size="lg">
             <Flex direction="column">
                 <PasswordInput
                     variant="filled"
                     size="md"
                     radius="md"
-                    placeholder="Nostr private key starting with 'nsec'..."
+                    label="Enter your private key"
+                    description='It starts with "nsec"'
+                    placeholder="nsec..."
                     value={privateKey}
                     onChange={(event) => setPrivateKey(event.currentTarget.value.trim())}
-                    rightSectionPointerEvents="all"
-                    rightSection={
-                        <CloseButton
-                            aria-label="Clear input"
-                            onClick={() => setPrivateKey("")}
-                            style={{ display: privateKey ? undefined : "none" }}
-                        />
-                    }
                     autoFocus
                     aria-label="Nostr private key input"
                     mb="lg"
+                    data-autofocus
                 />
 
                 {error && (
