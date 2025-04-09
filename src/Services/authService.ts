@@ -1,4 +1,4 @@
-import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent } from "nostr-tools";
+import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent, generateSecretKey, getPublicKey } from "nostr-tools";
 
 import { hexToBytes } from "@noble/hashes/utils";
 
@@ -7,7 +7,7 @@ import { UserMetadata } from "../Types/userMetadata";
 // Common Nostr relays
 const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
-export const authenticate = async (privateKey: string, pool: SimplePool): Promise<string> => {
+export const authenticateUser = async (privateKey: string, pool: SimplePool): Promise<string> => {
     try {
         let privateKeyBytes: Uint8Array;
 
@@ -26,6 +26,7 @@ export const authenticate = async (privateKey: string, pool: SimplePool): Promis
             if (!privateKey.match(/^[0-9a-fA-F]{64}$/)) {
                 throw new Error("Invalid private key format. Must be 64 hexadecimal characters...");
             }
+
             privateKeyBytes = hexToBytes(privateKey);
         }
 
@@ -80,6 +81,51 @@ export const fetchUserMetadata = async (publicKey: string, pool: SimplePool): Pr
     }
 };
 
-export const createAccount = () => {
+export function generateKeyPair(): { privateKey: string; publicKey: string } {
+    const sk = generateSecretKey();
+    const pk = getPublicKey(sk);
 
+    const nsec = nip19.nsecEncode(sk);
+    const npub = nip19.npubEncode(pk);
+
+    return { privateKey: nsec, publicKey: npub };
 }
+
+export const publishProfile = async (privateKey: string, userMetadata: UserMetadata): Promise<void> => {
+    // Decode nsec private key to raw form
+    const { type, data: sk } = nip19.decode(privateKey);
+
+    if (type !== "nsec") {
+        throw new Error("Invalid private key format...");
+    }
+
+    // Create a kind 0 metadata event
+    const eventTemplate = {
+        kind: 0,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [],
+        content: JSON.stringify({
+            name: userMetadata.name,
+            display_name: userMetadata.display_name,
+            picture: userMetadata.picture,
+            about: userMetadata.about,
+            website: userMetadata.website,
+        }),
+    };
+
+    // Sign the event
+    const signedEvent = finalizeEvent(eventTemplate, sk);
+
+    // Publish to relays
+    const pool = new SimplePool();
+
+    try {
+        const pubs = pool.publish(relays, signedEvent);
+
+        await Promise.all(pubs);
+    } catch (error) {
+        throw new Error("Failed to publish profile...");
+    } finally {
+        pool.close(relays);
+    }
+};

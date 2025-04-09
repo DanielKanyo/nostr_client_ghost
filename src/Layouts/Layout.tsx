@@ -8,7 +8,7 @@ import { Box, Flex } from "@mantine/core";
 
 import GetStarted from "../Components/GetStarted";
 import PageLoader from "../Components/PageLoader";
-import { authenticate, fetchUserMetadata } from "../Services/service";
+import { authenticateUser, fetchUserMetadata } from "../Services/authService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
 import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
@@ -27,14 +27,14 @@ export default function Layout() {
     }, [dispatch]);
 
     useEffect(() => {
-        const authenticateUser = async () => {
+        const authenticate = async () => {
             const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
             const storedPublicKey = localStorage.getItem("nostrPublicKey");
 
             if (storedPrivateKey && storedPublicKey) {
                 try {
                     const pool = new SimplePool();
-                    const publicKey = await authenticate(storedPrivateKey, pool);
+                    const publicKey = await authenticateUser(storedPrivateKey, pool);
 
                     if (publicKey === storedPublicKey) {
                         const metadata = await fetchUserMetadata(publicKey, pool);
@@ -59,7 +59,7 @@ export default function Layout() {
             }
         };
 
-        authenticateUser();
+        authenticate();
     }, [dispatch]);
 
     if (user.loading) {
