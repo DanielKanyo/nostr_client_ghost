@@ -7,10 +7,10 @@ import { Alert, Button, Checkbox, Flex, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../../Services/authService";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
 import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
 import { UserMetadata } from "../../Types/userMetadata";
 import PrivateKeyInput from "../PrivateKeyInput";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
 import AccountForm from "./AccountForm";
 
 interface SignUpModalProps {

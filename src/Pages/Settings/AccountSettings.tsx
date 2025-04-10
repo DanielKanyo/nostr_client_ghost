@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { nip19, SimplePool } from "nostr-tools";
 
-import { ActionIcon, Alert, Button, Container, CopyButton, Group, MantineColor, ScrollArea, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Button, Container, CopyButton, Group, MantineColor, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
 
 import AccountForm from "../../Components/Authentication/AccountForm";
+import CustomScrollArea from "../../Components/CustomScrollArea";
 import PageTitle from "../../Components/PageTitle";
 import PrivateKeyInput from "../../Components/PrivateKeyInput";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Components/Shared/utils";
 import Content from "../../Layouts/Content";
 import MainBox from "../../Layouts/MainBox";
 import SideBox from "../../Layouts/SideBox";
+import { ROUTES } from "../../Routes/routes";
 import { closePool, fetchUserMetadata, publishProfile } from "../../Services/authService";
-import { updateUser } from "../../Store/Features/userSlice";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
+import { resetUser, updateUser } from "../../Store/Features/userSlice";
 import { useAppSelector } from "../../Store/hook";
 import { UserMetadata } from "../../Types/userMetadata";
 
@@ -23,7 +26,7 @@ export default function AccountSettings() {
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const [name, setName] = useState<string | undefined>(user?.name);
     const [displayName, setDisplayName] = useState<string | undefined>(user?.display_name);
-    const [website, setWebsite] = useState<string | undefined>(user?.picture);
+    const [website, setWebsite] = useState<string | undefined>(user?.website);
     const [picture, setPicture] = useState<string | undefined>(user?.picture);
     const [banner, setBanner] = useState<string | undefined>(user?.banner);
     const [about, setAbout] = useState<string | undefined>(user?.about);
@@ -33,6 +36,7 @@ export default function AccountSettings() {
     const [privateKey, setPrivateKey] = useState<string>("");
     const [npub, setNpub] = useState<string>("");
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
@@ -82,11 +86,19 @@ export default function AccountSettings() {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("nostrPrivateKey");
+        localStorage.removeItem("nostrPublicKey");
+
+        dispatch(resetUser());
+        navigate(ROUTES.HOME);
+    };
+
     return (
         <Content>
             <MainBox width={680}>
                 <PageTitle title="Account Settings" withBackwards />
-                <ScrollArea h="calc(100vh - 84px)" overscrollBehavior="contain" scrollbarSize={6}>
+                <CustomScrollArea>
                     <Container mx={0} px="lg">
                         <AccountForm
                             name={name ?? ""}
@@ -156,7 +168,7 @@ export default function AccountSettings() {
                             </Alert>
                         )}
                         <Group gap="xs" my="lg" justify="space-between">
-                            <Button variant="filled" color="red" radius="md" leftSection={<IconLogout2 size={21} />}>
+                            <Button variant="filled" color="red" radius="md" leftSection={<IconLogout2 size={21} />} onClick={handleLogout}>
                                 Logout
                             </Button>
                             <Button
@@ -164,7 +176,7 @@ export default function AccountSettings() {
                                 color={primaryColor}
                                 radius="md"
                                 leftSection={<IconCheck size={21} />}
-                                disabled={!displayName || !name}
+                                disabled={!displayName || !name || loading}
                                 onClick={handleSave}
                                 loading={loading}
                                 loaderProps={{ type: "dots" }}
@@ -173,7 +185,7 @@ export default function AccountSettings() {
                             </Button>
                         </Group>
                     </Container>
-                </ScrollArea>
+                </CustomScrollArea>
             </MainBox>
             <SideBox width={320}>Side Box</SideBox>
         </Content>

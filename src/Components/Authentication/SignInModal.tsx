@@ -7,8 +7,8 @@ import { Alert, Button, Flex, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata } from "../../Services/authService";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
 import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
 
 interface SignInModalProps {
     opened: boolean;

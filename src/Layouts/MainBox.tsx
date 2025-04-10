@@ -16,7 +16,17 @@ export default function MainBox({ children, width }: MainBoxProps) {
     }, [computedColorScheme, theme.colors]);
 
     return (
-        <Box w={width} style={{ borderRight: `1px solid ${borderColor}`, borderLeft: `1px solid ${borderColor}` }}>
+        <Box
+            w={width}
+            style={{
+                height: "100vh",
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                borderRight: `1px solid ${borderColor}`,
+                borderLeft: `1px solid ${borderColor}`,
+            }}
+        >
             {children}
         </Box>
     );
