@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { nip19, SimplePool } from "nostr-tools";
 
 import { ActionIcon, Alert, Button, Container, CopyButton, Group, MantineColor, TextInput, Tooltip } from "@mantine/core";
-import { IconCheck, IconCopy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
+import { IconCheck, IconCopy, IconDeviceFloppy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
 
 import AccountForm from "../../Components/Authentication/AccountForm";
 import PageTitle from "../../Components/PageTitle";
@@ -168,14 +168,14 @@ export default function AccountSettings() {
                             </Alert>
                         )}
                         <Group gap="xs" my="lg" justify="space-between">
-                            <Button variant="filled" color="red" radius="md" leftSection={<IconLogout2 size={21} />} onClick={handleLogout}>
+                            <Button variant="filled" color="red" radius="xl" leftSection={<IconLogout2 size={21} />} onClick={handleLogout}>
                                 Logout
                             </Button>
                             <Button
                                 variant="filled"
                                 color={primaryColor}
-                                radius="md"
-                                leftSection={<IconCheck size={21} />}
+                                radius="xl"
+                                leftSection={<IconDeviceFloppy size={21} />}
                                 disabled={!displayName || !name || loading}
                                 onClick={handleSave}
                                 loading={loading}

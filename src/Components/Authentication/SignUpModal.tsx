@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Checkbox, Flex, Modal } from "@mantine/core";
-import { IconExclamationCircle } from "@tabler/icons-react";
+import { IconCirclePlus, IconExclamationCircle } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../../Services/authService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
@@ -133,12 +133,13 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
                 />
                 <Button
                     variant="filled"
-                    radius="md"
+                    radius="xl"
                     color="violet"
                     onClick={handleSaveProfile}
                     disabled={!displayName || !name || !privateKeyStored}
                     loading={loading}
                     loaderProps={{ type: "dots" }}
+                    leftSection={<IconCirclePlus size={21} />}
                 >
                     Create Account
                 </Button>

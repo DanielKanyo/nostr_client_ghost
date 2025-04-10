@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, Flex, Modal, PasswordInput } from "@mantine/core";
-import { IconExclamationCircle } from "@tabler/icons-react";
+import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
+import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata } from "../../Services/authService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
@@ -90,17 +90,20 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                     </Alert>
                 )}
 
-                <Button
-                    variant="filled"
-                    radius="md"
-                    color="violet"
-                    onClick={handleLogin}
-                    loading={loading}
-                    loaderProps={{ type: "dots" }}
-                    disabled={!privateKey}
-                >
-                    Login
-                </Button>
+                <Group justify="flex-end">
+                    <Button
+                        variant="filled"
+                        radius="xl"
+                        color="violet"
+                        onClick={handleLogin}
+                        loading={loading}
+                        loaderProps={{ type: "dots" }}
+                        disabled={!privateKey}
+                        leftSection={<IconLogin2 size={21} />}
+                    >
+                        Login
+                    </Button>
+                </Group>
             </Flex>
         </Modal>
     );
