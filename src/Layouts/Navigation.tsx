@@ -18,7 +18,7 @@ export default function Navigation() {
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const location = useLocation();
 
-    const activeIndex = navItems.findIndex((item) => location.pathname === item.to || location.pathname.startsWith(item.to + "/"));
+    const activeRoute = Object.values(ROUTES).find((r) => location.pathname === r || location.pathname.startsWith(r + "/"));
 
     const items = navItems.map((item, index) => (
         <Button
@@ -28,8 +28,8 @@ export default function Navigation() {
             fullWidth
             component={Link}
             to={item.to}
-            variant={activeIndex === index ? "filled" : "subtle"}
-            color={activeIndex === index ? primaryColor : "gray"}
+            variant={activeRoute === item.to ? "filled" : "subtle"}
+            color={activeRoute === item.to ? primaryColor : "gray"}
             radius="xl"
             leftSection={<item.icon size={25} style={{ marginRight: 6 }} />}
             mb="xs"
