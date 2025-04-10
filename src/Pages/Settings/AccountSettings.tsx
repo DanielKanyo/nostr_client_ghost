@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 
 import { nip19 } from "nostr-tools";
 
-import { ActionIcon, Alert, Container, CopyButton, PasswordInput, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Container, CopyButton, MantineColor, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoCircle } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
+import PrivateKeyInput from "../../Components/PrivateKeyInput";
 import Content from "../../Layouts/Content";
 import MainBox from "../../Layouts/MainBox";
 import SideBox from "../../Layouts/SideBox";
 import { useAppSelector } from "../../Store/hook";
 
 export default function AccountSettings() {
-    const primaryColor = useAppSelector((state) => state.primaryColor);
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const [privateKey, setPrivateKey] = useState<string>("");
     const [npub, setNpub] = useState<string>("");
 
@@ -66,27 +67,7 @@ export default function AccountSettings() {
                         value={npub}
                         readOnly
                     />
-                    <PasswordInput
-                        variant="filled"
-                        mt="lg"
-                        size="md"
-                        radius="md"
-                        label="Private Key"
-                        description="This key fully controls your Nostr account. Don't share it with anyone. Only copy this key to store it securely or to login to another Nostr app."
-                        rightSection={
-                            <CopyButton value={privateKey} timeout={2000}>
-                                {({ copied, copy }) => (
-                                    <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
-                                        <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
-                                            {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                                        </ActionIcon>
-                                    </Tooltip>
-                                )}
-                            </CopyButton>
-                        }
-                        value={privateKey}
-                        readOnly
-                    />
+                    <PrivateKeyInput privateKey={privateKey} primaryColor={primaryColor} />
                 </Container>
             </MainBox>
             <SideBox width={320}>Side Box</SideBox>

@@ -10,5 +10,5 @@ export interface UserMetadata {
     website?: string;
     location?: string;
     // Add any additional optional fields if needed
-    // [key: string]: any;
+    [key: string]: any;
 }

@@ -1,8 +1,8 @@
 import { Button, Card, Center, Flex, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-import SignInModal from "./SignInModal";
-import SignUpModal from "./SignUpModal";
+import SignInModal from "./Authentication/SignInModal";
+import SignUpModal from "./Authentication/SignUpModal";
 
 export default function GetStarted() {
     const [signInModalOpened, { open: openSignInModal, close: closeSignInModal }] = useDisclosure(false);

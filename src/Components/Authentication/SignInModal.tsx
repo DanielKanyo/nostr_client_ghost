@@ -6,8 +6,8 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Flex, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { authenticateUser, fetchUserMetadata } from "../Services/authService";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { authenticateUser, fetchUserMetadata } from "../../Services/authService";
+import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
 
 interface SignInModalProps {
     opened: boolean;

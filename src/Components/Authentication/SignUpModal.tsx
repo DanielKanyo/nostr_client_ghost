@@ -3,12 +3,14 @@ import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, Group, Modal, Textarea, TextInput } from "@mantine/core";
+import { Alert, Button, Group, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { authenticateUser, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/authService";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
-import { UserMetadata } from "../Types/userMetadata";
+import { authenticateUser, fetchUserMetadata, generateKeyPair, publishProfile } from "../../Services/authService";
+import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
+import { UserMetadata } from "../../Types/userMetadata";
+import PrivateKeyInput from "../PrivateKeyInput";
+import SignUpForm from "./SignUpForm";
 
 interface SignUpModalProps {
     opened: boolean;
@@ -25,7 +27,10 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [warning, setWarning] = useState<string>("");
+    const [privateKeyStored, setPrivateKeyStored] = useState<boolean>(false);
     const dispatch = useDispatch();
+
+    const { privateKey } = generateKeyPair();
 
     const handleSaveProfile = async () => {
         if (!displayName || !name) {
@@ -36,7 +41,6 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
         setWarning("");
         setLoading(true);
 
-        const { privateKey } = generateKeyPair();
         const metadataToStore: UserMetadata = { name, display_name: displayName, website, picture, banner, about };
 
         try {
@@ -71,6 +75,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
         setWebsite("");
         setWarning("");
         setError("");
+        setPrivateKeyStored(false);
 
         close();
     };
@@ -86,73 +91,21 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
             radius="md"
             size="lg"
         >
-            <Group mt="lg" grow gap="lg">
-                <TextInput
-                    variant="filled"
-                    size="md"
-                    radius="md"
-                    label="Name"
-                    description="Pick a short name"
-                    value={name}
-                    onChange={(e) => setName(e.currentTarget.value)}
-                    placeholder="Enter your name"
-                    withAsterisk
-                    data-autofocus
-                />
-                <TextInput
-                    variant="filled"
-                    size="md"
-                    radius="md"
-                    label="Display Name"
-                    description="Pick a longer display name"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.currentTarget.value)}
-                    placeholder="Enter your display name"
-                    withAsterisk
-                />
-            </Group>
-            <TextInput
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
-                label="Profile Picture Url"
-                value={picture}
-                onChange={(e) => setPicture(e.currentTarget.value)}
-                placeholder="Enter the url to your profile picture"
+            <SignUpForm
+                name={name}
+                displayName={displayName}
+                picture={picture}
+                banner={banner}
+                website={website}
+                about={about}
+                setName={setName}
+                setDisplayName={setDisplayName}
+                setPicture={setPicture}
+                setBanner={setBanner}
+                setWebsite={setWebsite}
+                setAbout={setAbout}
             />
-            <TextInput
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
-                label="Banner Picture Url"
-                value={banner}
-                onChange={(e) => setBanner(e.currentTarget.value)}
-                placeholder="Enter the url to your banner picture"
-            />
-            <TextInput
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
-                label="Website"
-                value={website}
-                onChange={(e) => setWebsite(e.currentTarget.value)}
-                placeholder="https://yourwebsite.com"
-            />
-            <Textarea
-                label="About Me"
-                placeholder="Say some words about yourself"
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
-                value={about}
-                onChange={(e) => setAbout(e.currentTarget.value)}
-                autosize
-                minRows={3}
-            />
+            <PrivateKeyInput privateKey={privateKey} primaryColor="violet" />
             {error && (
                 <Alert variant="light" color="red" radius="md" title="Something went wrong!" icon={<IconExclamationCircle />} mt="lg">
                     {error}
@@ -167,9 +120,20 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
                 <Button
                     variant="filled"
                     radius="md"
+                    color="red"
+                    onClick={() => setPrivateKeyStored(true)}
+                    disabled={!displayName || !name || privateKeyStored}
+                    loading={loading}
+                    loaderProps={{ type: "dots" }}
+                >
+                    Private Key Securely Stored
+                </Button>
+                <Button
+                    variant="filled"
+                    radius="md"
                     color="violet"
                     onClick={handleSaveProfile}
-                    disabled={!displayName || !name}
+                    disabled={!displayName || !name || !privateKeyStored}
                     loading={loading}
                     loaderProps={{ type: "dots" }}
                 >
