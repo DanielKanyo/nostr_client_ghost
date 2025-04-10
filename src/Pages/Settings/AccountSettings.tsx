@@ -8,11 +8,11 @@ import { ActionIcon, Alert, Button, Container, CopyButton, Group, MantineColor, 
 import { IconCheck, IconCopy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
 
 import AccountForm from "../../Components/Authentication/AccountForm";
-import CustomScrollArea from "../../Components/CustomScrollArea";
 import PageTitle from "../../Components/PageTitle";
 import PrivateKeyInput from "../../Components/PrivateKeyInput";
 import Content from "../../Layouts/Content";
 import MainBox from "../../Layouts/MainBox";
+import ScrollBox from "../../Layouts/ScrollBox";
 import SideBox from "../../Layouts/SideBox";
 import { ROUTES } from "../../Routes/routes";
 import { closePool, fetchUserMetadata, publishProfile } from "../../Services/authService";
@@ -98,7 +98,7 @@ export default function AccountSettings() {
         <Content>
             <MainBox width={680}>
                 <PageTitle title="Account Settings" withBackwards />
-                <CustomScrollArea>
+                <ScrollBox>
                     <Container mx={0} px="lg">
                         <AccountForm
                             name={name ?? ""}
@@ -185,7 +185,7 @@ export default function AccountSettings() {
                             </Button>
                         </Group>
                     </Container>
-                </CustomScrollArea>
+                </ScrollBox>
             </MainBox>
             <SideBox width={320}>Side Box</SideBox>
         </Content>
