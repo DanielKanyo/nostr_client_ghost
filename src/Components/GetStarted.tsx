@@ -1,10 +1,12 @@
 import { Button, Card, Center, Flex, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-import LoginModal from "../Components/LoginModal";
+import SignInModal from "./Authentication/SignInModal";
+import SignUpModal from "./Authentication/SignUpModal";
 
 export default function GetStarted() {
-    const [opened, { open, close }] = useDisclosure(false);
+    const [signInModalOpened, { open: openSignInModal, close: closeSignInModal }] = useDisclosure(false);
+    const [signUpModalOpened, { open: openSignUpModal, close: closeSignUpModal }] = useDisclosure(false);
 
     return (
         <>
@@ -17,17 +19,18 @@ export default function GetStarted() {
                         <Text size="md" mt="lg">
                             New to Nostr? Create your account now and join the future of social media. It's quick and easy!
                         </Text>
-                        <Button variant="filled" radius="md" color="violet" mt="lg">
+                        <Button variant="filled" radius="md" color="violet" mt="lg" onClick={openSignUpModal}>
                             Create Account
                         </Button>
-                        <Button variant="light" radius="md" color="gray" mt="sm" onClick={open}>
+                        <Button variant="light" radius="md" color="gray" mt="sm" onClick={openSignInModal}>
                             Login
                         </Button>
                     </Card>
                 </Flex>
             </Center>
 
-            <LoginModal opened={opened} close={close} />
+            <SignInModal opened={signInModalOpened} close={closeSignInModal} />
+            <SignUpModal opened={signUpModalOpened} close={closeSignUpModal} />
         </>
     );
 }

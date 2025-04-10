@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 
-import { Avatar, Button, Container, Flex, Text } from "@mantine/core";
+import { Avatar, Button, Container, Flex, MantineColor, Text } from "@mantine/core";
 import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
 
 import { ROUTES } from "../Routes/routes";
@@ -15,7 +15,7 @@ const navItems = [
 
 export default function Navigation() {
     const user = useAppSelector((state) => state.user).data;
-    const primaryColor = useAppSelector((state) => state.primaryColor);
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const location = useLocation();
 
     const activeIndex = navItems.findIndex((item) => location.pathname === item.to || location.pathname.startsWith(item.to + "/"));

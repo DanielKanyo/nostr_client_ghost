@@ -3,18 +3,18 @@ import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, CloseButton, Flex, Input, Modal } from "@mantine/core";
+import { Alert, Button, Flex, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { authenticate, fetchUserMetadata } from "../Services/service";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { authenticateUser, fetchUserMetadata } from "../../Services/authService";
+import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
 
-interface LoginModalProps {
+interface SignInModalProps {
     opened: boolean;
     close: () => void;
 }
 
-export default function LoginModal({ opened, close }: LoginModalProps) {
+export default function SignInModal({ opened, close }: SignInModalProps) {
     const [privateKey, setPrivateKey] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -27,7 +27,7 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
 
         try {
             const pool = new SimplePool();
-            const publicKey = await authenticate(privateKey, pool);
+            const publicKey = await authenticateUser(privateKey, pool);
             const metadata = await fetchUserMetadata(publicKey, pool);
 
             localStorage.setItem("nostrPrivateKey", privateKey);
@@ -49,27 +49,29 @@ export default function LoginModal({ opened, close }: LoginModalProps) {
         }
     };
 
+    const handleClose = () => {
+        setPrivateKey("");
+        setError("");
+
+        close();
+    };
+
     return (
-        <Modal opened={opened} onClose={close} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="md">
+        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="md" size="lg">
             <Flex direction="column">
-                <Input
+                <PasswordInput
                     variant="filled"
                     size="md"
                     radius="md"
-                    placeholder="Nostr private key starting with 'nsec'..."
+                    label="Enter your private key"
+                    description='It starts with "nsec"'
+                    placeholder="nsec..."
                     value={privateKey}
                     onChange={(event) => setPrivateKey(event.currentTarget.value.trim())}
-                    rightSectionPointerEvents="all"
-                    rightSection={
-                        <CloseButton
-                            aria-label="Clear input"
-                            onClick={() => setPrivateKey("")}
-                            style={{ display: privateKey ? undefined : "none" }}
-                        />
-                    }
                     autoFocus
                     aria-label="Nostr private key input"
                     mb="lg"
+                    data-autofocus
                 />
 
                 {error && (

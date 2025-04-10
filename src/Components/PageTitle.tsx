@@ -18,11 +18,11 @@ export default function PageTitle({ title, withBackwards }: PageTitleProps) {
     return (
         <Flex p="lg" align="center" justify="flex-start">
             {withBackwards && (
-                <ActionIcon mr={14} variant="subtle" color="gray" size="xl" radius="md" aria-label="back" onClick={goBack}>
+                <ActionIcon mr={14} variant="subtle" color="gray" size="xl" radius="xl" aria-label="back" onClick={goBack}>
                     <IconChevronLeft className="mantine-rotate-rtl" />
                 </ActionIcon>
             )}
-            <Text fz={26}>{title}</Text>
+            <Text fz={22}>{title}</Text>
         </Flex>
     );
 }

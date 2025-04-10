@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { UserMetadata } from "../../Types/UserMetadata";
+import { UserMetadata } from "../../Types/userMetadata";
 
 type UserState = {
     data: UserMetadata | null;

@@ -1,24 +1,29 @@
 import { useEffect, useState } from "react";
 
-import { ActionIcon, Alert, Container, CopyButton, PasswordInput, TextInput, Tooltip } from "@mantine/core";
+import { nip19 } from "nostr-tools";
+
+import { ActionIcon, Alert, Container, CopyButton, MantineColor, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoCircle } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
+import PrivateKeyInput from "../../Components/PrivateKeyInput";
 import Content from "../../Layouts/Content";
 import MainBox from "../../Layouts/MainBox";
 import SideBox from "../../Layouts/SideBox";
 import { useAppSelector } from "../../Store/hook";
 
 export default function AccountSettings() {
-    const user = useAppSelector((state) => state.user).data;
-    const primaryColor = useAppSelector((state) => state.primaryColor);
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const [privateKey, setPrivateKey] = useState<string>("");
+    const [npub, setNpub] = useState<string>("");
 
     useEffect(() => {
         const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
+        const storedPublicKey = localStorage.getItem("nostrPublicKey");
 
-        if (storedPrivateKey) {
+        if (storedPrivateKey && storedPublicKey) {
             setPrivateKey(storedPrivateKey);
+            setNpub(nip19.npubEncode(storedPublicKey));
         }
     });
 
@@ -44,12 +49,12 @@ export default function AccountSettings() {
                     <TextInput
                         variant="filled"
                         mt="xl"
-                        size="lg"
+                        size="md"
                         radius="md"
                         label="Public Key"
                         description="Anyone on Nostr can find you via your public key. Feel free to share anywhere."
                         rightSection={
-                            <CopyButton value={user?.npub} timeout={2000}>
+                            <CopyButton value={npub} timeout={2000}>
                                 {({ copied, copy }) => (
                                     <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
                                         <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
@@ -59,30 +64,10 @@ export default function AccountSettings() {
                                 )}
                             </CopyButton>
                         }
-                        value={user?.npub ?? ""}
+                        value={npub}
                         readOnly
                     />
-                    <PasswordInput
-                        variant="filled"
-                        mt="xl"
-                        size="lg"
-                        radius="md"
-                        label="Private Key"
-                        description="This key fully controls your Nostr account. Don't share it with anyone. Only copy this key to store it securely or to login to another Nostr app."
-                        rightSection={
-                            <CopyButton value={privateKey} timeout={2000}>
-                                {({ copied, copy }) => (
-                                    <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
-                                        <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
-                                            {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                                        </ActionIcon>
-                                    </Tooltip>
-                                )}
-                            </CopyButton>
-                        }
-                        value={privateKey}
-                        readOnly
-                    />
+                    <PrivateKeyInput privateKey={privateKey} primaryColor={primaryColor} />
                 </Container>
             </MainBox>
             <SideBox width={320}>Side Box</SideBox>
