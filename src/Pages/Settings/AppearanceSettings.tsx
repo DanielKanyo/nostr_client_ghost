@@ -76,7 +76,7 @@ export default function AppearanceSettings() {
         <Content>
             <MainBox width={680}>
                 <PageTitle title="Appearance Settings" withBackwards />
-                <Container p="lg">
+                <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
                         <Text fz={20}>Theme</Text>
                         <Tooltip label="Toggle Color Scheme" radius="md" withArrow>
@@ -91,7 +91,7 @@ export default function AppearanceSettings() {
                     </Flex>
                 </Container>
                 <Divider />
-                <Container p="lg">
+                <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
                         <Text fz={20}>Primary Color</Text>
                         <Flex gap={6}>

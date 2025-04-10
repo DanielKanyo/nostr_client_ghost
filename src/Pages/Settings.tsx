@@ -16,7 +16,7 @@ const settingsItems = [
 
 export default function Settings() {
     const items = settingsItems.map((item, index) => (
-        <Container key={index} p={0}>
+        <Container key={index} p={0} m={0}>
             <NavLink
                 component={Link}
                 to={item.to}
