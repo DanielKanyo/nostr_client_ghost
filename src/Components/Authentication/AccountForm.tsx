@@ -1,6 +1,6 @@
 import { Group, Textarea, TextInput } from "@mantine/core";
 
-interface SignUpFormProps {
+interface AccountFormProps {
     name: string;
     displayName: string;
     picture: string;
@@ -15,7 +15,7 @@ interface SignUpFormProps {
     setAbout: (v: string) => void;
 }
 
-export default function SignUpForm({
+export default function AccountForm({
     name,
     displayName,
     picture,
@@ -28,7 +28,7 @@ export default function SignUpForm({
     setBanner,
     setWebsite,
     setAbout,
-}: SignUpFormProps) {
+}: AccountFormProps) {
     return (
         <>
             <Group grow gap="lg">

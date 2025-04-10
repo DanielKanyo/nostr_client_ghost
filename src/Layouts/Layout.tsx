@@ -8,7 +8,7 @@ import { Box, Flex } from "@mantine/core";
 
 import GetStarted from "../Components/GetStarted";
 import PageLoader from "../Components/PageLoader";
-import { authenticateUser, fetchUserMetadata } from "../Services/authService";
+import { authenticateUser, closePool, fetchUserMetadata } from "../Services/authService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
 import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
@@ -32,12 +32,13 @@ export default function Layout() {
             const storedPublicKey = localStorage.getItem("nostrPublicKey");
 
             if (storedPrivateKey && storedPublicKey) {
+                const pool = new SimplePool();
+
                 try {
-                    const pool = new SimplePool();
-                    const publicKey = await authenticateUser(storedPrivateKey, pool);
+                    const publicKey = await authenticateUser(storedPrivateKey);
 
                     if (publicKey === storedPublicKey) {
-                        const metadata = await fetchUserMetadata(publicKey, pool);
+                        const metadata = await fetchUserMetadata(pool, publicKey);
 
                         if (metadata) {
                             dispatch(updateUser(metadata));
@@ -52,6 +53,7 @@ export default function Layout() {
                     localStorage.removeItem("nostrPrivateKey");
                     localStorage.removeItem("nostrPublicKey");
 
+                    closePool(pool);
                     dispatch(updateLoading(false));
                 }
             } else {

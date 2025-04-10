@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
@@ -6,8 +6,9 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Flex, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { authenticateUser, fetchUserMetadata } from "../../Services/authService";
+import { authenticateUser, closePool, fetchUserMetadata } from "../../Services/authService";
 import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
 
 interface SignInModalProps {
     opened: boolean;
@@ -20,15 +21,23 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(""), HIDE_ALERT_TIMEOUT_IN_MS);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
     const handleLogin = async (event: FormEvent) => {
         event.preventDefault();
         setError("");
         setLoading(true);
 
+        const pool = new SimplePool();
+
         try {
-            const pool = new SimplePool();
-            const publicKey = await authenticateUser(privateKey, pool);
-            const metadata = await fetchUserMetadata(publicKey, pool);
+            const publicKey = await authenticateUser(privateKey);
+            const metadata = await fetchUserMetadata(pool, publicKey);
 
             localStorage.setItem("nostrPrivateKey", privateKey);
             localStorage.setItem("nostrPublicKey", publicKey);
@@ -45,6 +54,7 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
 
             setError(err instanceof Error ? err.message : "Authentication failed...");
         } finally {
+            closePool(pool);
             setLoading(false);
         }
     };
@@ -80,7 +90,15 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                     </Alert>
                 )}
 
-                <Button variant="filled" radius="md" color="violet" onClick={handleLogin} loading={loading} loaderProps={{ type: "dots" }}>
+                <Button
+                    variant="filled"
+                    radius="md"
+                    color="violet"
+                    onClick={handleLogin}
+                    loading={loading}
+                    loaderProps={{ type: "dots" }}
+                    disabled={!privateKey}
+                >
                     Login
                 </Button>
             </Flex>

@@ -1,0 +1,1 @@
+export const HIDE_ALERT_TIMEOUT_IN_MS = 6000;

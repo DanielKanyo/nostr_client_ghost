@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, Group, Modal } from "@mantine/core";
+import { Alert, Button, Checkbox, Flex, Modal } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
-import { authenticateUser, fetchUserMetadata, generateKeyPair, publishProfile } from "../../Services/authService";
+import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../../Services/authService";
 import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
 import { UserMetadata } from "../../Types/userMetadata";
 import PrivateKeyInput from "../PrivateKeyInput";
-import SignUpForm from "./SignUpForm";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
+import AccountForm from "./AccountForm";
 
 interface SignUpModalProps {
     opened: boolean;
@@ -32,6 +33,13 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
 
     const { privateKey } = generateKeyPair();
 
+    useEffect(() => {
+        if (warning) {
+            const timer = setTimeout(() => setWarning(""), HIDE_ALERT_TIMEOUT_IN_MS);
+            return () => clearTimeout(timer);
+        }
+    }, [warning]);
+
     const handleSaveProfile = async () => {
         if (!displayName || !name) {
             setWarning("Please fill the required fields!");
@@ -42,13 +50,12 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
         setLoading(true);
 
         const metadataToStore: UserMetadata = { name, display_name: displayName, website, picture, banner, about };
+        const pool = new SimplePool();
 
         try {
-            await publishProfile(privateKey, metadataToStore);
-
-            const pool = new SimplePool();
-            const publicKey = await authenticateUser(privateKey, pool);
-            const metadata = await fetchUserMetadata(publicKey, pool);
+            await publishProfile(pool, privateKey, metadataToStore);
+            const publicKey = await authenticateUser(privateKey);
+            const metadata = await fetchUserMetadata(pool, publicKey);
 
             localStorage.setItem("nostrPrivateKey", privateKey);
             localStorage.setItem("nostrPublicKey", publicKey);
@@ -62,6 +69,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
         } catch (err) {
             setError(err instanceof Error ? err.message : "Profile creation failed...");
         } finally {
+            closePool(pool);
             setLoading(false);
         }
     };
@@ -91,7 +99,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
             radius="md"
             size="lg"
         >
-            <SignUpForm
+            <AccountForm
                 name={name}
                 displayName={displayName}
                 picture={picture}
@@ -116,18 +124,13 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
                     {warning}
                 </Alert>
             )}
-            <Group mt="lg" justify="flex-end" gap="xs">
-                <Button
-                    variant="filled"
-                    radius="md"
-                    color="red"
-                    onClick={() => setPrivateKeyStored(true)}
-                    disabled={!displayName || !name || privateKeyStored}
-                    loading={loading}
-                    loaderProps={{ type: "dots" }}
-                >
-                    Private Key Securely Stored
-                </Button>
+            <Flex mt="lg" justify="space-between" align="center">
+                <Checkbox
+                    label="Private Key Securely Stored"
+                    color="violet"
+                    checked={privateKeyStored}
+                    onChange={() => setPrivateKeyStored(!privateKeyStored)}
+                />
                 <Button
                     variant="filled"
                     radius="md"
@@ -139,7 +142,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
                 >
                     Create Account
                 </Button>
-            </Group>
+            </Flex>
         </Modal>
     );
 }

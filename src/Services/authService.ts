@@ -7,7 +7,7 @@ import { UserMetadata } from "../Types/userMetadata";
 // Common Nostr relays
 const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
-export const authenticateUser = async (privateKey: string, pool: SimplePool): Promise<string> => {
+export const authenticateUser = async (privateKey: string): Promise<string> => {
     try {
         let privateKeyBytes: Uint8Array;
 
@@ -46,15 +46,13 @@ export const authenticateUser = async (privateKey: string, pool: SimplePool): Pr
         localStorage.setItem("nostrPrivateKey", privateKey);
         localStorage.setItem("nostrPublicKey", signedEvent.pubkey);
 
-        pool.close(relays);
-
         return signedEvent.pubkey;
     } catch (err) {
         throw new Error(err instanceof Error ? err.message : "Authentication failed! Please try again later...");
     }
 };
 
-export const fetchUserMetadata = async (publicKey: string, pool: SimplePool): Promise<UserMetadata | null> => {
+export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Promise<UserMetadata | null> => {
     try {
         const events = await pool.querySync(relays, {
             kinds: [0], // Metadata events
@@ -81,7 +79,7 @@ export const fetchUserMetadata = async (publicKey: string, pool: SimplePool): Pr
     }
 };
 
-export function generateKeyPair(): { privateKey: string; publicKey: string } {
+export const generateKeyPair = (): { privateKey: string; publicKey: string } => {
     const sk = generateSecretKey();
     const pk = getPublicKey(sk);
 
@@ -89,9 +87,9 @@ export function generateKeyPair(): { privateKey: string; publicKey: string } {
     const npub = nip19.npubEncode(pk);
 
     return { privateKey: nsec, publicKey: npub };
-}
+};
 
-export const publishProfile = async (privateKey: string, userMetadata: UserMetadata): Promise<void> => {
+export const publishProfile = async (pool: SimplePool, privateKey: string, userMetadata: UserMetadata): Promise<void> => {
     // Decode nsec private key to raw form
     const { type, data: sk } = nip19.decode(privateKey);
 
@@ -108,6 +106,7 @@ export const publishProfile = async (privateKey: string, userMetadata: UserMetad
             name: userMetadata.name,
             display_name: userMetadata.display_name,
             picture: userMetadata.picture,
+            banner: userMetadata.banner,
             about: userMetadata.about,
             website: userMetadata.website,
         }),
@@ -116,16 +115,19 @@ export const publishProfile = async (privateKey: string, userMetadata: UserMetad
     // Sign the event
     const signedEvent = finalizeEvent(eventTemplate, sk);
 
-    // Publish to relays
-    const pool = new SimplePool();
-
     try {
         const pubs = pool.publish(relays, signedEvent);
 
         await Promise.all(pubs);
     } catch (error) {
         throw new Error("Failed to publish profile...");
-    } finally {
-        pool.close(relays);
+    }
+};
+
+export const closePool = (pool: SimplePool): void => {
+    try {
+        return pool.close(relays);
+    } catch (error) {
+        throw new Error("Failed to close pool...");
     }
 };
