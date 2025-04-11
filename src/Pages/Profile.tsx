@@ -1,7 +1,7 @@
 import Content from "../Layouts/Content";
-import MainBox from "../Layouts/MainBox";
+import MainContainer from "../Layouts/MainContainer";
 import ProfileHeader from "../Layouts/ProfileHeader";
-import SideBox from "../Layouts/SideBox";
+import SideContainer from "../Layouts/SideContainer";
 import { useAppSelector } from "../Store/hook";
 
 export default function Profile() {
@@ -9,10 +9,10 @@ export default function Profile() {
 
     return (
         <Content>
-            <MainBox width={680}>
+            <MainContainer width={680}>
                 <ProfileHeader picture={user?.picture} banner={user?.banner} />
-            </MainBox>
-            <SideBox width={320}>Side Box</SideBox>
+            </MainContainer>
+            <SideContainer width={320}>Side Box</SideContainer>
         </Content>
     );
 }

@@ -7,13 +7,13 @@ import { nip19, SimplePool } from "nostr-tools";
 import { ActionIcon, Alert, Button, Container, CopyButton, Group, MantineColor, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconDeviceFloppy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
 
-import AccountForm from "../../Components/Authentication/AccountForm";
+import AccountForm from "../../Components/AccountForm";
 import PageTitle from "../../Components/PageTitle";
 import PrivateKeyInput from "../../Components/PrivateKeyInput";
 import Content from "../../Layouts/Content";
-import MainBox from "../../Layouts/MainBox";
-import ScrollBox from "../../Layouts/ScrollBox";
-import SideBox from "../../Layouts/SideBox";
+import MainContainer from "../../Layouts/MainContainer";
+import ScrollContainer from "../../Layouts/ScrollContainer";
+import SideContainer from "../../Layouts/SideContainer";
 import { ROUTES } from "../../Routes/routes";
 import { closePool, fetchUserMetadata, publishProfile } from "../../Services/authService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
@@ -96,9 +96,9 @@ export default function AccountSettings() {
 
     return (
         <Content>
-            <MainBox width={680}>
+            <MainContainer width={680}>
                 <PageTitle title="Account Settings" withBackwards />
-                <ScrollBox>
+                <ScrollContainer>
                     <Container mx={0} px="lg">
                         <AccountForm
                             name={name ?? ""}
@@ -185,9 +185,9 @@ export default function AccountSettings() {
                             </Button>
                         </Group>
                     </Container>
-                </ScrollBox>
-            </MainBox>
-            <SideBox width={320}>Side Box</SideBox>
+                </ScrollContainer>
+            </MainContainer>
+            <SideContainer width={320}>Side Box</SideContainer>
         </Content>
     );
 }

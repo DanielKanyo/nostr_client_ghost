@@ -1,12 +1,12 @@
 import Content from "../Layouts/Content";
-import MainBox from "../Layouts/MainBox";
-import SideBox from "../Layouts/SideBox";
+import MainContainer from "../Layouts/MainContainer";
+import SideContainer from "../Layouts/SideContainer";
 
 export default function Messages() {
     return (
         <Content>
-            <MainBox width={680}>Messages</MainBox>
-            <SideBox width={320}>Side Box</SideBox>
+            <MainContainer width={680}>Messages</MainContainer>
+            <SideContainer width={320}>Side Box</SideContainer>
         </Content>
     );
 }

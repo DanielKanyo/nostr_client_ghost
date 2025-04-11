@@ -6,9 +6,9 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
-import { authenticateUser, closePool, fetchUserMetadata } from "../../Services/authService";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
-import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
+import { authenticateUser, closePool, fetchUserMetadata } from "../Services/authService";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
+import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
 
 interface SignInModalProps {
     opened: boolean;

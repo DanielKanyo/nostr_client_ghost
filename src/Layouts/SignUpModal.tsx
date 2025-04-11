@@ -6,12 +6,12 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Checkbox, Flex, Modal } from "@mantine/core";
 import { IconCirclePlus, IconExclamationCircle } from "@tabler/icons-react";
 
-import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../../Services/authService";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
-import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
-import { UserMetadata } from "../../Types/userMetadata";
-import PrivateKeyInput from "../PrivateKeyInput";
-import AccountForm from "./AccountForm";
+import AccountForm from "../Components/AccountForm";
+import PrivateKeyInput from "../Components/PrivateKeyInput";
+import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/authService";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
+import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { UserMetadata } from "../Types/userMetadata";
 
 interface SignUpModalProps {
     opened: boolean;

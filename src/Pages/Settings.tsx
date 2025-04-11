@@ -5,8 +5,8 @@ import { IconUserCog, IconBrush, IconChevronRight } from "@tabler/icons-react";
 
 import PageTitle from "../Components/PageTitle";
 import Content from "../Layouts/Content";
-import MainBox from "../Layouts/MainBox";
-import SideBox from "../Layouts/SideBox";
+import MainContainer from "../Layouts/MainContainer";
+import SideContainer from "../Layouts/SideContainer";
 import { ROUTES } from "../Routes/routes";
 
 const settingsItems = [
@@ -31,11 +31,11 @@ export default function Settings() {
 
     return (
         <Content>
-            <MainBox width={680}>
+            <MainContainer width={680}>
                 <PageTitle title="Settings" />
                 {items}
-            </MainBox>
-            <SideBox width={320}>Side Box</SideBox>
+            </MainContainer>
+            <SideContainer width={320}>Side Box</SideContainer>
         </Content>
     );
 }

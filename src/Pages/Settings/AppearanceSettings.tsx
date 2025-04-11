@@ -16,8 +16,8 @@ import { IconMoon, IconSun } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
 import Content from "../../Layouts/Content";
-import MainBox from "../../Layouts/MainBox";
-import SideBox from "../../Layouts/SideBox";
+import MainContainer from "../../Layouts/MainContainer";
+import SideContainer from "../../Layouts/SideContainer";
 import { updatePrimaryColor } from "../../Store/Features/primaryColorSlice";
 import { useAppSelector } from "../../Store/hook";
 
@@ -74,7 +74,7 @@ export default function AppearanceSettings() {
 
     return (
         <Content>
-            <MainBox width={680}>
+            <MainContainer width={680}>
                 <PageTitle title="Appearance Settings" withBackwards />
                 <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
@@ -113,8 +113,8 @@ export default function AppearanceSettings() {
                     </Flex>
                 </Container>
                 <Divider />
-            </MainBox>
-            <SideBox width={320}>Side Box</SideBox>
+            </MainContainer>
+            <SideContainer width={320}>Side Box</SideContainer>
         </Content>
     );
 }
