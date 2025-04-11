@@ -86,6 +86,8 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                         radius={160}
                         pos="absolute"
                         bottom={-65}
+                        color={primaryColor}
+                        variant="filled"
                         left={80}
                         style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
                     />
@@ -115,17 +117,21 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                         radius="xl"
                         aria-label="account-settings"
                         component={Link}
-                        to={ROUTES.SETTINGS_ACCOUNT}
+                        to={ROUTES.SETTINGS_PROFILE}
                     >
                         <IconUserEdit />
                     </ActionIcon>
                 </Group>
                 <Group justify="space-between" px="lg" align="flex-end">
                     <Flex direction="column">
-                        <Text fz={26}>{displayName ?? "Undefined"}</Text>
-                        <Text c="dimmed" fz={18} lh={1}>
-                            @{name ?? "Undefined"}
-                        </Text>
+                        <Box w={150}>
+                            <Text ta="left" fz={26} truncate="end">
+                                {displayName ?? "Undefined"}
+                            </Text>
+                            <Text ta="left" c="dimmed" fz={18} lh={1} truncate="end">
+                                @{name ?? "Undefined"}
+                            </Text>
+                        </Box>
                     </Flex>
                     <Flex gap="xs">
                         {followDataLoading ? (
@@ -162,7 +168,15 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                 )}
             </Box>
 
-            <Modal opened={qrModalOpened} onClose={closeQrModal} title="Your Nostr Public Key" centered padding="lg" radius="lg">
+            <Modal
+                opened={qrModalOpened}
+                onClose={closeQrModal}
+                title="Your Nostr Public Key"
+                centered
+                padding="lg"
+                radius="lg"
+                overlayProps={{ blur: 3 }}
+            >
                 {npub && (
                     <>
                         <Text c="dimmed" fz={13}>

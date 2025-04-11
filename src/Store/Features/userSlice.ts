@@ -3,45 +3,45 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { UserMetadata } from "../../Types/userMetadata";
 
 type UserState = {
-    data: UserMetadata | null;
-    loading: boolean;
+    profile: UserMetadata | null;
     authenticated: boolean;
     privateKey: string;
     publicKey: string;
+    loading: boolean;
 };
 
 const initUser: UserState = {
-    data: null,
-    loading: true,
+    profile: null,
     authenticated: false,
     privateKey: "",
     publicKey: "",
+    loading: true,
 };
 
 export const userSlice = createSlice({
     name: "user",
     initialState: initUser,
     reducers: {
-        updateUser: (state, action: PayloadAction<UserMetadata>) => {
-            state.data = action.payload;
+        updateUserProfile: (state, action: PayloadAction<UserMetadata>) => {
+            state.profile = action.payload;
             state.loading = false;
         },
         resetUser: (state) => {
-            state.data = null;
+            state.profile = null;
             state.authenticated = false;
         },
-        updateKeys: (state, action: PayloadAction<{ privateKey: string; publicKey: string }>) => {
+        updateUserKeys: (state, action: PayloadAction<{ privateKey: string; publicKey: string }>) => {
             state.privateKey = action.payload.privateKey;
             state.publicKey = action.payload.publicKey;
         },
-        updateLoading: (state, action: PayloadAction<boolean>) => {
+        updateUserLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
         },
-        updateAuthenticated: (state, action: PayloadAction<boolean>) => {
+        updateUserAuthenticated: (state, action: PayloadAction<boolean>) => {
             state.authenticated = action.payload;
         },
     },
 });
 
-export const { updateUser, resetUser, updateLoading, updateAuthenticated, updateKeys } = userSlice.actions;
+export const { updateUserProfile, resetUser, updateUserLoading, updateUserAuthenticated, updateUserKeys } = userSlice.actions;
 export default userSlice.reducer;

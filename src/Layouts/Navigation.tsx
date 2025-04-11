@@ -70,16 +70,16 @@ export default function Navigation() {
                 radius={80}
                 variant="subtle"
                 color="gray"
-                leftSection={<Avatar src={user?.data?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
+                leftSection={<Avatar src={user?.profile?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
                 h={80}
             >
                 <Flex direction="column" align="flex-start" justify="center">
                     <Box w={150}>
                         <Text ta="left" size="xl" truncate="end">
-                            {user ? user?.data?.display_name : "Undefined"}
+                            {user ? user?.profile?.display_name : "Undefined"}
                         </Text>
                         <Text ta="left" c="dimmed" size="sm" lh={1} truncate="end">
-                            @{user ? user.data?.name : "Undefined"}
+                            @{user ? user.profile?.name : "Undefined"}
                         </Text>
                     </Box>
                 </Flex>

@@ -6,6 +6,7 @@ export const ROUTES = {
     NOTIFICATIONS: "/notifications",
     MESSAGES: "/messages",
     SETTINGS: "/settings",
-    SETTINGS_ACCOUNT: "/settings/account",
+    SETTINGS_KEY_MANAGEMENT: "/settings/key-management",
     SETTINGS_APPEARANCE: "/settings/appearance",
+    SETTINGS_PROFILE: "/settings/profile",
 };

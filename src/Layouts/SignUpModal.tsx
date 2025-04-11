@@ -10,7 +10,7 @@ import AccountForm from "../Components/AccountForm";
 import PrivateKeyInput from "../Components/PrivateKeyInput";
 import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
-import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { updateUserAuthenticated, updateUserKeys, updateUserLoading, updateUserProfile } from "../Store/Features/userSlice";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface SignUpModalProps {
@@ -61,12 +61,12 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
             localStorage.setItem("nostrPublicKey", publicKey);
 
             if (metadata) {
-                dispatch(updateUser(metadata));
+                dispatch(updateUserProfile(metadata));
             }
 
-            dispatch(updateKeys({ privateKey, publicKey }));
-            dispatch(updateAuthenticated(true));
-            dispatch(updateLoading(false));
+            dispatch(updateUserKeys({ privateKey, publicKey }));
+            dispatch(updateUserAuthenticated(true));
+            dispatch(updateUserLoading(false));
         } catch (err) {
             setError(err instanceof Error ? err.message : "Profile creation failed...");
         } finally {

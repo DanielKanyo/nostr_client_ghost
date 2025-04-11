@@ -8,7 +8,7 @@ import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
-import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { updateUserAuthenticated, updateUserKeys, updateUserLoading, updateUserProfile } from "../Store/Features/userSlice";
 
 interface SignInModalProps {
     opened: boolean;
@@ -43,12 +43,12 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
             localStorage.setItem("nostrPublicKey", publicKey);
 
             if (metadata) {
-                dispatch(updateUser(metadata));
+                dispatch(updateUserProfile(metadata));
             }
 
-            dispatch(updateKeys({ privateKey, publicKey }));
-            dispatch(updateAuthenticated(true));
-            dispatch(updateLoading(false));
+            dispatch(updateUserKeys({ privateKey, publicKey }));
+            dispatch(updateUserAuthenticated(true));
+            dispatch(updateUserLoading(false));
         } catch (err) {
             localStorage.removeItem("nostrPrivateKey");
             localStorage.removeItem("nostrPublicKey");

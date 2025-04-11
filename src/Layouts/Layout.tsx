@@ -9,7 +9,7 @@ import { Box, Flex } from "@mantine/core";
 import PageLoader from "../Components/PageLoader";
 import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
-import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { updateUserAuthenticated, updateUserKeys, updateUserLoading, updateUserProfile } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
 import GetStarted from "./GetStarted";
 import Navigation from "./Navigation";
@@ -41,12 +41,12 @@ export default function Layout() {
                         const metadata = await fetchUserMetadata(pool, publicKey);
 
                         if (metadata) {
-                            dispatch(updateUser(metadata));
+                            dispatch(updateUserProfile(metadata));
                         }
 
-                        dispatch(updateKeys({ privateKey: storedPrivateKey, publicKey }));
-                        dispatch(updateAuthenticated(true));
-                        dispatch(updateLoading(false));
+                        dispatch(updateUserKeys({ privateKey: storedPrivateKey, publicKey }));
+                        dispatch(updateUserAuthenticated(true));
+                        dispatch(updateUserLoading(false));
                     } else {
                         throw new Error("Public key mismatch...");
                     }
@@ -55,10 +55,10 @@ export default function Layout() {
                     localStorage.removeItem("nostrPublicKey");
 
                     closePool(pool);
-                    dispatch(updateLoading(false));
+                    dispatch(updateUserLoading(false));
                 }
             } else {
-                dispatch(updateLoading(false));
+                dispatch(updateUserLoading(false));
             }
         };
 

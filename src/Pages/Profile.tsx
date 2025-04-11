@@ -35,7 +35,7 @@ export default function Profile() {
         if (!nprofileData) return;
 
         if (nprofileData.pubkey === storedUser.publicKey) {
-            setUserData(storedUser.data);
+            setUserData(storedUser.profile);
             return;
         }
 
