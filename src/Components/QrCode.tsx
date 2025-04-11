@@ -34,7 +34,7 @@ export default function QRCode({ publicKey, size }: QRCode) {
     }, []);
 
     return (
-        <Paper shadow="xs" radius="lg" p="sm" bg="white" mt="md">
+        <Paper shadow="xs" radius="lg" p="sm" bg="white">
             <div style={{ height: size, width: size }} ref={ref} />
         </Paper>
     );

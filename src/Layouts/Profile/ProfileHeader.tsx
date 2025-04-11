@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
-
-import { SimplePool } from "nostr-tools";
 
 import {
     ActionIcon,
@@ -14,18 +12,17 @@ import {
     Group,
     Modal,
     NumberFormatter,
-    Skeleton,
     Text,
     useComputedColorScheme,
     useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconMail, IconQrcode, IconUserEdit } from "@tabler/icons-react";
+import { IconDots, IconMail, IconQrcode, IconUserEdit, IconUserPlus } from "@tabler/icons-react";
 
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
 import { ROUTES } from "../../Routes/routes";
-import { closePool, encodeNPub, getFollowers, getFollowing } from "../../Services/userService";
+import { encodeNPub } from "../../Services/userService";
 
 interface ProfileHeaderProps {
     publicKey: string;
@@ -35,37 +32,28 @@ interface ProfileHeaderProps {
     banner: string | undefined;
     about: string | undefined;
     primaryColor: string;
+    followers: string[];
+    following: string[];
+    ownKey: boolean;
 }
 
-export default function ProfileHeader({ publicKey, name, displayName, about, banner, picture, primaryColor }: ProfileHeaderProps) {
+export default function ProfileHeader({
+    publicKey,
+    name,
+    displayName,
+    about,
+    banner,
+    picture,
+    primaryColor,
+    followers,
+    following,
+    ownKey,
+}: ProfileHeaderProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const [qrModalOpened, { open: openQrModal, close: closeQrModal }] = useDisclosure(false);
-    const [following, setFollowing] = useState<string[]>([]);
-    const [followers, setFollowers] = useState<string[]>([]);
-    const [followDataLoading, setFollowDataLoading] = useState(true);
 
     const npub = useMemo(() => encodeNPub(publicKey), [publicKey]);
-
-    useEffect(() => {
-        const loadStats = async () => {
-            const pool = new SimplePool();
-
-            try {
-                const [follows, fans] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
-
-                setFollowing(follows);
-                setFollowers(fans);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                closePool(pool);
-                setFollowDataLoading(false);
-            }
-        };
-
-        loadStats();
-    }, []);
 
     return (
         <>
@@ -99,32 +87,41 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                     <ActionIcon variant="light" color="gray" size="xl" radius="xl" aria-label="qr" onClick={openQrModal}>
                         <IconQrcode />
                     </ActionIcon>
-                    <ActionIcon
-                        variant="light"
-                        color="gray"
-                        size="xl"
-                        radius="xl"
-                        aria-label="messages"
-                        component={Link}
-                        to={ROUTES.MESSAGES}
-                    >
-                        <IconMail />
-                    </ActionIcon>
-                    <ActionIcon
-                        variant="light"
-                        color="gray"
-                        size="xl"
-                        radius="xl"
-                        aria-label="account-settings"
-                        component={Link}
-                        to={ROUTES.SETTINGS_PROFILE}
-                    >
-                        <IconUserEdit />
-                    </ActionIcon>
+                    {/* TODO: Move to component */}
+                    {ownKey ? (
+                        <>
+                            <ActionIcon
+                                variant="light"
+                                color="gray"
+                                size="xl"
+                                radius="xl"
+                                aria-label="messages"
+                                component={Link}
+                                to={ROUTES.MESSAGES}
+                            >
+                                <IconMail />
+                            </ActionIcon>
+                            <ActionIcon
+                                variant="light"
+                                color="gray"
+                                size="xl"
+                                radius="xl"
+                                aria-label="account-settings"
+                                component={Link}
+                                to={ROUTES.SETTINGS_PROFILE}
+                            >
+                                <IconUserEdit />
+                            </ActionIcon>
+                        </>
+                    ) : (
+                        <ActionIcon variant="light" color="gray" size="xl" radius="xl" aria-label="follow">
+                            <IconUserPlus />
+                        </ActionIcon>
+                    )}
                 </Group>
                 <Group justify="space-between" px="lg" align="flex-end">
                     <Flex direction="column">
-                        <Box w={150}>
+                        <Box w={300}>
                             <Text ta="left" fz={26} truncate="end">
                                 {displayName ?? "Undefined"}
                             </Text>
@@ -133,32 +130,24 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                             </Text>
                         </Box>
                     </Flex>
+                    {/* TODO: Move to component */}
                     <Flex gap="xs">
-                        {followDataLoading ? (
-                            <>
-                                <Skeleton height={30} width={102} radius="xl" />
-                                <Skeleton height={30} width={102} radius="xl" />
-                            </>
-                        ) : (
-                            <>
-                                <Button variant="light" color="gray" radius="xl" size="xs">
-                                    <Text fz={14} fw="bolder">
-                                        <NumberFormatter thousandSeparator value={followers.length} />{" "}
-                                    </Text>
-                                    <Text ml={6} fz={14} c="dimmed">
-                                        Followers
-                                    </Text>
-                                </Button>
-                                <Button variant="light" color="gray" radius="xl" size="xs">
-                                    <Text fz={14} fw="bolder">
-                                        <NumberFormatter thousandSeparator value={following.length} />{" "}
-                                    </Text>
-                                    <Text ml={6} fz={14} c="dimmed">
-                                        Following
-                                    </Text>
-                                </Button>
-                            </>
-                        )}
+                        <Button variant="light" color="gray" radius="xl" size="xs">
+                            <Text fz={14} fw="bolder">
+                                <NumberFormatter thousandSeparator value={followers.length} />{" "}
+                            </Text>
+                            <Text ml={6} fz={14} c="dimmed">
+                                Followers
+                            </Text>
+                        </Button>
+                        <Button variant="light" color="gray" radius="xl" size="xs">
+                            <Text fz={14} fw="bolder">
+                                <NumberFormatter thousandSeparator value={following.length} />{" "}
+                            </Text>
+                            <Text ml={6} fz={14} c="dimmed">
+                                Following
+                            </Text>
+                        </Button>
                     </Flex>
                 </Group>
                 {about && (
@@ -167,11 +156,11 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                     </Text>
                 )}
             </Box>
-
+            {/* TODO: Move to component */}
             <Modal
                 opened={qrModalOpened}
                 onClose={closeQrModal}
-                title="Your Nostr Public Key"
+                title="Nostr Public Key"
                 centered
                 padding="lg"
                 radius="lg"
@@ -179,9 +168,6 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
             >
                 {npub && (
                     <>
-                        <Text c="dimmed" fz={13}>
-                            Anyone on Nostr can find you via your public key. Feel free to share anywhere.
-                        </Text>
                         <Center>
                             <QRCode publicKey={npub} size={250} />
                         </Center>

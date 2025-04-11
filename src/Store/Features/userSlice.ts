@@ -8,6 +8,8 @@ type UserState = {
     privateKey: string;
     publicKey: string;
     loading: boolean;
+    followers: string[];
+    following: string[];
 };
 
 const initUser: UserState = {
@@ -16,6 +18,8 @@ const initUser: UserState = {
     privateKey: "",
     publicKey: "",
     loading: true,
+    followers: [],
+    following: [],
 };
 
 export const userSlice = createSlice({
@@ -40,8 +44,13 @@ export const userSlice = createSlice({
         updateUserAuthenticated: (state, action: PayloadAction<boolean>) => {
             state.authenticated = action.payload;
         },
+        updateUserFollowersAndFollowing: (state, action: PayloadAction<{ followers: string[]; following: string[] }>) => {
+            state.followers = action.payload.followers;
+            state.following = action.payload.following;
+        },
     },
 });
 
-export const { updateUserProfile, resetUser, updateUserLoading, updateUserAuthenticated, updateUserKeys } = userSlice.actions;
+export const { updateUserProfile, resetUser, updateUserLoading, updateUserAuthenticated, updateUserKeys, updateUserFollowersAndFollowing } =
+    userSlice.actions;
 export default userSlice.reducer;

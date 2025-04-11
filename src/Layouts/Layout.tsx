@@ -7,9 +7,15 @@ import { SimplePool } from "nostr-tools";
 import { Box, Flex } from "@mantine/core";
 
 import PageLoader from "../Components/PageLoader";
-import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
+import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
-import { updateUserAuthenticated, updateUserKeys, updateUserLoading, updateUserProfile } from "../Store/Features/userSlice";
+import {
+    updateUserAuthenticated,
+    updateUserFollowersAndFollowing,
+    updateUserKeys,
+    updateUserLoading,
+    updateUserProfile,
+} from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
 import GetStarted from "./GetStarted";
 import Navigation from "./Navigation";
@@ -39,12 +45,14 @@ export default function Layout() {
 
                     if (publicKey === storedPublicKey) {
                         const metadata = await fetchUserMetadata(pool, publicKey);
+                        const [following, followers] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
 
                         if (metadata) {
                             dispatch(updateUserProfile(metadata));
                         }
 
                         dispatch(updateUserKeys({ privateKey: storedPrivateKey, publicKey }));
+                        dispatch(updateUserFollowersAndFollowing({ following, followers }));
                         dispatch(updateUserAuthenticated(true));
                         dispatch(updateUserLoading(false));
                     } else {
