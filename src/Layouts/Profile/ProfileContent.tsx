@@ -8,7 +8,7 @@ interface ProfileContentProps {
 
 export default function ProfileContent({ primaryColor }: ProfileContentProps) {
     return (
-        <Tabs radius="lg" defaultValue="notes" color={primaryColor} classNames={classes}>
+        <Tabs radius="lg" defaultValue="notes" color={primaryColor} classNames={classes} mt="lg">
             <Tabs.List grow>
                 <Tabs.Tab value="notes">Notes</Tabs.Tab>
                 <Tabs.Tab value="reads">Reads</Tabs.Tab>

@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import { useLocation, Link } from "react-router-dom";
 
-import { Avatar, Button, Container, Flex, MantineColor, Text } from "@mantine/core";
+import { Avatar, Box, Button, Container, Flex, MantineColor, Text } from "@mantine/core";
 import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
 
-import { ROUTES } from "../Routes/routes";
+import { PROFILE_ROUTE_BASE, ROUTES } from "../Routes/routes";
+import { encodeNProfile } from "../Services/userService";
 import { useAppSelector } from "../Store/hook";
 
 const navItems = [
@@ -14,11 +16,15 @@ const navItems = [
 ];
 
 export default function Navigation() {
-    const user = useAppSelector((state) => state.user).data;
+    const user = useAppSelector((state) => state.user);
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const location = useLocation();
 
-    const activeRoute = Object.values(ROUTES).find((r) => location.pathname === r || location.pathname.startsWith(r + "/"));
+    const nprofile = useMemo(() => encodeNProfile(user.publicKey), [user.publicKey]);
+
+    const activeRoute = useMemo(() => {
+        return Object.values(ROUTES).find((r) => location.pathname === r || location.pathname.startsWith(r + "/"));
+    }, [location.pathname]);
 
     const items = navItems.map((item, index) => (
         <Button
@@ -58,20 +64,24 @@ export default function Navigation() {
             </Container>
             <Button
                 component={Link}
-                to="/profile"
+                to={`${PROFILE_ROUTE_BASE}/${nprofile}`}
                 justify="flex-start"
                 size="xl"
                 radius={80}
                 variant="subtle"
                 color="gray"
-                leftSection={<Avatar src={user?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
+                leftSection={<Avatar src={user?.data?.picture} size={60} style={{ marginRight: 10, marginLeft: -10 }} />}
                 h={80}
             >
                 <Flex direction="column" align="flex-start" justify="center">
-                    <Text size="xl">{user ? user?.display_name : "Undefined"}</Text>
-                    <Text c="dimmed" size="sm" lh={1}>
-                        @{user ? user.name : "Undefined"}
-                    </Text>
+                    <Box w={150}>
+                        <Text ta="left" size="xl" truncate="end">
+                            {user ? user?.data?.display_name : "Undefined"}
+                        </Text>
+                        <Text ta="left" c="dimmed" size="sm" lh={1} truncate="end">
+                            @{user ? user.data?.name : "Undefined"}
+                        </Text>
+                    </Box>
                 </Flex>
             </Button>
         </Flex>

@@ -2,6 +2,7 @@ import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent
 
 import { hexToBytes } from "@noble/hashes/utils";
 
+import { NProfile } from "../Types/nProfile";
 import { UserMetadata } from "../Types/userMetadata";
 
 // Common Nostr relays
@@ -146,6 +147,18 @@ export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<st
 
     return Array.from(followers);
 };
+
+export const encodeNProfile = (pubkey: string): string => nip19.nprofileEncode({ pubkey, relays });
+export const decodeNProfile = (nprofile: string): NProfile => {
+    const decoded = nip19.decode(nprofile);
+
+    if (decoded.type !== "nprofile") {
+        throw new Error("Invalid nprofile");
+    }
+
+    return decoded.data;
+};
+export const encodeNPub = (pubkey: string): string => nip19.npubEncode(pubkey);
 
 export const closePool = (pool: SimplePool): void => {
     try {

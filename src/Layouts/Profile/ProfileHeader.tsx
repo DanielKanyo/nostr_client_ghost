@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { nip19, SimplePool } from "nostr-tools";
+import { SimplePool } from "nostr-tools";
 
 import {
     ActionIcon,
@@ -13,6 +13,7 @@ import {
     Flex,
     Group,
     Modal,
+    NumberFormatter,
     Skeleton,
     Text,
     useComputedColorScheme,
@@ -24,7 +25,7 @@ import { IconDots, IconMail, IconQrcode, IconUserEdit } from "@tabler/icons-reac
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
 import { ROUTES } from "../../Routes/routes";
-import { closePool, getFollowers, getFollowing } from "../../Services/userService";
+import { closePool, encodeNPub, getFollowers, getFollowing } from "../../Services/userService";
 
 interface ProfileHeaderProps {
     publicKey: string;
@@ -43,7 +44,8 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
     const [following, setFollowing] = useState<string[]>([]);
     const [followers, setFollowers] = useState<string[]>([]);
     const [followDataLoading, setFollowDataLoading] = useState(true);
-    const npub = nip19.npubEncode(publicKey);
+
+    const npub = useMemo(() => encodeNPub(publicKey), [publicKey]);
 
     useEffect(() => {
         const loadStats = async () => {
@@ -51,8 +53,6 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
 
             try {
                 const [follows, fans] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
-
-                console.log(follows, fans);
 
                 setFollowing(follows);
                 setFollowers(fans);
@@ -137,7 +137,7 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                             <>
                                 <Button variant="light" color="gray" radius="xl" size="xs">
                                     <Text fz={14} fw="bolder">
-                                        {followers.length}{" "}
+                                        <NumberFormatter thousandSeparator value={followers.length} />{" "}
                                     </Text>
                                     <Text ml={6} fz={14} c="dimmed">
                                         Followers
@@ -145,7 +145,7 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                                 </Button>
                                 <Button variant="light" color="gray" radius="xl" size="xs">
                                     <Text fz={14} fw="bolder">
-                                        {following.length}{" "}
+                                        <NumberFormatter thousandSeparator value={following.length} />{" "}
                                     </Text>
                                     <Text ml={6} fz={14} c="dimmed">
                                         Following
@@ -156,7 +156,7 @@ export default function ProfileHeader({ publicKey, name, displayName, about, ban
                     </Flex>
                 </Group>
                 {about && (
-                    <Text p="lg" fz={16}>
+                    <Text px="lg" pt="lg" fz={16}>
                         {about}
                     </Text>
                 )}

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { nip19, SimplePool } from "nostr-tools";
+import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Container, Group, MantineColor } from "@mantine/core";
 import { IconDeviceFloppy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
@@ -16,7 +16,7 @@ import MainContainer from "../../Layouts/MainContainer";
 import ScrollContainer from "../../Layouts/ScrollContainer";
 import SideContainer from "../../Layouts/SideContainer";
 import { ROUTES } from "../../Routes/routes";
-import { closePool, fetchUserMetadata, publishProfile } from "../../Services/userService";
+import { closePool, encodeNPub, fetchUserMetadata, publishProfile } from "../../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
 import { resetUser, updateUser } from "../../Store/Features/userSlice";
 import { useAppSelector } from "../../Store/hook";
@@ -35,9 +35,10 @@ export default function AccountSettings() {
     const [error, setError] = useState<string>("");
     const [warning, setWarning] = useState<string>("");
     const privateKey = user.privateKey;
-    const npub = nip19.npubEncode(user.publicKey);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const npub = useMemo(() => encodeNPub(user.publicKey), [user.publicKey]);
 
     useEffect(() => {
         if (warning) {
