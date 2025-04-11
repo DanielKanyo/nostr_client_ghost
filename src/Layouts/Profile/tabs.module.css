@@ -1,0 +1,9 @@
+.tab {
+    &:first-of-type {
+        border-top-left-radius: 0;
+    }
+
+    &:last-of-type {
+        border-top-right-radius: 0;
+    }
+}

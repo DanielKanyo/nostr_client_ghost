@@ -1,10 +1,10 @@
 import { ScrollArea } from "@mantine/core";
 
-type ScrollBoxProps = {
+type ScrollContainerProps = {
     children: React.ReactNode;
 };
 
-export default function ScrollBox({ children }: ScrollBoxProps) {
+export default function ScrollContainer({ children }: ScrollContainerProps) {
     return (
         <div style={{ flex: 1, overflow: "hidden" }}>
             <ScrollArea h="100%" overscrollBehavior="contain" scrollbarSize={6}>

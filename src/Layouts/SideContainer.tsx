@@ -1,10 +1,10 @@
 import { Box } from "@mantine/core";
 
-type SideBoxProps = {
+type SideContainerProps = {
     children: React.ReactNode;
     width: number;
 };
 
-export default function SideBox({ children, width }: SideBoxProps) {
+export default function SideContainer({ children, width }: SideContainerProps) {
     return <Box w={width}>{children}</Box>;
 }

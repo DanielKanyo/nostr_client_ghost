@@ -2,12 +2,12 @@ import { useMemo } from "react";
 
 import { Box, useComputedColorScheme, useMantineTheme } from "@mantine/core";
 
-type MainBoxProps = {
+type MainContainerProps = {
     children: React.ReactNode;
     width: number;
 };
 
-export default function MainBox({ children, width }: MainBoxProps) {
+export default function MainContainer({ children, width }: MainContainerProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
 

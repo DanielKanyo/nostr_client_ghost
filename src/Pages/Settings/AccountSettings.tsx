@@ -4,49 +4,40 @@ import { useNavigate } from "react-router-dom";
 
 import { nip19, SimplePool } from "nostr-tools";
 
-import { ActionIcon, Alert, Button, Container, CopyButton, Group, MantineColor, TextInput, Tooltip } from "@mantine/core";
-import { IconCheck, IconCopy, IconDeviceFloppy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
+import { Alert, Button, Container, Group, MantineColor } from "@mantine/core";
+import { IconDeviceFloppy, IconExclamationCircle, IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
 
-import AccountForm from "../../Components/Authentication/AccountForm";
+import AccountForm from "../../Components/AccountForm";
 import PageTitle from "../../Components/PageTitle";
 import PrivateKeyInput from "../../Components/PrivateKeyInput";
+import PublicKeyInput from "../../Components/PublicKeyInput";
 import Content from "../../Layouts/Content";
-import MainBox from "../../Layouts/MainBox";
-import ScrollBox from "../../Layouts/ScrollBox";
-import SideBox from "../../Layouts/SideBox";
+import MainContainer from "../../Layouts/MainContainer";
+import ScrollContainer from "../../Layouts/ScrollContainer";
+import SideContainer from "../../Layouts/SideContainer";
 import { ROUTES } from "../../Routes/routes";
-import { closePool, fetchUserMetadata, publishProfile } from "../../Services/authService";
+import { closePool, fetchUserMetadata, publishProfile } from "../../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
 import { resetUser, updateUser } from "../../Store/Features/userSlice";
 import { useAppSelector } from "../../Store/hook";
 import { UserMetadata } from "../../Types/userMetadata";
 
 export default function AccountSettings() {
-    const user = useAppSelector((state) => state.user).data;
+    const user = useAppSelector((state) => state.user);
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
-    const [name, setName] = useState<string | undefined>(user?.name);
-    const [displayName, setDisplayName] = useState<string | undefined>(user?.display_name);
-    const [website, setWebsite] = useState<string | undefined>(user?.website);
-    const [picture, setPicture] = useState<string | undefined>(user?.picture);
-    const [banner, setBanner] = useState<string | undefined>(user?.banner);
-    const [about, setAbout] = useState<string | undefined>(user?.about);
+    const [name, setName] = useState<string | undefined>(user?.data?.name);
+    const [displayName, setDisplayName] = useState<string | undefined>(user?.data?.display_name);
+    const [website, setWebsite] = useState<string | undefined>(user?.data?.website);
+    const [picture, setPicture] = useState<string | undefined>(user?.data?.picture);
+    const [banner, setBanner] = useState<string | undefined>(user?.data?.banner);
+    const [about, setAbout] = useState<string | undefined>(user?.data?.about);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [warning, setWarning] = useState<string>("");
-    const [privateKey, setPrivateKey] = useState<string>("");
-    const [npub, setNpub] = useState<string>("");
+    const privateKey = user.privateKey;
+    const npub = nip19.npubEncode(user.publicKey);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
-        const storedPublicKey = localStorage.getItem("nostrPublicKey");
-
-        if (storedPrivateKey && storedPublicKey) {
-            setPrivateKey(storedPrivateKey);
-            setNpub(nip19.npubEncode(storedPublicKey));
-        }
-    });
 
     useEffect(() => {
         if (warning) {
@@ -96,10 +87,10 @@ export default function AccountSettings() {
 
     return (
         <Content>
-            <MainBox width={680}>
-                <PageTitle title="Account Settings" withBackwards />
-                <ScrollBox>
-                    <Container mx={0} px="lg">
+            <MainContainer width={680}>
+                <PageTitle title="Account Settings" withBackBtn />
+                <ScrollContainer>
+                    <Container mx={0} px="lg" mt="lg">
                         <AccountForm
                             name={name ?? ""}
                             displayName={displayName ?? ""}
@@ -128,27 +119,7 @@ export default function AccountSettings() {
                             web app, including Ghost.
                         </Alert>
 
-                        <TextInput
-                            variant="filled"
-                            mt="lg"
-                            size="md"
-                            radius="md"
-                            label="Public Key"
-                            description="Anyone on Nostr can find you via your public key. Feel free to share anywhere."
-                            rightSection={
-                                <CopyButton value={npub} timeout={2000}>
-                                    {({ copied, copy }) => (
-                                        <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
-                                            <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
-                                                {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                                            </ActionIcon>
-                                        </Tooltip>
-                                    )}
-                                </CopyButton>
-                            }
-                            value={npub}
-                            readOnly
-                        />
+                        <PublicKeyInput publicKey={npub} primaryColor={primaryColor} withLabels />
                         <PrivateKeyInput privateKey={privateKey} primaryColor={primaryColor} />
                         {error && (
                             <Alert
@@ -185,9 +156,9 @@ export default function AccountSettings() {
                             </Button>
                         </Group>
                     </Container>
-                </ScrollBox>
-            </MainBox>
-            <SideBox width={320}>Side Box</SideBox>
+                </ScrollContainer>
+            </MainContainer>
+            <SideContainer width={320}>Side Box</SideContainer>
         </Content>
     );
 }

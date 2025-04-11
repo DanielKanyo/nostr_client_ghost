@@ -6,9 +6,9 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
-import { authenticateUser, closePool, fetchUserMetadata } from "../../Services/authService";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
-import { updateAuthenticated, updateLoading, updateUser } from "../../Store/Features/userSlice";
+import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
+import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
+import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
 
 interface SignInModalProps {
     opened: boolean;
@@ -46,6 +46,7 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                 dispatch(updateUser(metadata));
             }
 
+            dispatch(updateKeys({ privateKey, publicKey }));
             dispatch(updateAuthenticated(true));
             dispatch(updateLoading(false));
         } catch (err) {
@@ -67,7 +68,7 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="md" size="lg">
+        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="lg" size="md">
             <Flex direction="column">
                 <PasswordInput
                     variant="filled"
