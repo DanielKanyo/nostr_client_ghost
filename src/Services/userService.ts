@@ -43,9 +43,6 @@ export const authenticateUser = async (privateKey: string): Promise<string> => {
             throw new Error("Failed to validate signed event...");
         }
 
-        localStorage.setItem("nostrPrivateKey", privateKey);
-        localStorage.setItem("nostrPublicKey", signedEvent.pubkey);
-
         return signedEvent.pubkey;
     } catch (err) {
         throw new Error(err instanceof Error ? err.message : "Authentication failed! Please try again later...");
@@ -122,6 +119,32 @@ export const publishProfile = async (pool: SimplePool, privateKey: string, userM
     } catch (error) {
         throw new Error("Failed to publish profile...");
     }
+};
+
+export const getFollowing = async (pool: SimplePool, pubkey: string): Promise<string[]> => {
+    const events = await pool.querySync(relays, {
+        kinds: [3],
+        authors: [pubkey],
+    });
+
+    const latest = events.sort((a, b) => b.created_at - a.created_at)[0];
+    if (!latest) return [];
+
+    return latest.tags.filter(([tag]) => tag === "p").map(([, followedPubkey]) => followedPubkey);
+};
+
+export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<string[]> => {
+    const events = await pool.querySync(relays, {
+        kinds: [3],
+        "#p": [pubkey],
+    });
+
+    const followers = new Set<string>();
+    for (const event of events) {
+        followers.add(event.pubkey);
+    }
+
+    return Array.from(followers);
 };
 
 export const closePool = (pool: SimplePool): void => {

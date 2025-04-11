@@ -75,7 +75,7 @@ export default function AppearanceSettings() {
     return (
         <Content>
             <MainContainer width={680}>
-                <PageTitle title="Appearance Settings" withBackwards />
+                <PageTitle title="Appearance Settings" withBackBtn />
                 <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
                         <Text fz={20}>Theme</Text>

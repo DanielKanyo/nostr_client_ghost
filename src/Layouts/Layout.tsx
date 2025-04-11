@@ -7,9 +7,9 @@ import { SimplePool } from "nostr-tools";
 import { Box, Flex } from "@mantine/core";
 
 import PageLoader from "../Components/PageLoader";
-import { authenticateUser, closePool, fetchUserMetadata } from "../Services/authService";
+import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
 import GetStarted from "./GetStarted";
 import Navigation from "./Navigation";
@@ -44,6 +44,7 @@ export default function Layout() {
                             dispatch(updateUser(metadata));
                         }
 
+                        dispatch(updateKeys({ privateKey: storedPrivateKey, publicKey }));
                         dispatch(updateAuthenticated(true));
                         dispatch(updateLoading(false));
                     } else {

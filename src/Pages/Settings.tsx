@@ -32,7 +32,7 @@ export default function Settings() {
     return (
         <Content>
             <MainContainer width={680}>
-                <PageTitle title="Settings" />
+                <PageTitle title="Settings" withBackBtn />
                 {items}
             </MainContainer>
             <SideContainer width={320}>Side Box</SideContainer>

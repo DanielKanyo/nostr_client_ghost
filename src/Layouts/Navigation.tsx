@@ -69,7 +69,7 @@ export default function Navigation() {
             >
                 <Flex direction="column" align="flex-start" justify="center">
                     <Text size="xl">{user ? user?.display_name : "Undefined"}</Text>
-                    <Text c="dimmed" size="sm">
+                    <Text c="dimmed" size="sm" lh={1}>
                         @{user ? user.name : "Undefined"}
                     </Text>
                 </Flex>

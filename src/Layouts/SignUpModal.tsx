@@ -8,9 +8,9 @@ import { IconCirclePlus, IconExclamationCircle } from "@tabler/icons-react";
 
 import AccountForm from "../Components/AccountForm";
 import PrivateKeyInput from "../Components/PrivateKeyInput";
-import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/authService";
+import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
-import { updateAuthenticated, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface SignUpModalProps {
@@ -64,6 +64,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
                 dispatch(updateUser(metadata));
             }
 
+            dispatch(updateKeys({ privateKey, publicKey }));
             dispatch(updateAuthenticated(true));
             dispatch(updateLoading(false));
         } catch (err) {
@@ -96,7 +97,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
             centered
             overlayProps={{ blur: 3 }}
             padding="lg"
-            radius="md"
+            radius="lg"
             size="lg"
         >
             <AccountForm
