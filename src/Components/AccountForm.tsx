@@ -1,4 +1,4 @@
-import { Group, Textarea, TextInput } from "@mantine/core";
+import { Group, Textarea, TextInput, Stack } from "@mantine/core";
 
 interface AccountFormProps {
     name: string;
@@ -29,75 +29,72 @@ export default function AccountForm({
     setWebsite,
     setAbout,
 }: AccountFormProps) {
+    const sharedProps = {
+        variant: "filled" as const,
+        size: "md" as const,
+        radius: "md" as const,
+    };
+
     return (
-        <>
-            <Group grow gap="lg">
+        <Stack gap="lg">
+            <Group grow>
                 <TextInput
-                    variant="filled"
-                    size="md"
-                    radius="md"
                     label="Name"
                     description="Pick a short name"
                     value={name}
                     onChange={(e) => setName(e.currentTarget.value)}
-                    placeholder="Enter your name"
+                    placeholder="e.g., satoshi123"
                     withAsterisk
                     data-autofocus
+                    {...sharedProps}
                 />
+
                 <TextInput
-                    variant="filled"
-                    size="md"
-                    radius="md"
                     label="Display Name"
-                    description="Pick a longer display name"
+                    description="More friendly name to show on your profile"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.currentTarget.value)}
-                    placeholder="Enter your display name"
+                    placeholder="e.g., Satoshi Nakamoto"
                     withAsterisk
+                    {...sharedProps}
                 />
             </Group>
+
             <TextInput
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
-                label="Profile Picture Url"
+                label="Profile Picture URL"
+                description="Link to your profile image"
                 value={picture}
                 onChange={(e) => setPicture(e.currentTarget.value)}
-                placeholder="Enter the url to your profile picture"
+                placeholder="https://example.com/pfp.png"
+                {...sharedProps}
             />
+
             <TextInput
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
-                label="Banner Picture Url"
+                label="Banner Picture URL"
+                description="Link to your profile banner"
                 value={banner}
                 onChange={(e) => setBanner(e.currentTarget.value)}
-                placeholder="Enter the url to your banner picture"
+                placeholder="https://example.com/banner.png"
+                {...sharedProps}
             />
+
             <TextInput
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
                 label="Website"
                 value={website}
                 onChange={(e) => setWebsite(e.currentTarget.value)}
                 placeholder="https://yourwebsite.com"
+                {...sharedProps}
             />
+
             <Textarea
                 label="About Me"
                 placeholder="Say some words about yourself"
-                variant="filled"
-                size="md"
-                radius="md"
-                mt="lg"
                 value={about}
                 onChange={(e) => setAbout(e.currentTarget.value)}
                 autosize
                 minRows={3}
+                {...sharedProps}
             />
-        </>
+        </Stack>
     );
 }

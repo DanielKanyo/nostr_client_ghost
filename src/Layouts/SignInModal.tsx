@@ -6,9 +6,9 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
 import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
-import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
+import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
-import { updateUserAuthenticated, updateUserKeys, updateUserLoading, updateUserProfile } from "../Store/Features/userSlice";
+import { updateUser } from "../Store/Features/userSlice";
 
 interface SignInModalProps {
     opened: boolean;
@@ -38,17 +38,22 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
         try {
             const publicKey = await authenticateUser(privateKey);
             const metadata = await fetchUserMetadata(pool, publicKey);
+            const [following, followers] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
 
             localStorage.setItem("nostrPrivateKey", privateKey);
             localStorage.setItem("nostrPublicKey", publicKey);
 
-            if (metadata) {
-                dispatch(updateUserProfile(metadata));
-            }
-
-            dispatch(updateUserKeys({ privateKey, publicKey }));
-            dispatch(updateUserAuthenticated(true));
-            dispatch(updateUserLoading(false));
+            dispatch(
+                updateUser({
+                    profile: metadata,
+                    privateKey,
+                    publicKey,
+                    followers,
+                    following,
+                    authenticated: true,
+                    loading: false,
+                })
+            );
         } catch (err) {
             localStorage.removeItem("nostrPrivateKey");
             localStorage.removeItem("nostrPublicKey");

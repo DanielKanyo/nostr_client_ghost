@@ -8,9 +8,17 @@ import { IconCirclePlus, IconExclamationCircle } from "@tabler/icons-react";
 
 import AccountForm from "../Components/AccountForm";
 import PrivateKeyInput from "../Components/PrivateKeyInput";
-import { authenticateUser, closePool, fetchUserMetadata, generateKeyPair, publishProfile } from "../Services/userService";
+import {
+    authenticateUser,
+    closePool,
+    fetchUserMetadata,
+    generateKeyPair,
+    getFollowers,
+    getFollowing,
+    publishProfile,
+} from "../Services/userService";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
-import { updateUserAuthenticated, updateUserKeys, updateUserLoading, updateUserProfile } from "../Store/Features/userSlice";
+import { updateUser } from "../Store/Features/userSlice";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface SignUpModalProps {
@@ -56,17 +64,22 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
             await publishProfile(pool, privateKey, metadataToStore);
             const publicKey = await authenticateUser(privateKey);
             const metadata = await fetchUserMetadata(pool, publicKey);
+            const [following, followers] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
 
             localStorage.setItem("nostrPrivateKey", privateKey);
             localStorage.setItem("nostrPublicKey", publicKey);
 
-            if (metadata) {
-                dispatch(updateUserProfile(metadata));
-            }
-
-            dispatch(updateUserKeys({ privateKey, publicKey }));
-            dispatch(updateUserAuthenticated(true));
-            dispatch(updateUserLoading(false));
+            dispatch(
+                updateUser({
+                    profile: metadata,
+                    privateKey,
+                    publicKey,
+                    followers,
+                    following,
+                    authenticated: true,
+                    loading: false,
+                })
+            );
         } catch (err) {
             setError(err instanceof Error ? err.message : "Profile creation failed...");
         } finally {

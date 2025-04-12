@@ -17,7 +17,7 @@ const initUser: UserState = {
     authenticated: false,
     privateKey: "",
     publicKey: "",
-    loading: true,
+    loading: false,
     followers: [],
     following: [],
 };
@@ -26,31 +26,20 @@ export const userSlice = createSlice({
     name: "user",
     initialState: initUser,
     reducers: {
-        updateUserProfile: (state, action: PayloadAction<UserMetadata>) => {
+        updateUser: (_state, action: PayloadAction<UserState>) => {
+            return action.payload;
+        },
+        updateUserProfile: (state, action: PayloadAction<UserMetadata | null>) => {
             state.profile = action.payload;
-            state.loading = false;
         },
-        resetUser: (state) => {
-            state.profile = null;
-            state.authenticated = false;
-        },
-        updateUserKeys: (state, action: PayloadAction<{ privateKey: string; publicKey: string }>) => {
-            state.privateKey = action.payload.privateKey;
-            state.publicKey = action.payload.publicKey;
+        resetUser: () => {
+            return initUser;
         },
         updateUserLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
         },
-        updateUserAuthenticated: (state, action: PayloadAction<boolean>) => {
-            state.authenticated = action.payload;
-        },
-        updateUserFollowersAndFollowing: (state, action: PayloadAction<{ followers: string[]; following: string[] }>) => {
-            state.followers = action.payload.followers;
-            state.following = action.payload.following;
-        },
     },
 });
 
-export const { updateUserProfile, resetUser, updateUserLoading, updateUserAuthenticated, updateUserKeys, updateUserFollowersAndFollowing } =
-    userSlice.actions;
+export const { updateUser, updateUserProfile, resetUser, updateUserLoading } = userSlice.actions;
 export default userSlice.reducer;

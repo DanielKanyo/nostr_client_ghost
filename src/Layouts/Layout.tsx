@@ -9,13 +9,7 @@ import { Box, Flex } from "@mantine/core";
 import PageLoader from "../Components/PageLoader";
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
-import {
-    updateUserAuthenticated,
-    updateUserFollowersAndFollowing,
-    updateUserKeys,
-    updateUserLoading,
-    updateUserProfile,
-} from "../Store/Features/userSlice";
+import { updateUser, updateUserLoading } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
 import GetStarted from "./GetStarted";
 import Navigation from "./Navigation";
@@ -34,6 +28,8 @@ export default function Layout() {
 
     useEffect(() => {
         const authenticate = async () => {
+            dispatch(updateUserLoading(true));
+
             const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
             const storedPublicKey = localStorage.getItem("nostrPublicKey");
 
@@ -47,14 +43,17 @@ export default function Layout() {
                         const metadata = await fetchUserMetadata(pool, publicKey);
                         const [following, followers] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
 
-                        if (metadata) {
-                            dispatch(updateUserProfile(metadata));
-                        }
-
-                        dispatch(updateUserKeys({ privateKey: storedPrivateKey, publicKey }));
-                        dispatch(updateUserFollowersAndFollowing({ following, followers }));
-                        dispatch(updateUserAuthenticated(true));
-                        dispatch(updateUserLoading(false));
+                        dispatch(
+                            updateUser({
+                                profile: metadata,
+                                privateKey: storedPrivateKey,
+                                publicKey,
+                                followers,
+                                following,
+                                authenticated: true,
+                                loading: false,
+                            })
+                        );
                     } else {
                         throw new Error("Public key mismatch...");
                     }
