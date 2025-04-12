@@ -1,12 +1,11 @@
-import { Tabs } from "@mantine/core";
+import { MantineColor, Tabs } from "@mantine/core";
 
+import { useAppSelector } from "../../Store/hook";
 import classes from "./tabs.module.css";
 
-interface ProfileContentProps {
-    primaryColor: string;
-}
+export default function ProfileContent() {
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
 
-export default function ProfileContent({ primaryColor }: ProfileContentProps) {
     return (
         <Tabs radius="lg" defaultValue="notes" color={primaryColor} classNames={classes} mt="lg">
             <Tabs.List grow>

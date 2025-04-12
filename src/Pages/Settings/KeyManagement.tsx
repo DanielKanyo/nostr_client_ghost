@@ -54,8 +54,8 @@ export default function KeyManagement() {
                             web app, including Ghost.
                         </Alert>
 
-                        <PublicKeyInput publicKey={npub} primaryColor={primaryColor} withLabels />
-                        <PrivateKeyInput privateKey={privateKey} primaryColor={primaryColor} />
+                        <PublicKeyInput publicKey={npub} withLabels />
+                        <PrivateKeyInput privateKey={privateKey} />
                         <Group my="lg" justify="flex-end">
                             <Button variant="filled" color="red" radius="xl" leftSection={<IconLogout2 size={21} />} onClick={handleLogout}>
                                 Logout

@@ -127,7 +127,7 @@ export default function SignUpModal({ opened, close }: SignUpModalProps) {
                 setWebsite={setWebsite}
                 setAbout={setAbout}
             />
-            <PrivateKeyInput privateKey={privateKey} primaryColor="violet" />
+            <PrivateKeyInput privateKey={privateKey} />
             {error && (
                 <Alert variant="light" color="red" radius="md" title="Something went wrong!" icon={<IconExclamationCircle />} mt="lg">
                     {error}

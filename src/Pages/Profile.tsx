@@ -19,8 +19,7 @@ import { UserMetadata } from "../Types/userMetadata";
 export default function Profile() {
     const { nprofile } = useParams<{ nprofile: string }>();
     const storedUser = useAppSelector((state) => state.user);
-    const primaryColor = useAppSelector((state) => state.primaryColor);
-    const [userData, setUserData] = useState<UserMetadata | null>(null);
+    const [profile, setProfile] = useState<UserMetadata | null>(null);
     const [following, setFollowing] = useState<string[]>([]);
     const [followers, setFollowers] = useState<string[]>([]);
     const [ownKey, setOwnKey] = useState<boolean>(false);
@@ -30,7 +29,7 @@ export default function Profile() {
 
     // Reset states on nprofile change
     useEffect(() => {
-        setUserData(null);
+        setProfile(null);
         setError("");
     }, [nprofile]);
 
@@ -40,7 +39,7 @@ export default function Profile() {
 
         if (nprofileData.pubkey === storedUser.publicKey) {
             setOwnKey(true);
-            setUserData(storedUser.profile);
+            setProfile(storedUser.profile);
             setFollowers(storedUser.followers);
             setFollowing(storedUser.following);
             return;
@@ -65,7 +64,7 @@ export default function Profile() {
                 setFollowing(following);
 
                 if (metadata) {
-                    setUserData(metadata);
+                    setProfile(metadata);
                 }
             } catch (err) {
                 setError("Fetching user details failed! Please try again later...");
@@ -81,21 +80,21 @@ export default function Profile() {
         <Content>
             <MainContainer width={680}>
                 <ScrollContainer>
-                    {userData ? (
+                    {profile ? (
                         <>
                             <ProfileHeader
                                 publicKey={nprofileData.pubkey}
-                                name={userData.name}
-                                displayName={userData.display_name}
-                                about={userData.about}
-                                picture={userData.picture}
-                                banner={userData.banner}
-                                primaryColor={primaryColor}
+                                name={profile.name}
+                                displayName={profile.display_name}
+                                about={profile.about}
+                                picture={profile.picture}
+                                banner={profile.banner}
+                                website={profile.website}
                                 followers={followers}
                                 following={following}
                                 ownKey={ownKey}
                             />
-                            <ProfileContent primaryColor={primaryColor} />
+                            <ProfileContent />
                         </>
                     ) : (
                         <Center h={100}>

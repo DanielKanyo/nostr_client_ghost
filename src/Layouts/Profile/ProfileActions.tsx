@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { Group, ActionIcon, Center, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconQrcode, IconMail, IconUserEdit, IconUserPlus } from "@tabler/icons-react";
+import { IconDots, IconQrcode, IconMail, IconUserEdit, IconUserPlus, IconWorldWww } from "@tabler/icons-react";
 
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
@@ -13,10 +13,10 @@ import { encodeNPub } from "../../Services/userService";
 interface ProfileActionsProps {
     ownKey: boolean;
     publicKey: string;
-    primaryColor: string;
+    website: string | undefined;
 }
 
-export default function ProfileActions({ ownKey, publicKey, primaryColor }: ProfileActionsProps) {
+export default function ProfileActions({ ownKey, publicKey, website }: ProfileActionsProps) {
     const [qrModalOpened, { open: openQrModal, close: closeQrModal }] = useDisclosure(false);
     const npub = useMemo(() => encodeNPub(publicKey), [publicKey]);
 
@@ -35,6 +35,14 @@ export default function ProfileActions({ ownKey, publicKey, primaryColor }: Prof
                         <IconDots />
                     </ActionIcon>
                 </Tooltip>
+
+                {website && (
+                    <Tooltip label="Open Website" withArrow>
+                        <ActionIcon aria-label="webiste" {...iconProps} component={Link} to={website} target="_blank">
+                            <IconWorldWww />
+                        </ActionIcon>
+                    </Tooltip>
+                )}
 
                 <Tooltip label="Show QR code" withArrow>
                     <ActionIcon aria-label="qr" onClick={openQrModal} {...iconProps}>
@@ -79,7 +87,7 @@ export default function ProfileActions({ ownKey, publicKey, primaryColor }: Prof
                         <Center mb="md">
                             <QRCode publicKey={npub} size={250} />
                         </Center>
-                        <PublicKeyInput publicKey={npub} primaryColor={primaryColor} withLabels={false} />
+                        <PublicKeyInput publicKey={npub} withLabels={false} />
                     </>
                 )}
             </Modal>

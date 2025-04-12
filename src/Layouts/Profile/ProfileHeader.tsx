@@ -1,5 +1,6 @@
-import { Avatar, BackgroundImage, Box, Flex, Group, Text, useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import { Avatar, BackgroundImage, Box, Flex, Group, MantineColor, Text, useComputedColorScheme, useMantineTheme } from "@mantine/core";
 
+import { useAppSelector } from "../../Store/hook";
 import FollowersAndFollowing from "./FollowersAndFollowing";
 import ProfileActions from "./ProfileActions";
 
@@ -10,7 +11,7 @@ interface ProfileHeaderProps {
     picture: string | undefined;
     banner: string | undefined;
     about: string | undefined;
-    primaryColor: string;
+    website: string | undefined;
     followers: string[];
     following: string[];
     ownKey: boolean;
@@ -21,15 +22,16 @@ export default function ProfileHeader({
     name,
     displayName,
     about,
+    website,
     banner,
     picture,
-    primaryColor,
     followers,
     following,
     ownKey,
 }: ProfileHeaderProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
 
     return (
         <Box w="100%">
@@ -55,7 +57,7 @@ export default function ProfileHeader({
                     style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
                 />
             </BackgroundImage>
-            <ProfileActions ownKey={ownKey} publicKey={publicKey} primaryColor={primaryColor} />
+            <ProfileActions ownKey={ownKey} publicKey={publicKey} website={website} />
             <Group justify="space-between" px="lg" align="flex-end">
                 <Flex direction="column">
                     <Box w={300}>
