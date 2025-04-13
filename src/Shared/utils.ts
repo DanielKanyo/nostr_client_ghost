@@ -1,1 +1,2 @@
 export const HIDE_ALERT_TIMEOUT_IN_MS = 6000;
+export const DEFAULT_NUM_OF_DISPLAYED_USERS = 15;

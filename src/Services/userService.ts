@@ -31,20 +31,21 @@ export const authenticateUser = async (privateKey: string): Promise<string> => {
             privateKeyBytes = hexToBytes(privateKey);
         }
 
+        const pubkey = getPublicKey(privateKeyBytes);
         const testEvent = {
             kind: 1,
             created_at: Math.floor(Date.now() / 1000),
             tags: [],
-            content: "Test authentication event",
+            content: "auth-check",
+            pubkey, // required for finalizeEvent
         };
-
         const signedEvent = finalizeEvent(testEvent, privateKeyBytes);
 
         if (!verifyEvent(signedEvent)) {
             throw new Error("Failed to validate signed event...");
         }
 
-        return signedEvent.pubkey;
+        return pubkey;
     } catch (err) {
         throw new Error(err instanceof Error ? err.message : "Authentication failed! Please try again later...");
     }
@@ -66,9 +67,7 @@ export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Pr
         }, null);
 
         if (latestEvent) {
-            const meta = JSON.parse(latestEvent.content) as UserMetadata;
-
-            return meta;
+            return JSON.parse(latestEvent.content) as UserMetadata;
         }
 
         return null;
