@@ -1,12 +1,15 @@
-import { PasswordInput, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
+import { PasswordInput, CopyButton, Tooltip, ActionIcon, MantineColor } from "@mantine/core";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
+
+import { useAppSelector } from "../Store/hook";
 
 interface PrivateKeyInput {
     privateKey: string;
-    primaryColor: string;
 }
 
-export default function PrivateKeyInput({ privateKey, primaryColor }: PrivateKeyInput) {
+export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+
     return (
         <PasswordInput
             variant="filled"

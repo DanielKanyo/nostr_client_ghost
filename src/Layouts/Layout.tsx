@@ -7,9 +7,9 @@ import { SimplePool } from "nostr-tools";
 import { Box, Flex } from "@mantine/core";
 
 import PageLoader from "../Components/PageLoader";
-import { authenticateUser, closePool, fetchUserMetadata } from "../Services/userService";
+import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
-import { updateAuthenticated, updateKeys, updateLoading, updateUser } from "../Store/Features/userSlice";
+import { updateUser, updateUserLoading } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
 import GetStarted from "./GetStarted";
 import Navigation from "./Navigation";
@@ -28,6 +28,8 @@ export default function Layout() {
 
     useEffect(() => {
         const authenticate = async () => {
+            dispatch(updateUserLoading(true));
+
             const storedPrivateKey = localStorage.getItem("nostrPrivateKey");
             const storedPublicKey = localStorage.getItem("nostrPublicKey");
 
@@ -39,14 +41,19 @@ export default function Layout() {
 
                     if (publicKey === storedPublicKey) {
                         const metadata = await fetchUserMetadata(pool, publicKey);
+                        const [following, followers] = await Promise.all([getFollowing(pool, publicKey), getFollowers(pool, publicKey)]);
 
-                        if (metadata) {
-                            dispatch(updateUser(metadata));
-                        }
-
-                        dispatch(updateKeys({ privateKey: storedPrivateKey, publicKey }));
-                        dispatch(updateAuthenticated(true));
-                        dispatch(updateLoading(false));
+                        dispatch(
+                            updateUser({
+                                profile: metadata,
+                                privateKey: storedPrivateKey,
+                                publicKey,
+                                followers,
+                                following,
+                                authenticated: true,
+                                loading: false,
+                            })
+                        );
                     } else {
                         throw new Error("Public key mismatch...");
                     }
@@ -55,10 +62,10 @@ export default function Layout() {
                     localStorage.removeItem("nostrPublicKey");
 
                     closePool(pool);
-                    dispatch(updateLoading(false));
+                    dispatch(updateUserLoading(false));
                 }
             } else {
-                dispatch(updateLoading(false));
+                dispatch(updateUserLoading(false));
             }
         };
 

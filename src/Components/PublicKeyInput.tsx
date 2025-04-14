@@ -1,13 +1,16 @@
 import { ActionIcon, CopyButton, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 
+import { useAppSelector } from "../Store/hook";
+
 interface PublicKeyInputProps {
     publicKey: string;
-    primaryColor: string;
     withLabels: boolean;
 }
 
-export default function PublicKeyInput({ publicKey, primaryColor, withLabels }: PublicKeyInputProps) {
+export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInputProps) {
+    const primaryColor = useAppSelector((state) => state.primaryColor);
+
     return (
         <TextInput
             variant="filled"

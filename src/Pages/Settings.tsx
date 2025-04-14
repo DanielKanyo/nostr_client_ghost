@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Container, Divider, NavLink, Text } from "@mantine/core";
-import { IconUserCog, IconBrush, IconChevronRight } from "@tabler/icons-react";
+import { IconBrush, IconChevronRight, IconKey, IconUserCog } from "@tabler/icons-react";
 
 import PageTitle from "../Components/PageTitle";
 import Content from "../Layouts/Content";
@@ -10,8 +10,9 @@ import SideContainer from "../Layouts/SideContainer";
 import { ROUTES } from "../Routes/routes";
 
 const settingsItems = [
-    { icon: IconUserCog, label: "Account", to: ROUTES.SETTINGS_ACCOUNT },
+    { icon: IconKey, label: "Key Management", to: ROUTES.SETTINGS_KEY_MANAGEMENT },
     { icon: IconBrush, label: "Appearance", to: ROUTES.SETTINGS_APPEARANCE },
+    { icon: IconUserCog, label: "Profile", to: ROUTES.SETTINGS_PROFILE },
 ];
 
 export default function Settings() {

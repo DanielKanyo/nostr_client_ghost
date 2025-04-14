@@ -2,10 +2,11 @@ import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent
 
 import { hexToBytes } from "@noble/hashes/utils";
 
+import { NProfile } from "../Types/nProfile";
 import { UserMetadata } from "../Types/userMetadata";
 
 // Common Nostr relays
-const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
+export const RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
 export const authenticateUser = async (privateKey: string): Promise<string> => {
     try {
@@ -30,20 +31,21 @@ export const authenticateUser = async (privateKey: string): Promise<string> => {
             privateKeyBytes = hexToBytes(privateKey);
         }
 
+        const pubkey = getPublicKey(privateKeyBytes);
         const testEvent = {
             kind: 1,
             created_at: Math.floor(Date.now() / 1000),
             tags: [],
-            content: "Test authentication event",
+            content: "auth-check",
+            pubkey, // required for finalizeEvent
         };
-
         const signedEvent = finalizeEvent(testEvent, privateKeyBytes);
 
         if (!verifyEvent(signedEvent)) {
             throw new Error("Failed to validate signed event...");
         }
 
-        return signedEvent.pubkey;
+        return pubkey;
     } catch (err) {
         throw new Error(err instanceof Error ? err.message : "Authentication failed! Please try again later...");
     }
@@ -51,7 +53,7 @@ export const authenticateUser = async (privateKey: string): Promise<string> => {
 
 export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Promise<UserMetadata | null> => {
     try {
-        const events = await pool.querySync(relays, {
+        const events = await pool.querySync(RELAYS, {
             kinds: [0], // Metadata events
             authors: [publicKey],
         });
@@ -65,9 +67,7 @@ export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Pr
         }, null);
 
         if (latestEvent) {
-            const meta = JSON.parse(latestEvent.content) as UserMetadata;
-
-            return meta;
+            return JSON.parse(latestEvent.content) as UserMetadata;
         }
 
         return null;
@@ -113,7 +113,7 @@ export const publishProfile = async (pool: SimplePool, privateKey: string, userM
     const signedEvent = finalizeEvent(eventTemplate, sk);
 
     try {
-        const pubs = pool.publish(relays, signedEvent);
+        const pubs = pool.publish(RELAYS, signedEvent);
 
         await Promise.all(pubs);
     } catch (error) {
@@ -122,7 +122,7 @@ export const publishProfile = async (pool: SimplePool, privateKey: string, userM
 };
 
 export const getFollowing = async (pool: SimplePool, pubkey: string): Promise<string[]> => {
-    const events = await pool.querySync(relays, {
+    const events = await pool.querySync(RELAYS, {
         kinds: [3],
         authors: [pubkey],
     });
@@ -134,7 +134,7 @@ export const getFollowing = async (pool: SimplePool, pubkey: string): Promise<st
 };
 
 export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<string[]> => {
-    const events = await pool.querySync(relays, {
+    const events = await pool.querySync(RELAYS, {
         kinds: [3],
         "#p": [pubkey],
     });
@@ -147,9 +147,21 @@ export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<st
     return Array.from(followers);
 };
 
+export const encodeNProfile = (pubkey: string): string => nip19.nprofileEncode({ pubkey, relays: RELAYS });
+export const decodeNProfile = (nprofile: string): NProfile => {
+    const decoded = nip19.decode(nprofile);
+
+    if (decoded.type !== "nprofile") {
+        throw new Error("Invalid nprofile");
+    }
+
+    return decoded.data;
+};
+export const encodeNPub = (pubkey: string): string => nip19.npubEncode(pubkey);
+
 export const closePool = (pool: SimplePool): void => {
     try {
-        return pool.close(relays);
+        return pool.close(RELAYS);
     } catch (error) {
         throw new Error("Failed to close pool...");
     }
