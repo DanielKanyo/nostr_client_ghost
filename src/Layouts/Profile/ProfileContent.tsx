@@ -17,13 +17,14 @@ export default function ProfileContent({ activeTab, setActiveTab, followers, fol
 
     return (
         <Tabs
-            radius="lg"
+            radius="md"
             defaultValue={PROFILE_CONTENT_TABS.NOTES}
             color={primaryColor}
             classNames={classes}
             mt="lg"
             value={activeTab}
             onChange={setActiveTab}
+            keepMounted={false}
         >
             <Tabs.List grow>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.NOTES}>Notes</Tabs.Tab>
@@ -46,11 +47,11 @@ export default function ProfileContent({ activeTab, setActiveTab, followers, fol
             </Tabs.Panel>
 
             <Tabs.Panel value="followers" p="md">
-                {activeTab === PROFILE_CONTENT_TABS.FOLLOWERS && <UserList pubkeys={followers} />}
+                <UserList pubkeys={followers} />
             </Tabs.Panel>
 
             <Tabs.Panel value="following" p="md">
-                {activeTab === PROFILE_CONTENT_TABS.FOLLOWING && <UserList pubkeys={following} />}
+                <UserList pubkeys={following} />
             </Tabs.Panel>
         </Tabs>
     );

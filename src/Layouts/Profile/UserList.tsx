@@ -101,8 +101,8 @@ export default function UserList({ pubkeys }: UserListProps) {
     return (
         <Stack gap="sm">
             {usersMetadata.map((user) => (
-                <Card key={user.pubkey} shadow="sm" padding="md" radius="md">
-                    <Group>
+                <Card key={user.pubkey} padding="md" radius="md">
+                    <Group key={user.pubkey}>
                         <Avatar src={user.picture} radius="xl" size="md" />
                         <Text fw={500}>{user.display_name || user.name || encodeNPub(user.pubkey)}</Text>
                     </Group>

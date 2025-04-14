@@ -113,11 +113,12 @@ export default function ProfileSettings() {
                                 variant="filled"
                                 color={primaryColor}
                                 radius="xl"
-                                leftSection={<IconDeviceFloppy size={21} />}
+                                leftSection={<IconDeviceFloppy size={28} />}
                                 disabled={!displayName || !name || loading}
                                 onClick={handleSave}
                                 loading={loading}
                                 loaderProps={{ type: "dots" }}
+                                size="lg"
                             >
                                 Save
                             </Button>
