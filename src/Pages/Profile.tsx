@@ -15,8 +15,7 @@ import SideContainer from "../Layouts/SideContainer";
 import { closePool, decodeNProfile, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
-
-const DEFAULT_ACTIVE_TAB = "notes";
+import { PROFILE_CONTENT_TABS } from "../Shared/utils";
 
 export default function Profile() {
     const { nprofile } = useParams<{ nprofile: string }>();
@@ -26,7 +25,7 @@ export default function Profile() {
     const [followers, setFollowers] = useState<string[]>([]);
     const [ownKey, setOwnKey] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
-    const [activeTab, setActiveTab] = useState<string | null>(DEFAULT_ACTIVE_TAB);
+    const [activeTab, setActiveTab] = useState<string | null>(PROFILE_CONTENT_TABS.NOTES);
 
     const nprofileData = useMemo(() => decodeNProfile(nprofile!), [nprofile]);
 
@@ -36,7 +35,7 @@ export default function Profile() {
         setFollowers([]);
         setFollowers([]);
         setOwnKey(false);
-        setActiveTab(DEFAULT_ACTIVE_TAB);
+        setActiveTab(PROFILE_CONTENT_TABS.NOTES);
         setError("");
     }, [nprofile]);
 
@@ -101,7 +100,7 @@ export default function Profile() {
                                 following={following}
                                 ownKey={ownKey}
                             />
-                            <ProfileContent activeTab={activeTab} setActiveTab={setActiveTab} followers={followers} />
+                            <ProfileContent activeTab={activeTab} setActiveTab={setActiveTab} followers={followers} following={following} />
                         </>
                     ) : (
                         <Center h={100}>

@@ -1,26 +1,36 @@
 import { MantineColor, Tabs } from "@mantine/core";
 
+import { PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
-import Followers from "./Followers";
+import UserList from "./UserList";
 import classes from "./tabs.module.css";
 
 interface ProfileContentProps {
     activeTab: string | null;
     setActiveTab: (value: string | null) => void;
     followers: string[];
+    following: string[];
 }
 
-export default function ProfileContent({ activeTab, setActiveTab, followers }: ProfileContentProps) {
+export default function ProfileContent({ activeTab, setActiveTab, followers, following }: ProfileContentProps) {
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
 
     return (
-        <Tabs radius="lg" defaultValue="notes" color={primaryColor} classNames={classes} mt="lg" value={activeTab} onChange={setActiveTab}>
+        <Tabs
+            radius="lg"
+            defaultValue={PROFILE_CONTENT_TABS.NOTES}
+            color={primaryColor}
+            classNames={classes}
+            mt="lg"
+            value={activeTab}
+            onChange={setActiveTab}
+        >
             <Tabs.List grow>
-                <Tabs.Tab value="notes">Notes</Tabs.Tab>
-                <Tabs.Tab value="reads">Reads</Tabs.Tab>
-                <Tabs.Tab value="replies">Replies</Tabs.Tab>
-                <Tabs.Tab value="followers">Followers</Tabs.Tab>
-                <Tabs.Tab value="following">Following</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.NOTES}>Notes</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.READS}>Reads</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.REPLIES}>Replies</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWERS}>Followers</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWING}>Following</Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="notes" p="md">
@@ -36,11 +46,11 @@ export default function ProfileContent({ activeTab, setActiveTab, followers }: P
             </Tabs.Panel>
 
             <Tabs.Panel value="followers" p="md">
-                <Followers followers={followers} />
+                {activeTab === PROFILE_CONTENT_TABS.FOLLOWERS && <UserList pubkeys={followers} />}
             </Tabs.Panel>
 
             <Tabs.Panel value="following" p="md">
-                TODO: Following
+                {activeTab === PROFILE_CONTENT_TABS.FOLLOWING && <UserList pubkeys={following} />}
             </Tabs.Panel>
         </Tabs>
     );

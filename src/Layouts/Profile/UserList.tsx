@@ -8,35 +8,32 @@ import { IconExclamationCircle, IconX } from "@tabler/icons-react";
 import { encodeNPub, RELAYS } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
 
-interface FollowersProps {
-    followers: string[];
+interface UserListProps {
+    pubkeys: string[];
 }
 
 const EmptyList = () => (
     <Center py="lg">
-        <Stack align="center" gap="xs">
-            <IconX />
-            <Text>No followers so far</Text>
-        </Stack>
+        <IconX />
     </Center>
 );
 
-export default function Followers({ followers }: FollowersProps) {
+export default function UserList({ pubkeys }: UserListProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [followersMetadata, setFollowersMetadata] = useState<UserMetadata[]>([]);
+    const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
     const [fetchedCount, setFetchedCount] = useState(0);
     const BATCH_SIZE = 20;
 
     const fetchMetadataBatch = useCallback(
         async (startIndex: number) => {
-            if (startIndex >= followers.length) return;
+            if (startIndex >= pubkeys.length) return;
 
             setLoading(true);
             const pool = new SimplePool();
 
             try {
-                const batchPubkeys = followers.slice(startIndex, startIndex + BATCH_SIZE);
+                const batchPubkeys = pubkeys.slice(startIndex, startIndex + BATCH_SIZE);
 
                 if (!batchPubkeys.length) return;
 
@@ -64,7 +61,7 @@ export default function Followers({ followers }: FollowersProps) {
                     }
                 });
 
-                setFollowersMetadata((prev) => {
+                setUsersMetadata((prev) => {
                     const existingMap = new Map(prev.map((item) => [item.pubkey, item]));
                     metadataMap.forEach((item, pubkey) => existingMap.set(pubkey, item));
                     return Array.from(existingMap.values());
@@ -72,26 +69,26 @@ export default function Followers({ followers }: FollowersProps) {
 
                 setFetchedCount(startIndex + batchPubkeys.length);
             } catch (fetchError) {
-                setError("Failed to load the followers! Please try again later...");
+                setError("Failed to load the data! Please try again later...");
             } finally {
                 setLoading(false);
                 pool.close(RELAYS);
             }
         },
-        [followers]
+        [pubkeys]
     );
 
     useEffect(() => {
-        setFollowersMetadata([]);
+        setUsersMetadata([]);
         setFetchedCount(0);
         setError("");
 
-        if (followers.length > 0) {
+        if (pubkeys.length > 0) {
             fetchMetadataBatch(0);
         }
-    }, [followers, fetchMetadataBatch]);
+    }, [pubkeys, fetchMetadataBatch]);
 
-    if (!followers.length) return <EmptyList />;
+    if (!pubkeys.length) return <EmptyList />;
 
     if (error) {
         return (
@@ -103,7 +100,7 @@ export default function Followers({ followers }: FollowersProps) {
 
     return (
         <Stack gap="sm">
-            {followersMetadata.map((user) => (
+            {usersMetadata.map((user) => (
                 <Card key={user.pubkey} shadow="sm" padding="md" radius="md">
                     <Group>
                         <Avatar src={user.picture} radius="xl" size="md" />
@@ -116,7 +113,7 @@ export default function Followers({ followers }: FollowersProps) {
                     <Loader size={36} color="var(--mantine-color-dark-0)" type="dots" />
                 </Center>
             )}
-            {fetchedCount < followers.length && !loading && (
+            {fetchedCount < pubkeys.length && !loading && (
                 <Button
                     variant="light"
                     color="gray"
