@@ -16,6 +16,8 @@ import { closePool, decodeNProfile, fetchUserMetadata, getFollowers, getFollowin
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
 
+const DEFAULT_ACTIVE_TAB = "notes";
+
 export default function Profile() {
     const { nprofile } = useParams<{ nprofile: string }>();
     const storedUser = useAppSelector((state) => state.user);
@@ -24,12 +26,17 @@ export default function Profile() {
     const [followers, setFollowers] = useState<string[]>([]);
     const [ownKey, setOwnKey] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+    const [activeTab, setActiveTab] = useState<string | null>(DEFAULT_ACTIVE_TAB);
 
     const nprofileData = useMemo(() => decodeNProfile(nprofile!), [nprofile]);
 
     // Reset states on nprofile change
     useEffect(() => {
         setProfile(null);
+        setFollowers([]);
+        setFollowers([]);
+        setOwnKey(false);
+        setActiveTab(DEFAULT_ACTIVE_TAB);
         setError("");
     }, [nprofile]);
 
@@ -94,11 +101,11 @@ export default function Profile() {
                                 following={following}
                                 ownKey={ownKey}
                             />
-                            <ProfileContent />
+                            <ProfileContent activeTab={activeTab} setActiveTab={setActiveTab} followers={followers} />
                         </>
                     ) : (
                         <Center h={100}>
-                            <Loader size={40} color="var(--mantine-color-dark-0)" type="dots" />
+                            <Loader size={36} color="var(--mantine-color-dark-0)" type="dots" />
                         </Center>
                     )}
 

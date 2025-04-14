@@ -1,7 +1,18 @@
-import { Avatar, BackgroundImage, Box, Flex, Group, MantineColor, Text, useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import {
+    Avatar,
+    BackgroundImage,
+    Box,
+    Button,
+    Flex,
+    Group,
+    MantineColor,
+    NumberFormatter,
+    Text,
+    useComputedColorScheme,
+    useMantineTheme,
+} from "@mantine/core";
 
 import { useAppSelector } from "../../Store/hook";
-import FollowersAndFollowing from "./FollowersAndFollowing";
 import ProfileActions from "./ProfileActions";
 
 interface ProfileHeaderProps {
@@ -32,6 +43,14 @@ export default function ProfileHeader({
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+
+    const countStyle = { fontSize: 14, fontWeight: 700 };
+    const buttonProps = {
+        variant: "light" as const,
+        color: "gray",
+        size: "xs" as const,
+        radius: "xl" as const,
+    };
 
     return (
         <Box w="100%">
@@ -69,7 +88,24 @@ export default function ProfileHeader({
                         </Text>
                     </Box>
                 </Flex>
-                <FollowersAndFollowing followers={followers} following={following} />
+                <Flex gap="xs">
+                    <Button {...buttonProps}>
+                        <Text style={countStyle}>
+                            <NumberFormatter thousandSeparator value={followers.length} />{" "}
+                        </Text>
+                        <Text ml={6} fz={14} c="dimmed">
+                            Followers
+                        </Text>
+                    </Button>
+                    <Button {...buttonProps}>
+                        <Text style={countStyle}>
+                            <NumberFormatter thousandSeparator value={following.length} />{" "}
+                        </Text>
+                        <Text ml={6} fz={14} c="dimmed">
+                            Following
+                        </Text>
+                    </Button>
+                </Flex>
             </Group>
             {about && (
                 <Text px="lg" pt="lg" fz={16}>

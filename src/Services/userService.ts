@@ -6,7 +6,7 @@ import { NProfile } from "../Types/nProfile";
 import { UserMetadata } from "../Types/userMetadata";
 
 // Common Nostr relays
-const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
+export const RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
 export const authenticateUser = async (privateKey: string): Promise<string> => {
     try {
@@ -53,7 +53,7 @@ export const authenticateUser = async (privateKey: string): Promise<string> => {
 
 export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Promise<UserMetadata | null> => {
     try {
-        const events = await pool.querySync(relays, {
+        const events = await pool.querySync(RELAYS, {
             kinds: [0], // Metadata events
             authors: [publicKey],
         });
@@ -113,7 +113,7 @@ export const publishProfile = async (pool: SimplePool, privateKey: string, userM
     const signedEvent = finalizeEvent(eventTemplate, sk);
 
     try {
-        const pubs = pool.publish(relays, signedEvent);
+        const pubs = pool.publish(RELAYS, signedEvent);
 
         await Promise.all(pubs);
     } catch (error) {
@@ -122,7 +122,7 @@ export const publishProfile = async (pool: SimplePool, privateKey: string, userM
 };
 
 export const getFollowing = async (pool: SimplePool, pubkey: string): Promise<string[]> => {
-    const events = await pool.querySync(relays, {
+    const events = await pool.querySync(RELAYS, {
         kinds: [3],
         authors: [pubkey],
     });
@@ -134,7 +134,7 @@ export const getFollowing = async (pool: SimplePool, pubkey: string): Promise<st
 };
 
 export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<string[]> => {
-    const events = await pool.querySync(relays, {
+    const events = await pool.querySync(RELAYS, {
         kinds: [3],
         "#p": [pubkey],
     });
@@ -147,7 +147,7 @@ export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<st
     return Array.from(followers);
 };
 
-export const encodeNProfile = (pubkey: string): string => nip19.nprofileEncode({ pubkey, relays });
+export const encodeNProfile = (pubkey: string): string => nip19.nprofileEncode({ pubkey, relays: RELAYS });
 export const decodeNProfile = (nprofile: string): NProfile => {
     const decoded = nip19.decode(nprofile);
 
@@ -161,7 +161,7 @@ export const encodeNPub = (pubkey: string): string => nip19.npubEncode(pubkey);
 
 export const closePool = (pool: SimplePool): void => {
     try {
-        return pool.close(relays);
+        return pool.close(RELAYS);
     } catch (error) {
         throw new Error("Failed to close pool...");
     }
