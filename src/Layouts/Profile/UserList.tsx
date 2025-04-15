@@ -1,21 +1,20 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { ActionIcon, Alert, Avatar, Box, Button, Center, Flex, Group, Loader, Stack, Text, Tooltip } from "@mantine/core";
-import { IconExclamationCircle, IconUserShare, IconX } from "@tabler/icons-react";
+import { Alert, Button, Center, Loader, Stack } from "@mantine/core";
+import { IconExclamationCircle, IconX } from "@tabler/icons-react";
 
-import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
-import { encodeNProfile, encodeNPub, RELAYS } from "../../Services/userService";
+import { RELAYS } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
+import UserItem from "./UserItem";
 
 interface UserListProps {
     pubkeys: string[];
 }
 
 const EmptyList = () => (
-    <Center py="lg">
+    <Center>
         <IconX />
     </Center>
 );
@@ -26,13 +25,6 @@ export default function UserList({ pubkeys }: UserListProps) {
     const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
     const [fetchedCount, setFetchedCount] = useState(0);
     const BATCH_SIZE = 20;
-
-    const iconProps = {
-        variant: "light" as const,
-        color: "gray",
-        size: "xl" as const,
-        radius: "xl" as const,
-    };
 
     const fetchMetadataBatch = useCallback(
         async (startIndex: number) => {
@@ -110,33 +102,7 @@ export default function UserList({ pubkeys }: UserListProps) {
     return (
         <Stack gap="xl">
             {usersMetadata.map((user) => (
-                <Flex key={user.pubkey} justify="space-between" align="center">
-                    <Group>
-                        <Avatar src={user.picture} radius={45} size={45} />
-                        <Flex direction="column" align="flex-start" justify="center">
-                            <Box w={300}>
-                                <Text ta="left" size="md" truncate="end">
-                                    {user.display_name}
-                                </Text>
-                                <Text ta="left" c="dimmed" size="sm" truncate="end">
-                                    {user.name ? `@${user.name}` : encodeNPub(user.pubkey)}
-                                </Text>
-                            </Box>
-                        </Flex>
-                    </Group>
-                    <Group>
-                        <Tooltip label="View Profile" withArrow>
-                            <ActionIcon
-                                aria-label="dots"
-                                {...iconProps}
-                                component={Link}
-                                to={`${PROFILE_ROUTE_BASE}/${encodeNProfile(user.pubkey)}`}
-                            >
-                                <IconUserShare />
-                            </ActionIcon>
-                        </Tooltip>
-                    </Group>
-                </Flex>
+                <UserItem key={user.pubkey} pubkey={user.pubkey} name={user.name} displayName={user.display_name} picture={user.picture} />
             ))}
             {loading && (
                 <Center>

@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { UserMetadata } from "../../Types/userMetadata";
 
-type UserState = {
+export type UserState = {
     profile: UserMetadata | null;
     authenticated: boolean;
     privateKey: string;

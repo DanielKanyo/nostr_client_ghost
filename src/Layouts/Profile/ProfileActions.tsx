@@ -65,7 +65,7 @@ export default function ProfileActions({ ownKey, publicKey, website }: ProfileAc
                         </Tooltip>
                     </>
                 ) : (
-                    <Tooltip label="Follow" withArrow>
+                    <Tooltip label="Follow User" withArrow>
                         <ActionIcon aria-label="follow" {...iconProps}>
                             <IconUserPlus />
                         </ActionIcon>
