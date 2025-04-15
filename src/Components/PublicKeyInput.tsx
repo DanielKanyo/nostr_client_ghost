@@ -1,5 +1,5 @@
 import { ActionIcon, CopyButton, Flex, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
-import { IconCheck, IconCopy, IconQuestionMark } from "@tabler/icons-react";
+import { IconCheck, IconCopy, IconInfoSquareRoundedFilled } from "@tabler/icons-react";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { useAppSelector } from "../Store/hook";
@@ -20,9 +20,14 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
             rightSection={
                 <Flex gap="xs">
                     {withLabels && (
-                        <Tooltip label="Anyone on Nostr can find you via your public key. Feel free to share anywhere." withArrow>
+                        <Tooltip
+                            label="Anyone on Nostr can find you via your public key. Feel free to share anywhere."
+                            withArrow
+                            multiline
+                            w={300}
+                        >
                             <ThemeIcon variant="light" radius="md" color="gray">
-                                <IconQuestionMark size={16} />
+                                <IconInfoSquareRoundedFilled size={16} />
                             </ThemeIcon>
                         </Tooltip>
                     )}

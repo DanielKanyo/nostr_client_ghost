@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
@@ -20,6 +21,7 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
     const [privateKey, setPrivateKey] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [visible, { toggle }] = useDisclosure(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -87,6 +89,8 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                     mb="lg"
                     data-autofocus
                     classNames={containedInputClasses}
+                    visible={visible}
+                    onVisibilityChange={toggle}
                 />
 
                 {error && (

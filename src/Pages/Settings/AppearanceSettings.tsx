@@ -78,7 +78,7 @@ export default function AppearanceSettings() {
                 <PageTitle title="Appearance Settings" withBackBtn />
                 <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
-                        <Text fz={20}>Theme</Text>
+                        <Text>Theme</Text>
                         <Tooltip label="Toggle Color Scheme" radius="md" withArrow>
                             <Switch
                                 size="xl"
@@ -93,7 +93,7 @@ export default function AppearanceSettings() {
                 <Divider />
                 <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
-                        <Text fz={20}>Primary Color</Text>
+                        <Text>Primary Color</Text>
                         <Flex gap={6}>
                             {colors.map((c) => (
                                 <ColorSwatch

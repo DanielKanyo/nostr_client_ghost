@@ -1,5 +1,5 @@
 import { PasswordInput, CopyButton, Tooltip, ActionIcon, MantineColor, Flex, ThemeIcon } from "@mantine/core";
-import { IconCheck, IconCopy, IconQuestionMark } from "@tabler/icons-react";
+import { IconCheck, IconCopy, IconInfoSquareRoundedFilled } from "@tabler/icons-react";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { useAppSelector } from "../Store/hook";
@@ -25,7 +25,7 @@ export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
                         w={300}
                     >
                         <ThemeIcon variant="light" radius="md" color="gray">
-                            <IconQuestionMark size={16} />
+                            <IconInfoSquareRoundedFilled size={16} />
                         </ThemeIcon>
                     </Tooltip>
                     <CopyButton value={privateKey} timeout={2000}>

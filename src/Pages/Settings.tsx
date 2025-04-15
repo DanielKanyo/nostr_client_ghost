@@ -22,8 +22,8 @@ export default function Settings() {
                 component={Link}
                 to={item.to}
                 p="lg"
-                label={<Text fz={20}>{item.label}</Text>}
-                leftSection={<item.icon size={22} />}
+                label={<Text>{item.label}</Text>}
+                leftSection={<item.icon size={21} />}
                 rightSection={<IconChevronRight size={15} className="mantine-rotate-rtl" />}
             />
             <Divider />

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { ActionIcon, Alert, Avatar, Box, Button, Card, Center, Flex, Group, Loader, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Avatar, Box, Button, Center, Flex, Group, Loader, Stack, Text, Tooltip } from "@mantine/core";
 import { IconExclamationCircle, IconUserShare, IconX } from "@tabler/icons-react";
 
 import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
@@ -108,37 +108,35 @@ export default function UserList({ pubkeys }: UserListProps) {
     }
 
     return (
-        <Stack gap="sm">
+        <Stack gap="xl">
             {usersMetadata.map((user) => (
-                <Card key={user.pubkey} padding="md" radius="md" withBorder bg="transparent">
-                    <Flex justify="space-between" align="center">
-                        <Group>
-                            <Avatar src={user.picture} radius={45} size={45} />
-                            <Flex direction="column" align="flex-start" justify="center">
-                                <Box w={300}>
-                                    <Text ta="left" size="md" truncate="end">
-                                        {user.display_name}
-                                    </Text>
-                                    <Text ta="left" c="dimmed" size="sm" truncate="end">
-                                        {user.name ? `@${user.name}` : encodeNPub(user.pubkey)}
-                                    </Text>
-                                </Box>
-                            </Flex>
-                        </Group>
-                        <Group>
-                            <Tooltip label="View Profile" withArrow>
-                                <ActionIcon
-                                    aria-label="dots"
-                                    {...iconProps}
-                                    component={Link}
-                                    to={`${PROFILE_ROUTE_BASE}/${encodeNProfile(user.pubkey)}`}
-                                >
-                                    <IconUserShare />
-                                </ActionIcon>
-                            </Tooltip>
-                        </Group>
-                    </Flex>
-                </Card>
+                <Flex key={user.pubkey} justify="space-between" align="center">
+                    <Group>
+                        <Avatar src={user.picture} radius={45} size={45} />
+                        <Flex direction="column" align="flex-start" justify="center">
+                            <Box w={300}>
+                                <Text ta="left" size="md" truncate="end">
+                                    {user.display_name}
+                                </Text>
+                                <Text ta="left" c="dimmed" size="sm" truncate="end">
+                                    {user.name ? `@${user.name}` : encodeNPub(user.pubkey)}
+                                </Text>
+                            </Box>
+                        </Flex>
+                    </Group>
+                    <Group>
+                        <Tooltip label="View Profile" withArrow>
+                            <ActionIcon
+                                aria-label="dots"
+                                {...iconProps}
+                                component={Link}
+                                to={`${PROFILE_ROUTE_BASE}/${encodeNProfile(user.pubkey)}`}
+                            >
+                                <IconUserShare />
+                            </ActionIcon>
+                        </Tooltip>
+                    </Group>
+                </Flex>
             ))}
             {loading && (
                 <Center>

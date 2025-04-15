@@ -1,9 +1,9 @@
 import { MantineColor, Tabs } from "@mantine/core";
 
+import classes from "../../Shared/Styles/tabs.module.css";
 import { PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import UserList from "./UserList";
-import classes from "./tabs.module.css";
 
 interface ProfileContentProps {
     activeTab: string | null;
