@@ -13,9 +13,9 @@ import ProfileHeader from "../Layouts/Profile/ProfileHeader";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
 import { closePool, decodeNProfile, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
+import { PROFILE_CONTENT_TABS } from "../Shared/utils";
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
-import { PROFILE_CONTENT_TABS } from "../Shared/utils";
 
 export default function Profile() {
     const { nprofile } = useParams<{ nprofile: string }>();
@@ -99,6 +99,7 @@ export default function Profile() {
                                 followers={followers}
                                 following={following}
                                 ownKey={ownKey}
+                                setActiveTab={setActiveTab}
                             />
                             <ProfileContent activeTab={activeTab} setActiveTab={setActiveTab} followers={followers} following={following} />
                         </>

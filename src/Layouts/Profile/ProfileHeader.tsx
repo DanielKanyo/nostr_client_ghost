@@ -12,6 +12,7 @@ import {
     useMantineTheme,
 } from "@mantine/core";
 
+import { PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import ProfileActions from "./ProfileActions";
 
@@ -26,6 +27,7 @@ interface ProfileHeaderProps {
     followers: string[];
     following: string[];
     ownKey: boolean;
+    setActiveTab: (value: string | null) => void;
 }
 
 export default function ProfileHeader({
@@ -39,6 +41,7 @@ export default function ProfileHeader({
     followers,
     following,
     ownKey,
+    setActiveTab,
 }: ProfileHeaderProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
@@ -89,7 +92,7 @@ export default function ProfileHeader({
                     </Box>
                 </Flex>
                 <Flex gap="xs">
-                    <Button {...buttonProps}>
+                    <Button {...buttonProps} onClick={() => setActiveTab(PROFILE_CONTENT_TABS.FOLLOWERS)}>
                         <Text style={countStyle}>
                             <NumberFormatter thousandSeparator value={followers.length} />{" "}
                         </Text>
@@ -97,7 +100,7 @@ export default function ProfileHeader({
                             Followers
                         </Text>
                     </Button>
-                    <Button {...buttonProps}>
+                    <Button {...buttonProps} onClick={() => setActiveTab(PROFILE_CONTENT_TABS.FOLLOWING)}>
                         <Text style={countStyle}>
                             <NumberFormatter thousandSeparator value={following.length} />{" "}
                         </Text>

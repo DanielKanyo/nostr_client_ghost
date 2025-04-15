@@ -1,0 +1,31 @@
+.root {
+    position: relative;
+}
+
+.input {
+    height: 54px;
+    padding-top: 20px;
+    background-color: transparent;
+}
+
+.innerInput {
+    padding-top: 20px;
+}
+
+.label {
+    position: absolute;
+    pointer-events: none;
+    font-size: var(--mantine-font-size-xs);
+    padding-left: var(--mantine-spacing-sm);
+    padding-top: calc(var(--mantine-spacing-sm) / 2);
+    z-index: 1;
+    color: var(--mantine-color-dimmed);
+}
+
+.visibilityToggle {
+    margin-right: 10px;
+}
+
+.section {
+    width: auto;
+}

@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Avatar, Button, Card, Center, Group, Loader, Stack, Text } from "@mantine/core";
-import { IconExclamationCircle, IconX } from "@tabler/icons-react";
+import { ActionIcon, Alert, Avatar, Box, Button, Card, Center, Flex, Group, Loader, Stack, Text, Tooltip } from "@mantine/core";
+import { IconExclamationCircle, IconUserShare, IconX } from "@tabler/icons-react";
 
-import { encodeNPub, RELAYS } from "../../Services/userService";
+import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
+import { encodeNProfile, encodeNPub, RELAYS } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
 
 interface UserListProps {
@@ -24,6 +26,13 @@ export default function UserList({ pubkeys }: UserListProps) {
     const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
     const [fetchedCount, setFetchedCount] = useState(0);
     const BATCH_SIZE = 20;
+
+    const iconProps = {
+        variant: "light" as const,
+        color: "gray",
+        size: "xl" as const,
+        radius: "xl" as const,
+    };
 
     const fetchMetadataBatch = useCallback(
         async (startIndex: number) => {
@@ -101,11 +110,34 @@ export default function UserList({ pubkeys }: UserListProps) {
     return (
         <Stack gap="sm">
             {usersMetadata.map((user) => (
-                <Card key={user.pubkey} padding="md" radius="md">
-                    <Group key={user.pubkey}>
-                        <Avatar src={user.picture} radius="xl" size="md" />
-                        <Text fw={500}>{user.display_name || user.name || encodeNPub(user.pubkey)}</Text>
-                    </Group>
+                <Card key={user.pubkey} padding="md" radius="md" withBorder bg="transparent">
+                    <Flex justify="space-between" align="center">
+                        <Group>
+                            <Avatar src={user.picture} radius={45} size={45} />
+                            <Flex direction="column" align="flex-start" justify="center">
+                                <Box w={300}>
+                                    <Text ta="left" size="md" truncate="end">
+                                        {user.display_name}
+                                    </Text>
+                                    <Text ta="left" c="dimmed" size="sm" truncate="end">
+                                        {user.name ? `@${user.name}` : encodeNPub(user.pubkey)}
+                                    </Text>
+                                </Box>
+                            </Flex>
+                        </Group>
+                        <Group>
+                            <Tooltip label="View Profile" withArrow>
+                                <ActionIcon
+                                    aria-label="dots"
+                                    {...iconProps}
+                                    component={Link}
+                                    to={`${PROFILE_ROUTE_BASE}/${encodeNProfile(user.pubkey)}`}
+                                >
+                                    <IconUserShare />
+                                </ActionIcon>
+                            </Tooltip>
+                        </Group>
+                    </Flex>
                 </Card>
             ))}
             {loading && (

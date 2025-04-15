@@ -7,6 +7,7 @@ import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core"
 import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
+import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { HIDE_ALERT_TIMEOUT_IN_MS } from "../Shared/utils";
 import { updateUser } from "../Store/Features/userSlice";
 
@@ -76,11 +77,8 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
         <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="lg" size="md">
             <Flex direction="column">
                 <PasswordInput
-                    variant="filled"
-                    size="md"
                     radius="md"
                     label="Enter your private key"
-                    description='It starts with "nsec"'
                     placeholder="nsec..."
                     value={privateKey}
                     onChange={(event) => setPrivateKey(event.currentTarget.value.trim())}
@@ -88,6 +86,7 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                     aria-label="Nostr private key input"
                     mb="lg"
                     data-autofocus
+                    classNames={containedInputClasses}
                 />
 
                 {error && (

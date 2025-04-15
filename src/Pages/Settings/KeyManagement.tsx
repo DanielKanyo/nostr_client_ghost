@@ -57,7 +57,7 @@ export default function KeyManagement() {
                         <PublicKeyInput publicKey={npub} withLabels />
                         <PrivateKeyInput privateKey={privateKey} />
                         <Group my="lg" justify="flex-end">
-                            <Button variant="filled" color="red" radius="xl" size="lg" leftSection={<IconLogout2 size={28} />} onClick={handleLogout}>
+                            <Button variant="filled" color="red" radius="xl" leftSection={<IconLogout2 size={21} />} onClick={handleLogout}>
                                 Logout
                             </Button>
                         </Group>

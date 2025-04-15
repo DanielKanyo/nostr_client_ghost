@@ -1,5 +1,8 @@
 import { Group, Textarea, TextInput, Stack } from "@mantine/core";
 
+import containedInputClasses from "../Shared/Styles/containedInput.module.css";
+import containedTextareaClasses from "../Shared/Styles/containedTextarea.module.css";
+
 interface AccountFormProps {
     name: string;
     displayName: string;
@@ -30,9 +33,8 @@ export default function AccountForm({
     setAbout,
 }: AccountFormProps) {
     const sharedProps = {
-        variant: "filled" as const,
-        size: "md" as const,
         radius: "md" as const,
+        classNames: containedInputClasses,
     };
 
     return (
@@ -40,18 +42,15 @@ export default function AccountForm({
             <Group grow>
                 <TextInput
                     label="Name"
-                    description="Pick a short name"
                     value={name}
                     onChange={(e) => setName(e.currentTarget.value)}
                     placeholder="e.g., satoshi123"
                     withAsterisk
-                    data-autofocus
                     {...sharedProps}
                 />
 
                 <TextInput
                     label="Display Name"
-                    description="More friendly name to show on your profile"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.currentTarget.value)}
                     placeholder="e.g., Satoshi Nakamoto"
@@ -62,7 +61,6 @@ export default function AccountForm({
 
             <TextInput
                 label="Profile Picture URL"
-                description="Link to your profile image"
                 value={picture}
                 onChange={(e) => setPicture(e.currentTarget.value)}
                 placeholder="https://example.com/pfp.png"
@@ -71,7 +69,6 @@ export default function AccountForm({
 
             <TextInput
                 label="Banner Picture URL"
-                description="Link to your profile banner"
                 value={banner}
                 onChange={(e) => setBanner(e.currentTarget.value)}
                 placeholder="https://example.com/banner.png"
@@ -93,7 +90,8 @@ export default function AccountForm({
                 onChange={(e) => setAbout(e.currentTarget.value)}
                 autosize
                 minRows={3}
-                {...sharedProps}
+                radius="md"
+                classNames={containedTextareaClasses}
             />
         </Stack>
     );

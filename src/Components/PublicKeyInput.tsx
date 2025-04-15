@@ -1,6 +1,7 @@
-import { ActionIcon, CopyButton, TextInput, Tooltip } from "@mantine/core";
-import { IconCheck, IconCopy } from "@tabler/icons-react";
+import { ActionIcon, CopyButton, Flex, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
+import { IconCheck, IconCopy, IconQuestionMark } from "@tabler/icons-react";
 
+import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { useAppSelector } from "../Store/hook";
 
 interface PublicKeyInputProps {
@@ -13,25 +14,32 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
 
     return (
         <TextInput
-            variant="filled"
             mt="lg"
-            size="md"
             radius="md"
             label={withLabels && "Public Key"}
-            description={withLabels && "Anyone on Nostr can find you via your public key. Feel free to share anywhere."}
             rightSection={
-                <CopyButton value={publicKey} timeout={2000}>
-                    {({ copied, copy }) => (
-                        <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
-                            <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy}>
-                                {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                            </ActionIcon>
+                <Flex gap="xs">
+                    {withLabels && (
+                        <Tooltip label="Anyone on Nostr can find you via your public key. Feel free to share anywhere." withArrow>
+                            <ThemeIcon variant="light" radius="md" color="gray">
+                                <IconQuestionMark size={16} />
+                            </ThemeIcon>
                         </Tooltip>
                     )}
-                </CopyButton>
+                    <CopyButton value={publicKey} timeout={2000}>
+                        {({ copied, copy }) => (
+                            <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
+                                <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
+                                    {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                                </ActionIcon>
+                            </Tooltip>
+                        )}
+                    </CopyButton>
+                </Flex>
             }
             value={publicKey}
             readOnly
+            classNames={containedInputClasses}
         />
     );
 }
