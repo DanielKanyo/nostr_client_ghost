@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Center, Container, Loader } from "@mantine/core";
-import { IconExclamationCircle, IconX } from "@tabler/icons-react";
+import { IconDots, IconExclamationCircle, IconX } from "@tabler/icons-react";
 
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
@@ -90,14 +90,15 @@ export default function UserList({ pubkeys }: UserListProps) {
             {fetchedCount < pubkeys.length && !loading && (
                 <Container m="md" p={0}>
                     <Button
-                        variant="light"
+                        variant="subtle"
                         color="gray"
+                        radius="md"
                         onClick={() => fetchMetadataBatch(fetchedCount)}
                         loading={loading}
                         loaderProps={{ type: "dots" }}
                         fullWidth
                     >
-                        Load More
+                        <IconDots />
                     </Button>
                 </Container>
             )}
