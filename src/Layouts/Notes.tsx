@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import { NostrEvent, SimplePool } from "nostr-tools";
 
@@ -14,10 +15,16 @@ interface NotesProps {
 }
 
 export default function Notes({ pubkeys }: NotesProps) {
+    const { nprofile } = useParams<{ nprofile: string }>();
     const [notes, setNotes] = useState<NostrEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [until, setUntil] = useState<number | undefined>(undefined);
     const limit = DEFAULT_NUM_OF_DISPLAYED_NOTES;
+
+    useEffect(() => {
+        setNotes([]);
+        setUntil(undefined);
+    }, [nprofile]);
 
     const loadNotes = async (reset: boolean = false) => {
         setLoading(true);
@@ -43,7 +50,7 @@ export default function Notes({ pubkeys }: NotesProps) {
         if (pubkeys.length > 0) {
             loadNotes(true);
         }
-    }, [pubkeys]);
+    }, [nprofile]);
 
     return (
         <>

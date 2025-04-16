@@ -1,15 +1,45 @@
+import { JSX } from "react";
+import { Link } from "react-router-dom";
+
 import { NostrEvent } from "nostr-tools";
 
-import { Container, Divider, Group, Stack, Text, Image } from "@mantine/core";
+import { Container, Divider, Group, Stack, Text, Image, TypographyStylesProvider } from "@mantine/core";
 
-import { extractImageUrlsAndNostrTags } from "../Shared/utils";
+import { PROFILE_ROUTE_BASE } from "../Routes/routes";
+import { extractImageUrls } from "../Shared/utils";
 
 interface NoteItemProps {
     note: NostrEvent;
 }
 
+export const replaceNostrTags = (content: string, replaceWithString: string = "user"): JSX.Element[] => {
+    // TODO: provide valid replaceWithString
+    const nostrRegex = /nostr:nprofile[0-9a-z]+/g;
+    const parts = content.split(nostrRegex);
+    const matches = content.match(nostrRegex) || [];
+
+    // Map through the parts and intersperse with Link components
+    const elements: JSX.Element[] = [];
+
+    parts.forEach((part, index) => {
+        elements.push(<span key={`part-${index}`}>{part}</span>);
+
+        if (matches[index]) {
+            const to = `${PROFILE_ROUTE_BASE}/${matches[index].replace("nostr:", "")}`;
+
+            elements.push(
+                <Link key={`link-${index}`} to={to}>
+                    @{replaceWithString}
+                </Link>
+            );
+        }
+    });
+
+    return elements;
+};
+
 export default function NoteItem({ note }: NoteItemProps) {
-    const { text, images } = extractImageUrlsAndNostrTags(note.content);
+    const { text, images } = extractImageUrls(note.content);
 
     const formatDate = (timestamp: number) => {
         return new Date(timestamp * 1000).toLocaleString();
@@ -26,9 +56,11 @@ export default function NoteItem({ note }: NoteItemProps) {
                         {formatDate(note.created_at)}
                     </Text>
                 </Group>
-                <Text size="md" lineClamp={4}>
-                    {text}
-                </Text>
+                <TypographyStylesProvider>
+                    <Text style={{ whiteSpace: "pre-line" }} lineClamp={9}>
+                        <div>{replaceNostrTags(text)}</div>
+                    </Text>
+                </TypographyStylesProvider>
                 {images.length > 0 && (
                     <Stack gap="sm">
                         {images.map((image, index) => (
