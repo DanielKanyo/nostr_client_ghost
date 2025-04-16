@@ -45,6 +45,7 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
             value={publicKey}
             readOnly
             classNames={containedInputClasses}
+            size="md"
         />
     );
 }

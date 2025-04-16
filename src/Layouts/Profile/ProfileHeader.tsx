@@ -111,7 +111,7 @@ export default function ProfileHeader({
                 </Flex>
             </Group>
             {about && (
-                <Text px="lg" pt="lg" fz={16}>
+                <Text px="lg" pt="lg" fz={16} lineClamp={4}>
                     {about}
                 </Text>
             )}

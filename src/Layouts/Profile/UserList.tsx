@@ -5,9 +5,9 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Button, Center, Container, Loader } from "@mantine/core";
 import { IconDots, IconExclamationCircle, IconX } from "@tabler/icons-react";
 
+import UserItem from "../../Components/UserItem";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
-import UserItem from "./UserItem";
 
 interface UserListProps {
     pubkeys: string[];

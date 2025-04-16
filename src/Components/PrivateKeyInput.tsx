@@ -42,6 +42,7 @@ export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
             value={privateKey}
             readOnly
             classNames={containedInputClasses}
+            size="md"
         />
     );
 }

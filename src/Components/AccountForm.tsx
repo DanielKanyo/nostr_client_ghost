@@ -35,6 +35,7 @@ export default function AccountForm({
     const sharedProps = {
         radius: "md" as const,
         classNames: containedInputClasses,
+        size: "md" as const,
     };
 
     return (
@@ -91,6 +92,7 @@ export default function AccountForm({
                 autosize
                 minRows={3}
                 radius="md"
+                size="md"
                 classNames={containedTextareaClasses}
             />
         </Stack>
