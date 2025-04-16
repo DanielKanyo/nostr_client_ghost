@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Container, Group, MantineColor } from "@mantine/core";
-import { IconDeviceFloppy, IconExclamationCircle } from "@tabler/icons-react";
+import { IconExclamationCircle, IconPencilCheck } from "@tabler/icons-react";
 
 import AccountForm from "../../Components/AccountForm";
 import PageTitle from "../../Components/PageTitle";
@@ -113,11 +113,12 @@ export default function ProfileSettings() {
                                 variant="filled"
                                 color={primaryColor}
                                 radius="xl"
-                                leftSection={<IconDeviceFloppy size={21} />}
+                                leftSection={<IconPencilCheck size={21} />}
                                 disabled={!displayName || !name || loading}
                                 onClick={handleSave}
                                 loading={loading}
                                 loaderProps={{ type: "dots" }}
+                                size="md"
                             >
                                 Save
                             </Button>

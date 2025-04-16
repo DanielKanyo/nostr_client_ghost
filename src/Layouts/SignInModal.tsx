@@ -3,9 +3,9 @@ import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
+import { ActionIcon, Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconExclamationCircle, IconLogin2 } from "@tabler/icons-react";
+import { IconExclamationCircle, IconEye, IconEyeClosed, IconLogin2 } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
@@ -76,11 +76,11 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="lg" size="md">
+        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="lg" size="lg">
             <Flex direction="column">
                 <PasswordInput
                     radius="md"
-                    label="Enter your private key"
+                    label="Nost private key"
                     placeholder="nsec..."
                     value={privateKey}
                     onChange={(event) => setPrivateKey(event.currentTarget.value.trim())}
@@ -90,7 +90,11 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                     data-autofocus
                     classNames={containedInputClasses}
                     visible={visible}
-                    onVisibilityChange={toggle}
+                    rightSection={
+                        <ActionIcon color="gray" variant="light" radius="md" mr={10} onClick={toggle}>
+                            {visible ? <IconEyeClosed size={17} /> : <IconEye size={17} />}
+                        </ActionIcon>
+                    }
                 />
 
                 {error && (
@@ -109,6 +113,7 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
                         loaderProps={{ type: "dots" }}
                         disabled={!privateKey}
                         leftSection={<IconLogin2 size={21} />}
+                        size="md"
                     >
                         Login
                     </Button>

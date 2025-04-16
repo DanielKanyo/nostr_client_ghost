@@ -1,5 +1,5 @@
-import { PasswordInput, CopyButton, Tooltip, ActionIcon, MantineColor, Flex, ThemeIcon } from "@mantine/core";
-import { IconCheck, IconCopy, IconInfoSquareRoundedFilled } from "@tabler/icons-react";
+import { ActionIcon, CopyButton, Flex, MantineColor, PasswordInput, ThemeIcon, Tooltip } from "@mantine/core";
+import { IconCheck, IconCopy, IconInfoSquareRounded } from "@tabler/icons-react";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { useAppSelector } from "../Store/hook";
@@ -25,14 +25,14 @@ export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
                         w={300}
                     >
                         <ThemeIcon variant="light" radius="md" color="gray">
-                            <IconInfoSquareRoundedFilled size={16} />
+                            <IconInfoSquareRounded size={17} />
                         </ThemeIcon>
                     </Tooltip>
                     <CopyButton value={privateKey} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
                                 <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
-                                    {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                                    {copied ? <IconCheck size={17} /> : <IconCopy size={17} />}
                                 </ActionIcon>
                             </Tooltip>
                         )}

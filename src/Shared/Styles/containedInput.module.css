@@ -5,12 +5,13 @@
 .input {
     height: 58px;
     padding-top: 20px;
-    padding-right: 50px;
+    padding-right: 48px;
     background-color: transparent;
 }
 
 .innerInput {
     padding-top: 20px;
+    padding-right: 48px;
 }
 
 .label {
