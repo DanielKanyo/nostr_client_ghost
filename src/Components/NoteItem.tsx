@@ -2,14 +2,14 @@ import { NostrEvent } from "nostr-tools";
 
 import { Container, Divider, Group, Stack, Text, Image } from "@mantine/core";
 
-import { extractImageUrls } from "../Shared/utils";
+import { extractImageUrlsAndNostrTags } from "../Shared/utils";
 
 interface NoteItemProps {
     note: NostrEvent;
 }
 
 export default function NoteItem({ note }: NoteItemProps) {
-    const { text, images } = extractImageUrls(note.content);
+    const { text, images } = extractImageUrlsAndNostrTags(note.content);
 
     const formatDate = (timestamp: number) => {
         return new Date(timestamp * 1000).toLocaleString();

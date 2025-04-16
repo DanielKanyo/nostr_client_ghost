@@ -13,16 +13,28 @@ export enum PROFILE_CONTENT_TABS {
 // Common Nostr relays
 export const RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
-export const extractImageUrls = (content: string): { text: string; images: string[] } => {
+export const extractImageUrlsAndNostrTags = (content: string): { text: string; images: string[]; nostrTags: string[] } => {
     const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?[^ ]*)?(?=\s|$)/i;
     const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const nostrRegex = /(nostr:nprofile[0-9a-z]+)/g;
 
     let text = content;
     const images: string[] = [];
+    const nostrTags: string[] = [];
 
-    const matches = content.match(urlRegex);
-    if (matches) {
-        matches.forEach((url) => {
+    // Extract Nostr tags
+    const nostrMatches = content.match(nostrRegex);
+    if (nostrMatches) {
+        nostrMatches.forEach((tag) => {
+            nostrTags.push(tag);
+            text = text.replace(tag, "").trim();
+        });
+    }
+
+    // Extract image URLs
+    const urlMatches = content.match(urlRegex);
+    if (urlMatches) {
+        urlMatches.forEach((url) => {
             if (url.match(imageExtensions)) {
                 images.push(url);
                 text = text.replace(url, "").trim();
@@ -30,5 +42,5 @@ export const extractImageUrls = (content: string): { text: string; images: strin
         });
     }
 
-    return { text, images };
+    return { text, images, nostrTags };
 };

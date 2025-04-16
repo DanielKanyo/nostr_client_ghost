@@ -14,13 +14,13 @@ import { useAppSelector } from "../../Store/hook";
 
 interface ProfileActionsProps {
     ownKey: boolean;
-    publicKey: string;
+    pubkey: string;
     website: string | undefined;
 }
 
-export default function ProfileActions({ ownKey, publicKey, website }: ProfileActionsProps) {
+export default function ProfileActions({ ownKey, pubkey, website }: ProfileActionsProps) {
     const [qrModalOpened, { open: openQrModal, close: closeQrModal }] = useDisclosure(false);
-    const npub = useMemo(() => encodeNPub(publicKey), [publicKey]);
+    const npub = useMemo(() => encodeNPub(pubkey), [pubkey]);
     const user = useAppSelector((state) => state.user);
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
 
@@ -69,7 +69,7 @@ export default function ProfileActions({ ownKey, publicKey, website }: ProfileAc
                         </Tooltip>
                     </>
                 ) : (
-                    <FollowOrUnfollowBtn loggedInUser={user} pubkey={publicKey} color={primaryColor} />
+                    <FollowOrUnfollowBtn loggedInUser={user} pubkey={pubkey} color={primaryColor} />
                 )}
             </Group>
 
@@ -85,9 +85,9 @@ export default function ProfileActions({ ownKey, publicKey, website }: ProfileAc
                 {npub && (
                     <>
                         <Center mb="md">
-                            <QRCode publicKey={npub} size={250} />
+                            <QRCode pubkey={npub} size={250} />
                         </Center>
-                        <PublicKeyInput publicKey={npub} withLabels={false} />
+                        <PublicKeyInput pubkey={npub} withLabels={false} />
                     </>
                 )}
             </Modal>

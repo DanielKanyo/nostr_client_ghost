@@ -5,11 +5,11 @@ import QRCodeStyling from "qr-code-styling";
 import { Paper, useMantineTheme } from "@mantine/core";
 
 interface QRCode {
-    publicKey: string;
+    pubkey: string;
     size: number;
 }
 
-export default function QRCode({ publicKey, size }: QRCode) {
+export default function QRCode({ pubkey, size }: QRCode) {
     const ref = useRef<HTMLDivElement | null>(null);
     const theme = useMantineTheme();
 
@@ -17,7 +17,7 @@ export default function QRCode({ publicKey, size }: QRCode) {
         width: size,
         height: size,
         type: "canvas",
-        data: publicKey,
+        data: pubkey,
         dotsOptions: {
             color: theme.colors.dark[6],
             type: "rounded",

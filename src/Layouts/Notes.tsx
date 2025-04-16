@@ -8,10 +8,12 @@ import { IconDots } from "@tabler/icons-react";
 import NoteItem from "../Components/NoteItem";
 import { fetchNotes } from "../Services/noteService";
 import { DEFAULT_NUM_OF_DISPLAYED_NOTES } from "../Shared/utils";
-import { useAppSelector } from "../Store/hook";
 
-export default function Notes() {
-    const user = useAppSelector((state) => state.user);
+interface NotesProps {
+    pubkeys: string[];
+}
+
+export default function Notes({ pubkeys }: NotesProps) {
     const [notes, setNotes] = useState<NostrEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [until, setUntil] = useState<number | undefined>(undefined);
@@ -23,7 +25,7 @@ export default function Notes() {
         const pool = new SimplePool();
 
         try {
-            const newNotes = await fetchNotes(pool, user.following, limit, reset ? undefined : until);
+            const newNotes = await fetchNotes(pool, pubkeys, limit, reset ? undefined : until);
 
             if (newNotes.length > 0) {
                 setNotes((prev) => (reset ? newNotes : [...prev, ...newNotes]));
@@ -38,16 +40,16 @@ export default function Notes() {
     };
 
     useEffect(() => {
-        if (user.following.length > 0) {
+        if (pubkeys.length > 0) {
             loadNotes(true);
         }
-    }, [user.following]);
+    }, [pubkeys]);
 
     return (
         <>
             {notes.length === 0 && !loading && (
                 <Center>
-                    <Text c="dimmed">No notes to display.</Text>
+                    <Text c="dimmed">No notes to display...</Text>
                 </Center>
             )}
 

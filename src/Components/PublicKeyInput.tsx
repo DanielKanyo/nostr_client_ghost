@@ -5,11 +5,11 @@ import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { useAppSelector } from "../Store/hook";
 
 interface PublicKeyInputProps {
-    publicKey: string;
+    pubkey: string;
     withLabels: boolean;
 }
 
-export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInputProps) {
+export default function PublicKeyInput({ pubkey, withLabels }: PublicKeyInputProps) {
     const primaryColor = useAppSelector((state) => state.primaryColor);
 
     return (
@@ -31,7 +31,7 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
                             </ThemeIcon>
                         </Tooltip>
                     )}
-                    <CopyButton value={publicKey} timeout={2000}>
+                    <CopyButton value={pubkey} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
                                 <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
@@ -42,7 +42,7 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
                     </CopyButton>
                 </Flex>
             }
-            value={publicKey}
+            value={pubkey}
             readOnly
             classNames={containedInputClasses}
             size="md"
