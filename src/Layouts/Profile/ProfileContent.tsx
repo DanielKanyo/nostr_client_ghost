@@ -1,10 +1,10 @@
 import { MantineColor, Tabs } from "@mantine/core";
 
 import classes from "../../Shared/Styles/tabs.module.css";
-import { PROFILE_CONTENT_TABS } from "../../Shared/utils";
+import { NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import Notes from "../Notes";
-import UserList from "./UserList";
+import UserList from "../UserList";
 
 interface ProfileContentProps {
     pubkey: string;
@@ -37,15 +37,15 @@ export default function ProfileContent({ pubkey, activeTab, setActiveTab, follow
             </Tabs.List>
 
             <Tabs.Panel value="notes">
-                <Notes pubkeys={[pubkey]} />
+                <Notes pubkeys={[pubkey]} filterOptions={NoteFilterOptions.Posts} />
             </Tabs.Panel>
 
             <Tabs.Panel value="reads" p="md">
                 TODO: Reads
             </Tabs.Panel>
 
-            <Tabs.Panel value="replies" p="md">
-                TODO: Replies
+            <Tabs.Panel value="replies">
+                <Notes pubkeys={[pubkey]} filterOptions={NoteFilterOptions.Replies} />
             </Tabs.Panel>
 
             <Tabs.Panel value="followers">

@@ -34,3 +34,9 @@ export const extractImageUrls = (content: string): { text: string; images: strin
 
     return { text, images };
 };
+
+export enum NoteFilterOptions {
+    Posts = "Posts",
+    Replies = "Replies",
+    All = "All",
+}
