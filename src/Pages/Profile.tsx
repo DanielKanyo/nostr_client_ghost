@@ -80,7 +80,7 @@ export default function Profile() {
         };
 
         fetchProfile();
-    }, [nprofileData, storedUser.publicKey]);
+    }, [nprofileData, storedUser.publicKey, storedUser.following]);
 
     return (
         <Content>

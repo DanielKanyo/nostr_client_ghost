@@ -46,11 +46,11 @@ export default function ProfileContent({ activeTab, setActiveTab, followers, fol
                 TODO: Replies
             </Tabs.Panel>
 
-            <Tabs.Panel value="followers" p="md">
+            <Tabs.Panel value="followers">
                 <UserList pubkeys={followers} />
             </Tabs.Panel>
 
-            <Tabs.Panel value="following" p="md">
+            <Tabs.Panel value="following">
                 <UserList pubkeys={following} />
             </Tabs.Panel>
         </Tabs>

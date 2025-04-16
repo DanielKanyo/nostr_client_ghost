@@ -76,6 +76,34 @@ export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Pr
     }
 };
 
+export const fetchMultipleUserMetadata = async (pool: SimplePool, publicKeys: string[]): Promise<Map<string, UserMetadata>> => {
+    const events = await pool.querySync(RELAYS, {
+        kinds: [0],
+        authors: publicKeys,
+    });
+
+    const metadataMap = new Map<string, UserMetadata>();
+
+    events.forEach((event) => {
+        try {
+            const metadata = JSON.parse(event.content);
+            const existing = metadataMap.get(event.pubkey);
+
+            if (!existing || (existing.created_at && event.created_at > existing.created_at)) {
+                metadataMap.set(event.pubkey, {
+                    pubkey: event.pubkey,
+                    ...metadata,
+                    created_at: event.created_at,
+                });
+            }
+        } catch (parseError) {
+            console.error(`Failed to parse metadata for ${event.pubkey}:`, parseError);
+        }
+    });
+
+    return metadataMap;
+};
+
 export const generateKeyPair = (): { privateKey: string; publicKey: string } => {
     const sk = generateSecretKey();
     const pk = getPublicKey(sk);
@@ -158,6 +186,33 @@ export const decodeNProfile = (nprofile: string): NProfile => {
     return decoded.data;
 };
 export const encodeNPub = (pubkey: string): string => nip19.npubEncode(pubkey);
+
+export const updateFollowList = async (pool: SimplePool, privateKey: string, newFollowing: string[]): Promise<void> => {
+    const { type, data: sk } = nip19.decode(privateKey);
+
+    if (type !== "nsec") {
+        throw new Error("Invalid private key format...");
+    }
+
+    const pubkey = getPublicKey(sk);
+
+    const event = {
+        kind: 3,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: newFollowing.map((pk) => ["p", pk]),
+        content: "",
+        pubkey,
+    };
+
+    const signed = finalizeEvent(event, sk);
+
+    try {
+        const pubs = pool.publish(RELAYS, signed);
+        await Promise.all(pubs);
+    } catch {
+        throw new Error("Failed to update follow list...");
+    }
+};
 
 export const closePool = (pool: SimplePool): void => {
     try {

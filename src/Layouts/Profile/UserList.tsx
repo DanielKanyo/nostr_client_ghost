@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, Center, Loader, Stack } from "@mantine/core";
+import { Alert, Button, Center, Container, Loader } from "@mantine/core";
 import { IconExclamationCircle, IconX } from "@tabler/icons-react";
 
-import { RELAYS } from "../../Services/userService";
+import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
 import UserItem from "./UserItem";
 
@@ -38,29 +38,7 @@ export default function UserList({ pubkeys }: UserListProps) {
 
                 if (!batchPubkeys.length) return;
 
-                const events = await pool.querySync(RELAYS, {
-                    kinds: [0],
-                    authors: batchPubkeys,
-                });
-
-                const metadataMap = new Map<string, UserMetadata>();
-
-                events.forEach((event) => {
-                    try {
-                        const metadata = JSON.parse(event.content);
-                        const existing = metadataMap.get(event.pubkey);
-
-                        if (!existing || (existing.created_at && event.created_at > existing.created_at)) {
-                            metadataMap.set(event.pubkey, {
-                                pubkey: event.pubkey,
-                                ...metadata,
-                                created_at: event.created_at,
-                            });
-                        }
-                    } catch (parseError) {
-                        console.error(`Failed to parse metadata for ${event.pubkey}:`, parseError);
-                    }
-                });
+                const metadataMap = await fetchMultipleUserMetadata(pool, batchPubkeys);
 
                 setUsersMetadata((prev) => {
                     const existingMap = new Map(prev.map((item) => [item.pubkey, item]));
@@ -73,7 +51,7 @@ export default function UserList({ pubkeys }: UserListProps) {
                 setError("Failed to load the data! Please try again later...");
             } finally {
                 setLoading(false);
-                pool.close(RELAYS);
+                closePool(pool);
             }
         },
         [pubkeys]
@@ -100,26 +78,29 @@ export default function UserList({ pubkeys }: UserListProps) {
     }
 
     return (
-        <Stack gap="xl">
+        <>
             {usersMetadata.map((user) => (
                 <UserItem key={user.pubkey} pubkey={user.pubkey} name={user.name} displayName={user.display_name} picture={user.picture} />
             ))}
             {loading && (
                 <Center>
-                    <Loader size={36} color="var(--mantine-color-dark-0)" type="dots" />
+                    <Loader size={36} my="md" color="var(--mantine-color-dark-0)" type="dots" />
                 </Center>
             )}
             {fetchedCount < pubkeys.length && !loading && (
-                <Button
-                    variant="light"
-                    color="gray"
-                    onClick={() => fetchMetadataBatch(fetchedCount)}
-                    loading={loading}
-                    loaderProps={{ type: "dots" }}
-                >
-                    Load More
-                </Button>
+                <Container m="md" p={0}>
+                    <Button
+                        variant="light"
+                        color="gray"
+                        onClick={() => fetchMetadataBatch(fetchedCount)}
+                        loading={loading}
+                        loaderProps={{ type: "dots" }}
+                        fullWidth
+                    >
+                        Load More
+                    </Button>
+                </Container>
             )}
-        </Stack>
+        </>
     );
 }

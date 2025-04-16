@@ -1,14 +1,16 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import { Group, ActionIcon, Center, Modal, Tooltip } from "@mantine/core";
+import { Group, ActionIcon, Center, Modal, Tooltip, MantineColor } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconQrcode, IconMail, IconUserEdit, IconUserPlus, IconWorldWww } from "@tabler/icons-react";
+import { IconDots, IconQrcode, IconMail, IconUserEdit, IconWorldWww } from "@tabler/icons-react";
 
+import FollowOrUnfollowBtn from "../../Components/FollowOrUnfollowBtn";
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
 import { ROUTES } from "../../Routes/routes";
 import { encodeNPub } from "../../Services/userService";
+import { useAppSelector } from "../../Store/hook";
 
 interface ProfileActionsProps {
     ownKey: boolean;
@@ -19,6 +21,8 @@ interface ProfileActionsProps {
 export default function ProfileActions({ ownKey, publicKey, website }: ProfileActionsProps) {
     const [qrModalOpened, { open: openQrModal, close: closeQrModal }] = useDisclosure(false);
     const npub = useMemo(() => encodeNPub(publicKey), [publicKey]);
+    const user = useAppSelector((state) => state.user);
+    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
 
     const iconProps = {
         variant: "light" as const,
@@ -65,11 +69,7 @@ export default function ProfileActions({ ownKey, publicKey, website }: ProfileAc
                         </Tooltip>
                     </>
                 ) : (
-                    <Tooltip label="Follow User" withArrow>
-                        <ActionIcon aria-label="follow" {...iconProps}>
-                            <IconUserPlus />
-                        </ActionIcon>
-                    </Tooltip>
+                    <FollowOrUnfollowBtn loggedInUser={user} pubkey={publicKey} color={primaryColor} />
                 )}
             </Group>
 

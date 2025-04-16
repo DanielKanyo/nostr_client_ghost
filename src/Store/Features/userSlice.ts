@@ -38,8 +38,11 @@ export const userSlice = createSlice({
         updateUserLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
         },
+        updateUserFollowing: (state, action: PayloadAction<string[]>) => {
+            state.following = action.payload;
+        },
     },
 });
 
-export const { updateUser, updateUserProfile, resetUser, updateUserLoading } = userSlice.actions;
+export const { updateUser, updateUserProfile, resetUser, updateUserLoading, updateUserFollowing } = userSlice.actions;
 export default userSlice.reducer;

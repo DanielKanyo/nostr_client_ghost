@@ -16,7 +16,7 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
         <TextInput
             mt="lg"
             radius="md"
-            label={withLabels && "Public Key"}
+            label={"Public Key"}
             rightSection={
                 <Flex gap="xs">
                     {withLabels && (
