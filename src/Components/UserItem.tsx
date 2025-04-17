@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { Flex, Group, Avatar, Box, Tooltip, ActionIcon, Text, MantineColor, Divider } from "@mantine/core";
 import { IconEyeShare } from "@tabler/icons-react";
 
-import FollowOrUnfollowBtn from "../../Components/FollowOrUnfollowBtn";
-import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
-import { encodeNPub, encodeNProfile } from "../../Services/userService";
-import { useAppSelector } from "../../Store/hook";
+import { PROFILE_ROUTE_BASE } from "../Routes/routes";
+import { encodeNPub, encodeNProfile } from "../Services/userService";
+import { useAppSelector } from "../Store/hook";
+import FollowOrUnfollowBtn from "./FollowOrUnfollowBtn";
 
 interface UserItemProps {
     pubkey: string;

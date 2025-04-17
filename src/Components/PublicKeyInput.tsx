@@ -1,15 +1,15 @@
 import { ActionIcon, CopyButton, Flex, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
-import { IconCheck, IconCopy, IconInfoSquareRoundedFilled } from "@tabler/icons-react";
+import { IconCheck, IconCopy, IconInfoSquareRounded } from "@tabler/icons-react";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import { useAppSelector } from "../Store/hook";
 
 interface PublicKeyInputProps {
-    publicKey: string;
+    pubkey: string;
     withLabels: boolean;
 }
 
-export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInputProps) {
+export default function PublicKeyInput({ pubkey, withLabels }: PublicKeyInputProps) {
     const primaryColor = useAppSelector((state) => state.primaryColor);
 
     return (
@@ -27,24 +27,25 @@ export default function PublicKeyInput({ publicKey, withLabels }: PublicKeyInput
                             w={300}
                         >
                             <ThemeIcon variant="light" radius="md" color="gray">
-                                <IconInfoSquareRoundedFilled size={16} />
+                                <IconInfoSquareRounded size={17} />
                             </ThemeIcon>
                         </Tooltip>
                     )}
-                    <CopyButton value={publicKey} timeout={2000}>
+                    <CopyButton value={pubkey} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
                                 <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
-                                    {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                                    {copied ? <IconCheck size={17} /> : <IconCopy size={17} />}
                                 </ActionIcon>
                             </Tooltip>
                         )}
                     </CopyButton>
                 </Flex>
             }
-            value={publicKey}
+            value={pubkey}
             readOnly
             classNames={containedInputClasses}
+            size="md"
         />
     );
 }

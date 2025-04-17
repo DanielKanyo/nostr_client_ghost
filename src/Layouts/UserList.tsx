@@ -1,23 +1,18 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { SimplePool } from "nostr-tools";
 
 import { Alert, Button, Center, Container, Loader } from "@mantine/core";
-import { IconDots, IconExclamationCircle, IconX } from "@tabler/icons-react";
+import { IconDots, IconExclamationCircle, IconUserOff } from "@tabler/icons-react";
 
-import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
-import { UserMetadata } from "../../Types/userMetadata";
-import UserItem from "./UserItem";
+import Empty from "../Components/Empty";
+import UserItem from "../Components/UserItem";
+import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
+import { UserMetadata } from "../Types/userMetadata";
 
 interface UserListProps {
     pubkeys: string[];
 }
-
-const EmptyList = () => (
-    <Center>
-        <IconX />
-    </Center>
-);
 
 export default function UserList({ pubkeys }: UserListProps) {
     const [loading, setLoading] = useState(false);
@@ -67,7 +62,7 @@ export default function UserList({ pubkeys }: UserListProps) {
         }
     }, [pubkeys, fetchMetadataBatch]);
 
-    if (!pubkeys.length) return <EmptyList />;
+    if (!pubkeys.length) return <Empty icon={<IconUserOff size={30} />} text="Nothing to display..." />;
 
     if (error) {
         return (

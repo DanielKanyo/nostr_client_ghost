@@ -89,7 +89,7 @@ export default function Profile() {
                     {profile ? (
                         <>
                             <ProfileHeader
-                                publicKey={nprofileData.pubkey}
+                                pubkey={nprofileData.pubkey}
                                 name={profile.name}
                                 displayName={profile.display_name}
                                 about={profile.about}
@@ -101,7 +101,13 @@ export default function Profile() {
                                 ownKey={ownKey}
                                 setActiveTab={setActiveTab}
                             />
-                            <ProfileContent activeTab={activeTab} setActiveTab={setActiveTab} followers={followers} following={following} />
+                            <ProfileContent
+                                pubkey={nprofileData.pubkey}
+                                activeTab={activeTab}
+                                setActiveTab={setActiveTab}
+                                followers={followers}
+                                following={following}
+                            />
                         </>
                     ) : (
                         <Center h={100}>

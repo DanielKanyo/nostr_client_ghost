@@ -17,7 +17,7 @@ import { useAppSelector } from "../../Store/hook";
 import ProfileActions from "./ProfileActions";
 
 interface ProfileHeaderProps {
-    publicKey: string;
+    pubkey: string;
     name: string | undefined;
     displayName: string | undefined;
     picture: string | undefined;
@@ -31,7 +31,7 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({
-    publicKey,
+    pubkey,
     name,
     displayName,
     about,
@@ -79,7 +79,7 @@ export default function ProfileHeader({
                     style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
                 />
             </BackgroundImage>
-            <ProfileActions ownKey={ownKey} publicKey={publicKey} website={website} />
+            <ProfileActions ownKey={ownKey} pubkey={pubkey} website={website} />
             <Group justify="space-between" px="lg" align="flex-end">
                 <Flex direction="column">
                     <Box w={300}>
@@ -111,7 +111,7 @@ export default function ProfileHeader({
                 </Flex>
             </Group>
             {about && (
-                <Text px="lg" pt="lg" fz={16}>
+                <Text px="lg" pt="lg" fz={16} lineClamp={4}>
                     {about}
                 </Text>
             )}

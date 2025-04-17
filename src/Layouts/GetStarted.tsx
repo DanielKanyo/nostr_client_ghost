@@ -19,10 +19,10 @@ export default function GetStarted() {
                         <Text size="md" mt="lg">
                             New to Nostr? Create your account now and join the future of social media. It's quick and easy!
                         </Text>
-                        <Button variant="filled" radius="md" color="violet" mt="lg" onClick={openSignUpModal}>
+                        <Button size="md" variant="filled" radius="md" color="violet" mt="lg" onClick={openSignUpModal}>
                             Create Account
                         </Button>
-                        <Button variant="light" radius="md" color="gray" mt="sm" onClick={openSignInModal}>
+                        <Button size="md" variant="light" radius="md" color="gray" mt="sm" onClick={openSignInModal}>
                             Login
                         </Button>
                     </Card>

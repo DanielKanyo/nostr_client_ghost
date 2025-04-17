@@ -2,11 +2,9 @@ import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent
 
 import { hexToBytes } from "@noble/hashes/utils";
 
+import { RELAYS } from "../Shared/utils";
 import { NProfile } from "../Types/nProfile";
 import { UserMetadata } from "../Types/userMetadata";
-
-// Common Nostr relays
-export const RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
 export const authenticateUser = async (privateKey: string): Promise<string> => {
     try {
