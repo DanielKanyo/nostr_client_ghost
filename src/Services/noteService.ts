@@ -1,5 +1,4 @@
-import { finalizeEvent, nip19, NostrEvent, SimplePool, UnsignedEvent } from "nostr-tools";
-import { NEvent } from "nostr-tools/nip19";
+import { nip19, NostrEvent, SimplePool } from "nostr-tools";
 
 import { NoteFilterOptions, RELAYS } from "../Shared/utils";
 
@@ -49,7 +48,7 @@ export const fetchNotes = async (
 };
 
 export const encodeNEvent = (id: string) => nip19.neventEncode({ id, relays: RELAYS });
-export const decodeNProfile = (nprofile: string): { id: string; relays?: string[] } => {
+export const decodeNEvent = (nprofile: string): { id: string; relays?: string[] } => {
     const decoded = nip19.decode(nprofile);
 
     if (decoded.type !== "nevent") {

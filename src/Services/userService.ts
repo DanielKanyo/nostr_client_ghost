@@ -1,9 +1,8 @@
-import { nip19, SimplePool, finalizeEvent, verifyEvent, type Event as NostrEvent, generateSecretKey, getPublicKey } from "nostr-tools";
+import { finalizeEvent, generateSecretKey, getPublicKey, nip19, SimplePool, verifyEvent, type Event as NostrEvent } from "nostr-tools";
 
 import { hexToBytes } from "@noble/hashes/utils";
 
 import { RELAYS } from "../Shared/utils";
-import { NProfile } from "../Types/nProfile";
 import { UserMetadata } from "../Types/userMetadata";
 
 export const authenticateUser = async (privateKey: string): Promise<string> => {
@@ -174,14 +173,23 @@ export const getFollowers = async (pool: SimplePool, pubkey: string): Promise<st
 };
 
 export const encodeNProfile = (pubkey: string): string => nip19.nprofileEncode({ pubkey, relays: RELAYS });
-export const decodeNProfile = (nprofile: string): NProfile => {
-    const decoded = nip19.decode(nprofile);
+export const decodeNProfileOrNPub = (key: string | undefined) => {
+    if (!key) return null;
 
-    if (decoded.type !== "nprofile") {
-        throw new Error("Invalid nprofile");
+    try {
+        const decoded = nip19.decode(key);
+
+        if (decoded.type === "npub") {
+            return { pubkey: decoded.data, relays: [] }; // npub only provides pubkey
+        } else if (decoded.type === "nprofile") {
+            return { pubkey: decoded.data.pubkey, relays: decoded.data.relays || [] };
+        }
+
+        return null; // Invalid type
+    } catch (error) {
+        console.error("Failed to decode key:", error);
+        return null;
     }
-
-    return decoded.data;
 };
 export const encodeNPub = (pubkey: string): string => nip19.npubEncode(pubkey);
 

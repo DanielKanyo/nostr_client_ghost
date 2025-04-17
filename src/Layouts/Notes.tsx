@@ -19,7 +19,7 @@ interface NotesProps {
 }
 
 export default function Notes({ pubkeys, filterOptions }: NotesProps) {
-    const { nprofile } = useParams<{ nprofile: string }>();
+    const { key } = useParams<{ key: string }>();
     const [notes, setNotes] = useState<NostrEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [until, setUntil] = useState<number | undefined>(undefined);
@@ -29,7 +29,7 @@ export default function Notes({ pubkeys, filterOptions }: NotesProps) {
     useEffect(() => {
         setNotes([]);
         setUntil(undefined);
-    }, [nprofile]);
+    }, [key]);
 
     const loadNotes = async (reset: boolean = false) => {
         setLoading(true);
@@ -58,7 +58,7 @@ export default function Notes({ pubkeys, filterOptions }: NotesProps) {
         if (pubkeys.length > 0) {
             loadNotes(true);
         }
-    }, [nprofile]);
+    }, [key]);
 
     return (
         <>

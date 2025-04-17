@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
 import {
-    ActionIcon,
     Avatar,
     Card,
     Container,
@@ -19,13 +18,13 @@ import {
     useMantineTheme,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import { IconBlockquote, IconDots, IconGridGoldenratio, IconKey, IconLink } from "@tabler/icons-react";
 
 import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNEvent } from "../../Services/noteService";
 import { encodeNProfile } from "../../Services/userService";
 import { extractImageUrls } from "../../Shared/utils";
 import { UserMetadata } from "../../Types/userMetadata";
+import NoteActionMore from "./NoteActionMore";
 import NoteActions from "./NoteActions";
 import NoteHeader from "./NoteHeader";
 
@@ -35,19 +34,23 @@ interface NoteItemProps {
 }
 
 const replaceNostrTags = (content: string, replaceWithString: string = "user"): JSX.Element[] => {
-    // TODO: provide valid replaceWithString
-    const nostrRegex = /nostr:nprofile[0-9a-z]+/g;
-    const parts = content.split(nostrRegex);
-    const matches = content.match(nostrRegex) || [];
+    const nostrTagRegex = /nostr:(nprofile[0-9a-z]+|npub1[0-9a-z]+)/g;
+    const parts = content.split(nostrTagRegex);
+    const matches = content.match(nostrTagRegex) || [];
 
-    // Map through the parts and intersperse with Link components
     const elements: JSX.Element[] = [];
 
-    parts.forEach((part, index) => {
-        elements.push(<span key={`part-${index}`}>{part}</span>);
+    let matchIndex = 0;
 
-        if (matches[index]) {
-            const to = `${PROFILE_ROUTE_BASE}/${matches[index].replace("nostr:", "")}`;
+    parts.forEach((part, index) => {
+        if (index % 2 === 0) {
+            // Even index: plain text
+            elements.push(<span key={`part-${index}`}>{part}</span>);
+        } else {
+            // Odd index: matched tag
+            const match = matches[matchIndex++] || "";
+            const nostrId = match.replace("nostr:", "");
+            const to = `${PROFILE_ROUTE_BASE}/${nostrId}`;
 
             elements.push(
                 <Link key={`link-${index}`} to={to}>
@@ -137,30 +140,7 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
                                 )}
                             </Stack>
 
-                            <Menu shadow="md" position="bottom-end" radius="md">
-                                <Menu.Target>
-                                    <ActionIcon
-                                        aria-label="dots"
-                                        variant="subtle"
-                                        size={28}
-                                        color="gray"
-                                        radius="xl"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <IconDots size={18} color="gray" />
-                                    </ActionIcon>
-                                </Menu.Target>
-
-                                {/* TODO */}
-                                <Menu.Dropdown>
-                                    <Menu.Label>Note</Menu.Label>
-                                    <Menu.Item leftSection={<IconLink size={14} />}>Copy Note Link</Menu.Item>
-                                    <Menu.Item leftSection={<IconBlockquote size={14} />}>Copy Note Text</Menu.Item>
-                                    <Menu.Item leftSection={<IconGridGoldenratio size={14} />}>Copy Note Id</Menu.Item>
-                                    <Menu.Label>User</Menu.Label>
-                                    <Menu.Item leftSection={<IconKey size={14} />}>Copy User Public Key</Menu.Item>
-                                </Menu.Dropdown>
-                            </Menu>
+                            <NoteActionMore />
                         </Flex>
                         <NoteActions handleActionIconClick={handleActionIconClick} />
                     </Container>

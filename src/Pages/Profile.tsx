@@ -12,13 +12,13 @@ import ProfileContent from "../Layouts/Profile/ProfileContent";
 import ProfileHeader from "../Layouts/Profile/ProfileHeader";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
-import { closePool, decodeNProfile, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
+import { closePool, decodeNProfileOrNPub, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { PROFILE_CONTENT_TABS } from "../Shared/utils";
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
 
 export default function Profile() {
-    const { nprofile } = useParams<{ nprofile: string }>();
+    const { key } = useParams<{ key: string }>();
     const storedUser = useAppSelector((state) => state.user);
     const [profile, setProfile] = useState<UserMetadata | null>(null);
     const [following, setFollowing] = useState<string[]>([]);
@@ -27,7 +27,7 @@ export default function Profile() {
     const [error, setError] = useState<string>("");
     const [activeTab, setActiveTab] = useState<string | null>(PROFILE_CONTENT_TABS.NOTES);
 
-    const nprofileData = useMemo(() => decodeNProfile(nprofile!), [nprofile]);
+    const nprofileData = useMemo(() => decodeNProfileOrNPub(key!), [key]);
 
     // Reset states on nprofile change
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function Profile() {
         setOwnKey(false);
         setActiveTab(PROFILE_CONTENT_TABS.NOTES);
         setError("");
-    }, [nprofile]);
+    }, [key]);
 
     useEffect(() => {
         // TODO: Check what happens when the user opens /profile without nprofile in the url
@@ -89,7 +89,7 @@ export default function Profile() {
                     {profile ? (
                         <>
                             <ProfileHeader
-                                pubkey={nprofileData.pubkey}
+                                pubkey={nprofileData!.pubkey}
                                 name={profile.name}
                                 displayName={profile.display_name}
                                 about={profile.about}
@@ -102,7 +102,7 @@ export default function Profile() {
                                 setActiveTab={setActiveTab}
                             />
                             <ProfileContent
-                                pubkey={nprofileData.pubkey}
+                                pubkey={nprofileData!.pubkey}
                                 activeTab={activeTab}
                                 setActiveTab={setActiveTab}
                                 followers={followers}

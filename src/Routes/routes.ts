@@ -7,7 +7,7 @@ export const ROUTES = {
     MESSAGES: "/messages",
     BOOKMARKS: "/bookmarks",
     SETTINGS: "/settings",
-    PROFILE: `${PROFILE_ROUTE_BASE}/:nprofile`,
+    PROFILE: `${PROFILE_ROUTE_BASE}/:key`,
     SETTINGS_KEY_MANAGEMENT: "/settings/key-management",
     SETTINGS_APPEARANCE: "/settings/appearance",
     SETTINGS_PROFILE: "/settings/profile",
