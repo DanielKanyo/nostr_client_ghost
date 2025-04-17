@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 
 import { NostrEvent } from "nostr-tools";
 
-import { Avatar, Container, Divider, Flex, Group, Image, Stack, Text, TypographyStylesProvider } from "@mantine/core";
+import { ActionIcon, Avatar, Card, Container, Divider, Flex, Group, Image, Stack, Text, TypographyStylesProvider } from "@mantine/core";
+import { IconDots } from "@tabler/icons-react";
 
 import { PROFILE_ROUTE_BASE } from "../Routes/routes";
-import { extractImageUrls } from "../Shared/utils";
+import { extractImageUrls, formatTimestamp } from "../Shared/utils";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface NoteItemProps {
@@ -43,10 +44,6 @@ export const replaceNostrTags = (content: string, replaceWithString: string = "u
 export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
     const { text, images } = extractImageUrls(note.content);
 
-    const formatDate = (timestamp: number) => {
-        return new Date(timestamp * 1000).toLocaleString();
-    };
-
     const userMetadata = useMemo(() => usersMetadata.find((u) => u.pubkey === note.pubkey), [usersMetadata, note.pubkey]);
 
     console.log(userMetadata);
@@ -58,18 +55,22 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
             <Container p="md">
                 <Flex>
                     <Avatar src={userMetadata?.picture} radius={45} size={45} />
-                    <Container w="100%" pr={0}>
-                        <Group justify="space-between" mb="xs">
-                            <Group>
-                                <Flex direction="column" align="flex-start" justify="center">
-                                    <Text ta="left" size="md" fw={700}>
-                                        {displayName}
-                                    </Text>
-                                </Flex>
+                    <Stack w="100%" gap="sm" pl="md">
+                        <Group justify="space-between">
+                            <Group gap={5}>
+                                <Text size="md" fw={700}>
+                                    {displayName}
+                                </Text>
+                                <Text c="dimmed" size="lg">
+                                    ·
+                                </Text>
+                                <Text c="dimmed" size="md">
+                                    {formatTimestamp(note.created_at * 1000)}
+                                </Text>
                             </Group>
-                            <Text c="dimmed" size="xs">
-                                {formatDate(note.created_at)}
-                            </Text>
+                            <ActionIcon aria-label="dots" variant="subtle" size={28} color="gray" radius="xl">
+                                <IconDots size={18} />
+                            </ActionIcon>
                         </Group>
                         <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
                             <TypographyStylesProvider>
@@ -77,21 +78,12 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
                             </TypographyStylesProvider>
                         </Text>
                         {images.length > 0 && (
-                            <Stack gap="sm">
-                                {images.map((image, index) => (
-                                    <Image
-                                        key={index}
-                                        src={image}
-                                        alt={`Image ${index + 1} from note`}
-                                        radius="lg"
-                                        fit="contain"
-                                        style={{ maxHeight: 300, width: "100%", objectFit: "contain" }}
-                                        fallbackSrc="https://via.placeholder.com/300x200?text=Image+Not+Found"
-                                    />
-                                ))}
-                            </Stack>
+                            <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
+                                <Image src={images[0]} alt="note-image" style={{ width: "100%" }} />
+                            </Card>
                         )}
-                    </Container>
+                        <Group justify="space-between">footer</Group>
+                    </Stack>
                 </Flex>
             </Container>
             <Divider />

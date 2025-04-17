@@ -40,3 +40,27 @@ export enum NoteFilterOptions {
     Replies = "Replies",
     All = "All",
 }
+
+const MONTHS = ["jan.", "feb.", "mar.", "apr.", "may", "jun.", "jul.", "aug.", "sep.", "oct.", "nov.", "dec."];
+
+export const formatTimestamp = (timestamp: number): string => {
+    const now = new Date();
+    const date = new Date(timestamp);
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+    if (diffHours < 24) {
+        return `${diffHours}h`;
+    }
+
+    const isSameYear = now.getFullYear() === date.getFullYear();
+    const month = MONTHS[date.getMonth()];
+    const day = date.getDate();
+
+    if (isSameYear) {
+        return `${month} ${day}`;
+    } else {
+        const year = date.getFullYear();
+        return `${year}, ${month} ${day}`;
+    }
+};

@@ -11,6 +11,7 @@ import AppearanceSettings from "./Pages/Settings/AppearanceSettings";
 import KeyManagement from "./Pages/Settings/KeyManagement";
 import ProfileSettings from "./Pages/Settings/ProfileSettings";
 import { ROUTES } from "./Routes/routes";
+import "./Shared/Styles/global.css";
 import store from "./Store/store";
 
 export default function App() {
