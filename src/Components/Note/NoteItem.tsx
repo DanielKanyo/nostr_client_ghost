@@ -1,16 +1,14 @@
 import { JSX, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { NostrEvent } from "nostr-tools";
 
 import {
-    ActionIcon,
     Avatar,
     Card,
     Container,
     Divider,
     Flex,
-    Group,
     Image,
     Stack,
     Text,
@@ -19,11 +17,14 @@ import {
     useMantineTheme,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import { IconBolt, IconBookmark, IconDots, IconHeart, IconMessageCircle, IconRepeat } from "@tabler/icons-react";
 
-import { PROFILE_ROUTE_BASE } from "../Routes/routes";
-import { extractImageUrls, formatTimestamp } from "../Shared/utils";
-import { UserMetadata } from "../Types/userMetadata";
+import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
+import { encodeNEvent } from "../../Services/noteService";
+import { encodeNProfile } from "../../Services/userService";
+import { extractImageUrls } from "../../Shared/utils";
+import { UserMetadata } from "../../Types/userMetadata";
+import NoteActions from "./NoteActions";
+import NoteHeader from "./NoteHeader";
 
 interface NoteItemProps {
     note: NostrEvent;
@@ -61,6 +62,8 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
     const { hovered, ref } = useHover();
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
+    const nevent = encodeNEvent(note.id);
+    const navigate = useNavigate();
 
     const bgColor = useMemo(() => {
         return computedColorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[1];
@@ -72,28 +75,56 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
         return userMetadata?.display_name || userMetadata?.name || `${note.pubkey.slice(0, 8)}...`;
     }, [userMetadata, note.pubkey]);
 
+    const nprofile = useMemo(() => {
+        if (userMetadata) {
+            return encodeNProfile(userMetadata.pubkey);
+        }
+        return null;
+    }, [userMetadata]);
+
+    const handleContainerClick = (event: React.MouseEvent) => {
+        if (
+            event.target instanceof HTMLElement &&
+            (event.target.closest("a") || event.target.closest("button") || event.target.closest("[role='button']"))
+        ) {
+            return;
+        }
+        navigate(`${EVENT_ROUTE_BASE}/${nevent}`);
+    };
+
+    const handleAvatarClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        if (nprofile) {
+            navigate(`${PROFILE_ROUTE_BASE}/${nprofile}`);
+        }
+    };
+
+    const handleActionIconClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        // Add your ActionIcon logic here (e.g., bookmark, like)
+        console.log("Action btn clicked");
+    };
+
+    const handleMoreBtnClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        // Add your logic here
+        console.log("More btn clicked");
+    };
+
     return (
         <>
-            <Container p="md" ref={ref} style={{ backgroundColor: hovered ? bgColor : "transparent" }}>
+            <Container
+                px="md"
+                pt="md"
+                pb="xs"
+                ref={ref}
+                style={{ backgroundColor: hovered ? bgColor : "transparent", cursor: "pointer" }}
+                onClick={handleContainerClick}
+            >
                 <Flex>
-                    <Avatar src={userMetadata?.picture} radius={45} size={45} />
+                    <Avatar src={userMetadata?.picture} radius={45} size={45} onClick={handleAvatarClick} />
                     <Stack w="100%" gap="sm" pl="lg">
-                        <Group justify="space-between">
-                            <Group gap={5}>
-                                <Text size="md" fw={700}>
-                                    {displayName}
-                                </Text>
-                                <Text c="dimmed" size="lg">
-                                    ·
-                                </Text>
-                                <Text c="dimmed" size="md">
-                                    {formatTimestamp(note.created_at * 1000)}
-                                </Text>
-                            </Group>
-                            <ActionIcon aria-label="dots" variant="subtle" size={28} color="gray" radius="xl">
-                                <IconDots size={18} color="gray" />
-                            </ActionIcon>
-                        </Group>
+                        <NoteHeader displayName={displayName} createdAt={note.created_at} handleMoreBtnClick={handleMoreBtnClick} />
                         <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
                             <TypographyStylesProvider>
                                 <div>{replaceNostrTags(text)}</div>
@@ -104,23 +135,7 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
                                 <Image src={images[0]} alt="note-image" style={{ width: "100%" }} />
                             </Card>
                         )}
-                        <Group justify="space-between" ml={-7}>
-                            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl">
-                                <IconMessageCircle size={18} color="gray" />
-                            </ActionIcon>
-                            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl">
-                                <IconBolt size={18} color="gray" />
-                            </ActionIcon>
-                            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl">
-                                <IconHeart size={18} color="gray" />
-                            </ActionIcon>
-                            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl">
-                                <IconRepeat size={18} color="gray" />
-                            </ActionIcon>
-                            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl">
-                                <IconBookmark size={18} color="gray" />
-                            </ActionIcon>
-                        </Group>
+                        <NoteActions handleActionIconClick={handleActionIconClick} />
                     </Stack>
                 </Flex>
             </Container>

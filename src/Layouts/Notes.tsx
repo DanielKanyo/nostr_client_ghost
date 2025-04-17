@@ -7,7 +7,7 @@ import { Button, Center, Container, Loader } from "@mantine/core";
 import { IconDots, IconNoteOff } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
-import NoteItem from "../Components/NoteItem";
+import NoteItem from "../Components/Note/NoteItem";
 import { fetchNotes } from "../Services/noteService";
 import { fetchMultipleUserMetadata } from "../Services/userService";
 import { DEFAULT_NUM_OF_DISPLAYED_NOTES, NoteFilterOptions } from "../Shared/utils";

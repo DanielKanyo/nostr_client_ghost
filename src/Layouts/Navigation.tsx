@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useLocation, Link } from "react-router-dom";
 
 import { Avatar, Box, Button, Container, Flex, MantineColor, Text } from "@mantine/core";
-import { IconHome, IconSettings, IconBell, IconMail, IconGhost } from "@tabler/icons-react";
+import { IconHome, IconSettings, IconBell, IconMail, IconGhost, IconBookmark } from "@tabler/icons-react";
 
 import { PROFILE_ROUTE_BASE, ROUTES } from "../Routes/routes";
 import { encodeNProfile } from "../Services/userService";
@@ -12,6 +12,7 @@ const navItems = [
     { icon: IconHome, label: "Home", to: ROUTES.HOME },
     { icon: IconBell, label: "Notifications", to: ROUTES.NOTIFICATIONS },
     { icon: IconMail, label: "Messages", to: ROUTES.MESSAGES },
+    { icon: IconBookmark, label: "Bookmarks", to: ROUTES.BOOKMARKS },
     { icon: IconSettings, label: "Settings", to: ROUTES.SETTINGS },
 ];
 

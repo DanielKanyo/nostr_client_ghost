@@ -2,6 +2,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./Layouts/Layout";
+import Bookmarks from "./Pages/Bookmarks";
+import Event from "./Pages/Event";
 import Home from "./Pages/Home";
 import Messages from "./Pages/Messages";
 import Notifications from "./Pages/Notifications";
@@ -28,6 +30,8 @@ export default function App() {
                         <Route path={ROUTES.SETTINGS_APPEARANCE} element={<AppearanceSettings />} />
                         <Route path={ROUTES.SETTINGS_PROFILE} element={<ProfileSettings />} />
                         <Route path={ROUTES.PROFILE} element={<Profile />} />
+                        <Route path={ROUTES.BOOKMARKS} element={<Bookmarks />} />
+                        <Route path={ROUTES.EVENT} element={<Event />} />
                     </Route>
                 </Routes>
             </Provider>
