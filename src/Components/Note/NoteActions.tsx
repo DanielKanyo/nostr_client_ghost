@@ -7,7 +7,7 @@ interface NoteActionsProps {
 
 export default function NoteActions({ handleActionIconClick }: NoteActionsProps) {
     return (
-        <Group justify="space-between" ml={-7}>
+        <Group justify="space-between" pl="sm" mt="sm">
             <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
                 <IconMessageCircle size={18} color="gray" />
             </ActionIcon>

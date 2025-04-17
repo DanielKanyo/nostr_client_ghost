@@ -1,15 +1,17 @@
-import { JSX, useMemo } from "react";
+import { JSX, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { NostrEvent } from "nostr-tools";
 
 import {
+    ActionIcon,
     Avatar,
     Card,
     Container,
     Divider,
     Flex,
     Image,
+    Menu,
     Stack,
     Text,
     TypographyStylesProvider,
@@ -17,6 +19,7 @@ import {
     useMantineTheme,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
+import { IconBlockquote, IconDots, IconGridGoldenratio, IconKey, IconLink } from "@tabler/icons-react";
 
 import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNEvent } from "../../Services/noteService";
@@ -59,11 +62,12 @@ const replaceNostrTags = (content: string, replaceWithString: string = "user"): 
 
 export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
     const { text, images } = extractImageUrls(note.content);
-    const { hovered, ref } = useHover();
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
+    const [opened, setOpened] = useState(false);
     const nevent = encodeNEvent(note.id);
     const navigate = useNavigate();
+    const { hovered, ref } = useHover();
 
     const bgColor = useMemo(() => {
         return computedColorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[1];
@@ -105,12 +109,6 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
         console.log("Action btn clicked");
     };
 
-    const handleMoreBtnClick = (event: React.MouseEvent) => {
-        event.stopPropagation();
-        // Add your logic here
-        console.log("More btn clicked");
-    };
-
     return (
         <>
             <Container
@@ -123,23 +121,56 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
             >
                 <Flex>
                     <Avatar src={userMetadata?.picture} radius={45} size={45} onClick={handleAvatarClick} />
-                    <Stack w="100%" gap="sm" pl="lg">
-                        <NoteHeader displayName={displayName} createdAt={note.created_at} handleMoreBtnClick={handleMoreBtnClick} />
-                        <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
-                            <TypographyStylesProvider>
-                                <div>{replaceNostrTags(text)}</div>
-                            </TypographyStylesProvider>
-                        </Text>
-                        {images.length > 0 && (
-                            <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
-                                <Image src={images[0]} alt="note-image" style={{ width: "100%" }} />
-                            </Card>
-                        )}
+                    <Container w="100%" p={0}>
+                        <Flex>
+                            <Stack w="100%" gap="sm" pl="lg">
+                                <NoteHeader displayName={displayName} createdAt={note.created_at} />
+                                <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
+                                    <TypographyStylesProvider>
+                                        <div>{replaceNostrTags(text)}</div>
+                                    </TypographyStylesProvider>
+                                </Text>
+                                {images.length > 0 && (
+                                    <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
+                                        <Image src={images[0]} alt="note-image" style={{ width: "100%" }} />
+                                    </Card>
+                                )}
+                            </Stack>
+
+                            <Menu shadow="md" position="bottom-end" radius="md">
+                                <Menu.Target>
+                                    <ActionIcon
+                                        aria-label="dots"
+                                        variant="subtle"
+                                        size={28}
+                                        color="gray"
+                                        radius="xl"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <IconDots size={18} color="gray" />
+                                    </ActionIcon>
+                                </Menu.Target>
+
+                                {/* TODO */}
+                                <Menu.Dropdown>
+                                    <Menu.Label>Note</Menu.Label>
+                                    <Menu.Item leftSection={<IconLink size={14} />}>Copy Note Link</Menu.Item>
+                                    <Menu.Item leftSection={<IconBlockquote size={14} />}>Copy Note Text</Menu.Item>
+                                    <Menu.Item leftSection={<IconGridGoldenratio size={14} />}>Copy Note Id</Menu.Item>
+                                    <Menu.Label>User</Menu.Label>
+                                    <Menu.Item leftSection={<IconKey size={14} />}>Copy User Public Key</Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        </Flex>
                         <NoteActions handleActionIconClick={handleActionIconClick} />
-                    </Stack>
+                    </Container>
                 </Flex>
             </Container>
             <Divider />
+
+            <Menu opened={opened} onChange={setOpened}>
+                {/* Menu content */}
+            </Menu>
         </>
     );
 }
