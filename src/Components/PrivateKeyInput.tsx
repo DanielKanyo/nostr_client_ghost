@@ -1,4 +1,4 @@
-import { ActionIcon, CopyButton, Flex, MantineColor, PasswordInput, ThemeIcon, Tooltip } from "@mantine/core";
+import { ActionIcon, CopyButton, CSSProperties, Flex, PasswordInput, ThemeIcon, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoSquareRounded } from "@tabler/icons-react";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
@@ -9,7 +9,7 @@ interface PrivateKeyInput {
 }
 
 export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color, borderColor } = useAppSelector((state) => state.primaryColor);
 
     return (
         <PasswordInput
@@ -31,7 +31,7 @@ export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
                     <CopyButton value={privateKey} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
-                                <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
+                                <ActionIcon color={copied ? color : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
                                     {copied ? <IconCheck size={17} /> : <IconCopy size={17} />}
                                 </ActionIcon>
                             </Tooltip>
@@ -43,6 +43,7 @@ export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
             readOnly
             classNames={containedInputClasses}
             size="md"
+            style={{ "--input-border-color-focus": borderColor } as CSSProperties}
         />
     );
 }

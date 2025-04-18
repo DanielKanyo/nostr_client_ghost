@@ -5,7 +5,6 @@ import {
     Button,
     Flex,
     Group,
-    MantineColor,
     NumberFormatter,
     Text,
     useComputedColorScheme,
@@ -45,7 +44,7 @@ export default function ProfileHeader({
 }: ProfileHeaderProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
 
     const countStyle = { fontSize: 14, fontWeight: 700 };
     const buttonProps = {
@@ -62,7 +61,7 @@ export default function ProfileHeader({
                 h={200}
                 pos="relative"
                 style={{
-                    backgroundColor: theme.colors[primaryColor][6],
+                    backgroundColor: theme.colors[color][6],
                     borderBottomLeftRadius: 30,
                     borderBottomRightRadius: 30,
                 }}
@@ -73,7 +72,7 @@ export default function ProfileHeader({
                     radius={160}
                     pos="absolute"
                     bottom={-65}
-                    color={primaryColor}
+                    color={color}
                     variant="filled"
                     left={80}
                     style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}

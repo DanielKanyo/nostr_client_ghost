@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Avatar, Box, Divider, Flex, Group, MantineColor, Text, useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import { Avatar, Box, Divider, Flex, Group, Text, useComputedColorScheme, useMantineTheme } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 
 import { PROFILE_ROUTE_BASE } from "../Routes/routes";
@@ -19,7 +19,7 @@ interface UserItemProps {
 export default function UserItem({ pubkey, name, picture, displayName }: UserItemProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
     const loggedInUser = useAppSelector((state) => state.user);
     const { hovered, ref } = useHover();
     const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function UserItem({ pubkey, name, picture, displayName }: UserIte
                         </Box>
                     </Flex>
                 </Group>
-                <FollowOrUnfollowBtn loggedInUser={loggedInUser} pubkey={pubkey} color={primaryColor} />
+                <FollowOrUnfollowBtn loggedInUser={loggedInUser} pubkey={pubkey} color={color} />
             </Flex>
             <Divider />
         </>

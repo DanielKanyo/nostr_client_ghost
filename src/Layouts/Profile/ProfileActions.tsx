@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import { Group, ActionIcon, Center, Modal, Tooltip, MantineColor } from "@mantine/core";
+import { ActionIcon, Center, Group, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconQrcode, IconMail, IconUserEdit, IconWorldWww } from "@tabler/icons-react";
+import { IconDots, IconMail, IconQrcode, IconUserEdit, IconWorldWww } from "@tabler/icons-react";
 
 import FollowOrUnfollowBtn from "../../Components/FollowOrUnfollowBtn";
 import PublicKeyInput from "../../Components/PublicKeyInput";
@@ -22,7 +22,7 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
     const [qrModalOpened, { open: openQrModal, close: closeQrModal }] = useDisclosure(false);
     const npub = useMemo(() => encodeNPub(pubkey), [pubkey]);
     const user = useAppSelector((state) => state.user);
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
 
     const iconProps = {
         variant: "light" as const,
@@ -69,7 +69,7 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
                         </Tooltip>
                     </>
                 ) : (
-                    <FollowOrUnfollowBtn loggedInUser={user} pubkey={pubkey} color={primaryColor} />
+                    <FollowOrUnfollowBtn loggedInUser={user} pubkey={pubkey} color={color} />
                 )}
             </Group>
 

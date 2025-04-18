@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { Alert, Button, Container, Group, MantineColor } from "@mantine/core";
+import { Alert, Button, Container, Group } from "@mantine/core";
 import { IconInfoCircle, IconLogout2 } from "@tabler/icons-react";
 
 import PageTitle from "../../Components/PageTitle";
@@ -19,7 +19,7 @@ import { useAppSelector } from "../../Store/hook";
 
 export default function KeyManagement() {
     const user = useAppSelector((state) => state.user);
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
     const privateKey = user.privateKey;
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -40,13 +40,13 @@ export default function KeyManagement() {
                 <PageTitle title="Key Management" withBackBtn />
                 <ScrollContainer>
                     <Container mx={0} px="lg" mt="lg">
-                        <Alert variant="light" color={primaryColor} radius="md" icon={<IconInfoCircle />} mt="lg">
+                        <Alert variant="light" color={color} radius="md" icon={<IconInfoCircle />} mt="lg">
                             You can improve your account security by installing a Nostr browser extension, like{" "}
                             <a
                                 href="https://getalby.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: `var(--mantine-color-${primaryColor}-3)` }}
+                                style={{ color: `var(--mantine-color-${color}-3)` }}
                             >
                                 Alby
                             </a>

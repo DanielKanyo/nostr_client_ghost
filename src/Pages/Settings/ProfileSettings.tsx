@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { SimplePool } from "nostr-tools";
 
-import { Alert, Button, Container, Group, MantineColor } from "@mantine/core";
+import { Alert, Button, Container, Group } from "@mantine/core";
 import { IconExclamationCircle, IconPencilCheck } from "@tabler/icons-react";
 
 import AccountForm from "../../Components/AccountForm";
@@ -20,7 +20,7 @@ import { UserMetadata } from "../../Types/userMetadata";
 
 export default function ProfileSettings() {
     const user = useAppSelector((state) => state.user);
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
     const [name, setName] = useState<string | undefined>(user?.profile?.name);
     const [displayName, setDisplayName] = useState<string | undefined>(user?.profile?.display_name);
     const [website, setWebsite] = useState<string | undefined>(user?.profile?.website);
@@ -111,7 +111,7 @@ export default function ProfileSettings() {
                         <Group my="lg" justify="flex-end">
                             <Button
                                 variant="filled"
-                                color={primaryColor}
+                                color={color}
                                 radius="xl"
                                 leftSection={<IconPencilCheck size={21} />}
                                 disabled={!displayName || !name || loading}

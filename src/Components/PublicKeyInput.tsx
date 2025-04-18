@@ -1,4 +1,4 @@
-import { ActionIcon, CopyButton, Flex, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
+import { ActionIcon, CopyButton, CSSProperties, Flex, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
 import { IconCheck, IconCopy, IconInfoSquareRounded } from "@tabler/icons-react";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
@@ -10,7 +10,7 @@ interface PublicKeyInputProps {
 }
 
 export default function PublicKeyInput({ pubkey, withLabels }: PublicKeyInputProps) {
-    const primaryColor = useAppSelector((state) => state.primaryColor);
+    const { color, borderColor } = useAppSelector((state) => state.primaryColor);
 
     return (
         <TextInput
@@ -34,7 +34,7 @@ export default function PublicKeyInput({ pubkey, withLabels }: PublicKeyInputPro
                     <CopyButton value={pubkey} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
-                                <ActionIcon color={copied ? primaryColor : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
+                                <ActionIcon color={copied ? color : "gray"} variant="light" radius="md" onClick={copy} mr={10}>
                                     {copied ? <IconCheck size={17} /> : <IconCopy size={17} />}
                                 </ActionIcon>
                             </Tooltip>
@@ -46,6 +46,7 @@ export default function PublicKeyInput({ pubkey, withLabels }: PublicKeyInputPro
             readOnly
             classNames={containedInputClasses}
             size="md"
+            style={{ "--input-border-color-focus": borderColor } as CSSProperties}
         />
     );
 }

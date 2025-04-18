@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { Box, Flex } from "@mantine/core";
+import { Box, Flex, useMantineTheme } from "@mantine/core";
 
 import PageLoader from "../Components/PageLoader";
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
@@ -17,12 +17,13 @@ import Navigation from "./Navigation";
 export default function Layout() {
     const user = useAppSelector((state) => state.user);
     const dispatch = useDispatch();
+    const theme = useMantineTheme();
 
     useEffect(() => {
         const primaryColor = localStorage.getItem("nostrPrimaryColor");
 
         if (primaryColor) {
-            dispatch(updatePrimaryColor(primaryColor));
+            dispatch(updatePrimaryColor({ color: primaryColor, borderColor: theme.colors[primaryColor]?.[5] || primaryColor }));
         }
     }, [dispatch]);
 

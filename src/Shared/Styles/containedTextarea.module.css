@@ -7,6 +7,10 @@
     background-color: transparent;
 }
 
+.input:focus {
+    border-color: var(--input-border-color-focus);
+}
+
 .label {
     position: absolute;
     pointer-events: none;

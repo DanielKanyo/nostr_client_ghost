@@ -9,9 +9,21 @@
     background-color: transparent;
 }
 
+.input:focus {
+    border-color: var(--input-border-color-focus);
+}
+
+.input:focus-within {
+    border-color: var(--input-border-color-focus);
+}
+
 .innerInput {
     padding-top: 20px;
     padding-right: 48px;
+}
+
+.innerInput:focus {
+    border-color: var(--input-border-color-focus);
 }
 
 .label {

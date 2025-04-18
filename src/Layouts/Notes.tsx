@@ -21,9 +21,7 @@ export default function Notes({ notes, usersMetadata, loading, loadNotes }: Note
         <>
             {!hasNotes && !loading && <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />}
 
-            {hasNotes && notes.map((note: NostrEvent) => (
-                <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} />
-            ))}
+            {hasNotes && notes.map((note: NostrEvent) => <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} />)}
             {loading && (
                 <Center>
                     <Loader size={36} my="md" color="var(--mantine-color-dark-0)" type="dots" />

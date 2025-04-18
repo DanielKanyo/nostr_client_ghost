@@ -1,7 +1,8 @@
-import { Group, Textarea, TextInput, Stack } from "@mantine/core";
+import { Group, Textarea, TextInput, Stack, CSSProperties } from "@mantine/core";
 
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
 import containedTextareaClasses from "../Shared/Styles/containedTextarea.module.css";
+import { useAppSelector } from "../Store/hook";
 
 interface AccountFormProps {
     name: string;
@@ -32,6 +33,8 @@ export default function AccountForm({
     setWebsite,
     setAbout,
 }: AccountFormProps) {
+    const { borderColor } = useAppSelector((state) => state.primaryColor);
+
     const sharedProps = {
         radius: "md" as const,
         classNames: containedInputClasses,
@@ -48,6 +51,7 @@ export default function AccountForm({
                     placeholder="e.g., satoshi123"
                     withAsterisk
                     {...sharedProps}
+                    style={{ "--input-border-color-focus": borderColor } as CSSProperties}
                 />
 
                 <TextInput
@@ -57,6 +61,7 @@ export default function AccountForm({
                     placeholder="e.g., Satoshi Nakamoto"
                     withAsterisk
                     {...sharedProps}
+                    style={{ "--input-border-color-focus": borderColor } as CSSProperties}
                 />
             </Group>
 
@@ -66,6 +71,7 @@ export default function AccountForm({
                 onChange={(e) => setPicture(e.currentTarget.value)}
                 placeholder="https://example.com/pfp.png"
                 {...sharedProps}
+                style={{ "--input-border-color-focus": borderColor } as CSSProperties}
             />
 
             <TextInput
@@ -74,6 +80,7 @@ export default function AccountForm({
                 onChange={(e) => setBanner(e.currentTarget.value)}
                 placeholder="https://example.com/banner.png"
                 {...sharedProps}
+                style={{ "--input-border-color-focus": borderColor } as CSSProperties}
             />
 
             <TextInput
@@ -82,6 +89,7 @@ export default function AccountForm({
                 onChange={(e) => setWebsite(e.currentTarget.value)}
                 placeholder="https://yourwebsite.com"
                 {...sharedProps}
+                style={{ "--input-border-color-focus": borderColor } as CSSProperties}
             />
 
             <Textarea
@@ -94,6 +102,7 @@ export default function AccountForm({
                 radius="md"
                 size="md"
                 classNames={containedTextareaClasses}
+                style={{ "--input-border-color-focus": borderColor } as CSSProperties}
             />
         </Stack>
     );

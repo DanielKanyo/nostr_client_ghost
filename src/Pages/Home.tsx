@@ -5,7 +5,7 @@ import isEqual from "lodash/isEqual";
 import { SimplePool } from "nostr-tools";
 
 import Content from "../Layouts/Content";
-import CreateNote from "../Layouts/CreateNote";
+import CreateNote from "../Layouts/CreateNote/CreateNote";
 import MainContainer from "../Layouts/MainContainer";
 import Notes from "../Layouts/Notes";
 import ScrollContainer from "../Layouts/ScrollContainer";
@@ -29,6 +29,7 @@ export default function Home() {
         const pool = new SimplePool();
 
         try {
+            // TODO: Include logged in user public key
             const newNotes = await fetchNotes(pool, user.following, limit, NoteFilterOptions.Notes, reset ? undefined : until);
 
             if (newNotes.length > 0) {

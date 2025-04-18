@@ -11,6 +11,7 @@ import {
     Tooltip,
     useComputedColorScheme,
     useMantineColorScheme,
+    useMantineTheme,
 } from "@mantine/core";
 import { IconMoon, IconSun } from "@tabler/icons-react";
 
@@ -62,14 +63,16 @@ const colors: Color[] = [
 ];
 
 export default function AppearanceSettings() {
-    const primaryColor = useAppSelector((state) => state.primaryColor);
+    const { color } = useAppSelector((state) => state.primaryColor);
     const { setColorScheme } = useMantineColorScheme({ keepTransitions: true });
     const computedColorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
     const dispatch = useDispatch();
+    const theme = useMantineTheme();
 
     const handlePrimaryColorChange = (colorId: string) => {
         localStorage.setItem("nostrPrimaryColor", colorId);
-        dispatch(updatePrimaryColor(colorId));
+
+        dispatch(updatePrimaryColor({ color: colorId, borderColor: theme.colors[colorId]?.[5] }));
     };
 
     return (
@@ -82,7 +85,7 @@ export default function AppearanceSettings() {
                         <Tooltip label="Toggle Color Scheme" radius="md" withArrow>
                             <Switch
                                 size="xl"
-                                color={primaryColor}
+                                color={color}
                                 onLabel={<IconSun size={22} />}
                                 offLabel={<IconMoon size={22} />}
                                 onClick={() => setColorScheme(computedColorScheme === "light" ? "dark" : "light")}
@@ -106,7 +109,7 @@ export default function AppearanceSettings() {
                                     onClick={() => handlePrimaryColorChange(c.id)}
                                     style={{ color: "#fff", cursor: "pointer" }}
                                 >
-                                    {primaryColor === c.id && <CheckIcon size={12} />}
+                                    {color === c.id && <CheckIcon size={12} />}
                                 </ColorSwatch>
                             ))}
                         </Flex>

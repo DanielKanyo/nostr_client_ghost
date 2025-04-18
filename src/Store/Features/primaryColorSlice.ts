@@ -1,10 +1,21 @@
+import { MantineColor } from "@mantine/core";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
+type PrimaryColorState = {
+    color: MantineColor;
+    borderColor: MantineColor;
+};
+
+const initValue = {
+    color: "violet",
+    borderColor: "violet",
+};
 
 export const primaryColorSlice = createSlice({
     name: "user",
-    initialState: "violet",
+    initialState: initValue,
     reducers: {
-        updatePrimaryColor: (_state, action: PayloadAction<string>) => {
+        updatePrimaryColor: (_state, action: PayloadAction<PrimaryColorState>) => {
             return action.payload;
         },
     },

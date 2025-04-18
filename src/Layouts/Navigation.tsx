@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-import { Avatar, Box, Button, Container, Flex, MantineColor, Text } from "@mantine/core";
-import { IconHome, IconSettings, IconBell, IconMail, IconGhost, IconBookmark } from "@tabler/icons-react";
+import { Avatar, Box, Button, Container, Flex, Text } from "@mantine/core";
+import { IconBell, IconBookmark, IconGhost, IconHome, IconMail, IconSettings } from "@tabler/icons-react";
 
 import { PROFILE_ROUTE_BASE, ROUTES } from "../Routes/routes";
 import { encodeNProfile } from "../Services/userService";
@@ -18,7 +18,7 @@ const navItems = [
 
 export default function Navigation() {
     const user = useAppSelector((state) => state.user);
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
     const location = useLocation();
 
     const nprofile = useMemo(() => encodeNProfile(user.publicKey), [user.publicKey]);
@@ -36,7 +36,7 @@ export default function Navigation() {
             component={Link}
             to={item.to}
             variant={activeRoute === item.to ? "filled" : "subtle"}
-            color={activeRoute === item.to ? primaryColor : "gray"}
+            color={activeRoute === item.to ? color : "gray"}
             radius="xl"
             leftSection={<item.icon size={25} style={{ marginRight: 6 }} />}
             mb="xs"

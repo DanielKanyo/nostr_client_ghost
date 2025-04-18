@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { NostrEvent, SimplePool } from "nostr-tools";
 
-import { MantineColor, Tabs } from "@mantine/core";
+import { Tabs } from "@mantine/core";
 
 import { fetchNotes } from "../../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
@@ -30,7 +30,7 @@ export default function ProfileContent({
     followers,
     following,
 }: ProfileContentProps) {
-    const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
+    const { color } = useAppSelector((state) => state.primaryColor);
     const [notes, setNotes] = useState<NostrEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
@@ -71,7 +71,7 @@ export default function ProfileContent({
         <Tabs
             radius="md"
             defaultValue={PROFILE_CONTENT_TABS.NOTES}
-            color={primaryColor}
+            color={color}
             classNames={classes}
             mt="lg"
             value={activeTab}
