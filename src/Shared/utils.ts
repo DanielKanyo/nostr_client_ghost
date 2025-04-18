@@ -64,3 +64,5 @@ export const formatTimestamp = (timestamp: number): string => {
         return `${year}, ${month} ${day}`;
     }
 };
+
+export const SCROLL_POS_DEBOUNCE_TIME = 350;

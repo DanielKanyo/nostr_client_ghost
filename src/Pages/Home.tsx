@@ -19,9 +19,9 @@ import { useAppSelector } from "../Store/hook";
 export default function Home() {
     const user = useAppSelector((state) => state.user);
     const { notes, usersMetadata, until, loading } = useAppSelector((state) => state.noteData);
-    const dispatch = useDispatch();
     const previousFollowing = useRef(user.following);
     const limit = DEFAULT_NUM_OF_DISPLAYED_NOTES;
+    const dispatch = useDispatch();
 
     const loadNotes = async (reset: boolean = false) => {
         dispatch(setLoading(true));
