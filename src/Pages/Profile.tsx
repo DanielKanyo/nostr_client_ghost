@@ -13,7 +13,7 @@ import ProfileHeader from "../Layouts/Profile/ProfileHeader";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
 import { closePool, decodeNProfileOrNPub, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
-import { PROFILE_CONTENT_TABS } from "../Shared/utils";
+import { NoteFilterOptions, PROFILE_CONTENT_TABS } from "../Shared/utils";
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
 
@@ -26,6 +26,7 @@ export default function Profile() {
     const [ownKey, setOwnKey] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [activeTab, setActiveTab] = useState<string | null>(PROFILE_CONTENT_TABS.NOTES);
+    const [filterOption, setFilterOption] = useState<NoteFilterOptions>(NoteFilterOptions.Notes);
 
     const nprofileData = useMemo(() => decodeNProfileOrNPub(key!), [key]);
 
@@ -35,7 +36,7 @@ export default function Profile() {
         setFollowers([]);
         setFollowers([]);
         setOwnKey(false);
-        setActiveTab(PROFILE_CONTENT_TABS.NOTES);
+        handleActiveTabChange(PROFILE_CONTENT_TABS.NOTES);
         setError("");
     }, [key]);
 
@@ -82,6 +83,22 @@ export default function Profile() {
         fetchProfile();
     }, [nprofileData, storedUser.publicKey, storedUser.following]);
 
+    const handleActiveTabChange = (tab: PROFILE_CONTENT_TABS) => {
+        switch (tab) {
+            case PROFILE_CONTENT_TABS.NOTES:
+                setFilterOption(NoteFilterOptions.Notes);
+                break;
+            case PROFILE_CONTENT_TABS.REPLIES:
+                setFilterOption(NoteFilterOptions.Replies);
+                break;
+            default:
+                setFilterOption(NoteFilterOptions.Notes);
+                break;
+        }
+
+        setActiveTab(tab);
+    };
+
     return (
         <Content>
             <MainContainer width={680}>
@@ -99,14 +116,15 @@ export default function Profile() {
                                 followers={followers}
                                 following={following}
                                 ownKey={ownKey}
-                                setActiveTab={setActiveTab}
+                                handleActiveTabChange={handleActiveTabChange}
                             />
                             <ProfileContent
                                 pubkey={nprofileData!.pubkey}
                                 activeTab={activeTab}
-                                setActiveTab={setActiveTab}
                                 followers={followers}
                                 following={following}
+                                filterOption={filterOption}
+                                handleActiveTabChange={handleActiveTabChange}
                             />
                         </>
                     ) : (

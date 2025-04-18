@@ -6,6 +6,7 @@ import { Tooltip, ActionIcon } from "@mantine/core";
 import { IconUserMinus, IconUserPlus } from "@tabler/icons-react";
 
 import { updateFollowList, closePool } from "../Services/userService";
+import { resetNotes } from "../Store/Features/noteDataSlice";
 import { UserState, updateUserFollowing } from "../Store/Features/userSlice";
 import { useAppDispatch } from "../Store/hook";
 
@@ -27,6 +28,7 @@ export default function FollowOrUnfollowBtn({ loggedInUser, pubkey, color }: { l
 
             await updateFollowList(pool, loggedInUser.privateKey!, newFollowing);
 
+            dispatch(resetNotes());
             dispatch(updateUserFollowing(newFollowing));
         } catch (error) {
             console.error("Something went wrong...", error);

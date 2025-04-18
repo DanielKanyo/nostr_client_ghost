@@ -27,7 +27,7 @@ interface ProfileHeaderProps {
     followers: string[];
     following: string[];
     ownKey: boolean;
-    setActiveTab: (value: string | null) => void;
+    handleActiveTabChange: (value: PROFILE_CONTENT_TABS) => void;
 }
 
 export default function ProfileHeader({
@@ -41,7 +41,7 @@ export default function ProfileHeader({
     followers,
     following,
     ownKey,
-    setActiveTab,
+    handleActiveTabChange,
 }: ProfileHeaderProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
@@ -86,13 +86,13 @@ export default function ProfileHeader({
                         <Text ta="left" fz={26} truncate="end">
                             {displayName ?? "Undefined"}
                         </Text>
-                        <Text ta="left" c="dimmed" fz={18} lh={1} truncate="end">
+                        <Text ta="left" c="dimmed" fz={18} lh={1.2} truncate="end">
                             @{name ?? "Undefined"}
                         </Text>
                     </Box>
                 </Flex>
                 <Flex gap="xs">
-                    <Button {...buttonProps} onClick={() => setActiveTab(PROFILE_CONTENT_TABS.FOLLOWERS)}>
+                    <Button {...buttonProps} onClick={() => handleActiveTabChange(PROFILE_CONTENT_TABS.FOLLOWERS)}>
                         <Text style={countStyle}>
                             <NumberFormatter thousandSeparator value={followers.length} />{" "}
                         </Text>
@@ -100,7 +100,7 @@ export default function ProfileHeader({
                             Followers
                         </Text>
                     </Button>
-                    <Button {...buttonProps} onClick={() => setActiveTab(PROFILE_CONTENT_TABS.FOLLOWING)}>
+                    <Button {...buttonProps} onClick={() => handleActiveTabChange(PROFILE_CONTENT_TABS.FOLLOWING)}>
                         <Text style={countStyle}>
                             <NumberFormatter thousandSeparator value={following.length} />{" "}
                         </Text>

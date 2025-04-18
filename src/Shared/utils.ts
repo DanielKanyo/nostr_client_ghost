@@ -1,6 +1,6 @@
 export const HIDE_ALERT_TIMEOUT_IN_MS = 6000;
 export const DEFAULT_NUM_OF_DISPLAYED_USERS = 15;
-export const DEFAULT_NUM_OF_DISPLAYED_NOTES = 20;
+export const DEFAULT_NUM_OF_DISPLAYED_NOTES = 15;
 
 export enum PROFILE_CONTENT_TABS {
     NOTES = "notes",
@@ -36,7 +36,7 @@ export const extractImageUrls = (content: string): { text: string; images: strin
 };
 
 export enum NoteFilterOptions {
-    Posts = "Posts",
+    Notes = "Notes",
     Replies = "Replies",
     All = "All",
 }

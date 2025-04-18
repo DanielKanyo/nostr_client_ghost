@@ -25,7 +25,7 @@ export const fetchNotes = async (
         let filteredNotes: NostrEvent[];
 
         switch (filterOptions) {
-            case NoteFilterOptions.Posts:
+            case NoteFilterOptions.Notes:
                 // Exclude replies (notes with #e tags)
                 filteredNotes = notes.filter((note) => note.tags.every((tag) => tag[0] !== "e"));
                 break;

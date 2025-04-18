@@ -79,7 +79,7 @@ export default function Navigation() {
                         <Text ta="left" size="xl" truncate="end">
                             {user ? user?.profile?.display_name : "Undefined"}
                         </Text>
-                        <Text ta="left" c="dimmed" size="sm" lh={1} truncate="end">
+                        <Text ta="left" c="dimmed" size="sm" lh={1.2} truncate="end">
                             @{user ? user.profile?.name : "Undefined"}
                         </Text>
                     </Box>
