@@ -1,7 +1,23 @@
-import { Menu, ActionIcon } from "@mantine/core";
-import { IconDots, IconLink, IconBlockquote, IconGridGoldenratio, IconKey, IconUserCancel } from "@tabler/icons-react";
+import { useMemo } from "react";
 
-export default function NoteActionMore() {
+import { NostrEvent } from "nostr-tools";
+
+import { ActionIcon, CopyButton, Menu } from "@mantine/core";
+import { IconBlockquote, IconDots, IconKey, IconLink, IconUserCancel } from "@tabler/icons-react";
+
+import { EVENT_ROUTE_BASE } from "../../Routes/routes";
+import { encodeNPub } from "../../Services/userService";
+import { UserMetadata } from "../../Types/userMetadata";
+
+interface NoteActionMorePorps {
+    note: NostrEvent;
+    usersMetadata: UserMetadata | undefined;
+    nevent: string;
+}
+
+export default function NoteActionMore({ note, nevent }: NoteActionMorePorps) {
+    const npub = useMemo(() => encodeNPub(note.pubkey), [note.pubkey]);
+
     return (
         <Menu shadow="lg" position="bottom-end" radius="md">
             <Menu.Target>
@@ -9,23 +25,38 @@ export default function NoteActionMore() {
                     <IconDots size={18} color="gray" />
                 </ActionIcon>
             </Menu.Target>
-
-            {/* TODO */}
             <Menu.Dropdown>
                 <Menu.Label fz="sm">Note</Menu.Label>
-                <Menu.Item fz="md" leftSection={<IconLink size={18} />}>
-                    Copy Note Link
-                </Menu.Item>
-                <Menu.Item fz="md" leftSection={<IconBlockquote size={18} />}>
-                    Copy Note Text
-                </Menu.Item>
-                <Menu.Item fz="md" leftSection={<IconGridGoldenratio size={18} />}>
-                    Copy Note Id
-                </Menu.Item>
+                <CopyButton value={`${window.location.origin}${EVENT_ROUTE_BASE}/${nevent}`} timeout={2000}>
+                    {({ copy }) => (
+                        <Menu.Item fz="md" leftSection={<IconLink size={18} />} onClick={copy}>
+                            Copy Note Link
+                        </Menu.Item>
+                    )}
+                </CopyButton>
+                <CopyButton value={note.content} timeout={2000}>
+                    {({ copy }) => (
+                        <Menu.Item fz="md" leftSection={<IconBlockquote size={18} />} onClick={copy}>
+                            Copy Note Text
+                        </Menu.Item>
+                    )}
+                </CopyButton>
+                <CopyButton value={nevent} timeout={2000}>
+                    {({ copy }) => (
+                        <Menu.Item fz="md" leftSection={<IconLink size={18} />} onClick={copy}>
+                            Copy Note Id
+                        </Menu.Item>
+                    )}
+                </CopyButton>
                 <Menu.Label fz="sm">User</Menu.Label>
-                <Menu.Item fz="md" leftSection={<IconKey size={18} />}>
-                    Copy User Public Key
-                </Menu.Item>
+                <CopyButton value={npub} timeout={2000}>
+                    {({ copy }) => (
+                        <Menu.Item fz="md" leftSection={<IconKey size={18} />} onClick={copy}>
+                            Copy User Public Key
+                        </Menu.Item>
+                    )}
+                </CopyButton>
+                {/* TODO */}
                 <Menu.Item fz="md" leftSection={<IconUserCancel size={18} />} color="red">
                     Mute User
                 </Menu.Item>

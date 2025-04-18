@@ -1,4 +1,4 @@
-import { JSX, useMemo, useState } from "react";
+import { JSX, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { NostrEvent } from "nostr-tools";
@@ -10,7 +10,6 @@ import {
     Divider,
     Flex,
     Image,
-    Menu,
     Stack,
     Text,
     TypographyStylesProvider,
@@ -22,11 +21,12 @@ import { useHover } from "@mantine/hooks";
 import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNEvent } from "../../Services/noteService";
 import { encodeNProfile } from "../../Services/userService";
-import { extractImageUrls } from "../../Shared/utils";
+import { extractImageUrls, extractVideoUrls } from "../../Shared/utils";
 import { UserMetadata } from "../../Types/userMetadata";
 import NoteActionMore from "./NoteActionMore";
 import NoteActions from "./NoteActions";
 import NoteHeader from "./NoteHeader";
+import VideoRenderer from "./VideoRenderer";
 
 interface NoteItemProps {
     note: NostrEvent;
@@ -64,13 +64,14 @@ const replaceNostrTags = (content: string, replaceWithString: string = "user"): 
 };
 
 export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
-    const { text, images } = extractImageUrls(note.content);
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
-    const [opened, setOpened] = useState(false);
     const nevent = encodeNEvent(note.id);
     const navigate = useNavigate();
     const { hovered, ref } = useHover();
+
+    const { text: text1, images } = useMemo(() => extractImageUrls(note.content), [note.content]);
+    const { text: textToDisplay, videos } = useMemo(() => extractVideoUrls(text1), [text1]);
 
     const bgColor = useMemo(() => {
         return computedColorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[1];
@@ -128,29 +129,31 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
                         <Flex>
                             <Stack w="100%" gap="sm" pl="lg">
                                 <NoteHeader displayName={displayName} createdAt={note.created_at} />
-                                <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
-                                    <TypographyStylesProvider>
-                                        <div>{replaceNostrTags(text)}</div>
-                                    </TypographyStylesProvider>
-                                </Text>
+                                {textToDisplay && (
+                                    <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
+                                        <TypographyStylesProvider>
+                                            <div>{replaceNostrTags(textToDisplay)}</div>
+                                        </TypographyStylesProvider>
+                                    </Text>
+                                )}
                                 {images.length > 0 && (
                                     <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
-                                        <Image src={images[0]} alt="note-image" style={{ width: "100%" }} />
+                                        <Image src={images[0]} alt={`${note.id}-video`} style={{ width: "100%" }} />
+                                    </Card>
+                                )}
+                                {videos.length > 0 && (
+                                    <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
+                                        <VideoRenderer url={videos[0]} />
                                     </Card>
                                 )}
                             </Stack>
-
-                            <NoteActionMore />
+                            <NoteActionMore note={note} usersMetadata={userMetadata} nevent={nevent} />
                         </Flex>
                         <NoteActions handleActionIconClick={handleActionIconClick} />
                     </Container>
                 </Flex>
             </Container>
             <Divider />
-
-            <Menu opened={opened} onChange={setOpened}>
-                {/* Menu content */}
-            </Menu>
         </>
     );
 }

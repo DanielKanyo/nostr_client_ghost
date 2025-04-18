@@ -35,6 +35,33 @@ export const extractImageUrls = (content: string): { text: string; images: strin
     return { text, images };
 };
 
+export const extractVideoUrls = (content: string): { text: string; videos: string[] } => {
+    // Common video file extensions
+    const videoExtensions = /\.(mp4|mov|avi|mkv|webm|wmv|flv|m4v)(\?[^ ]*)?(?=\s|$)/i;
+    // YouTube URL patterns (including /watch?v=, /live/, and youtu.be/)
+    const youtubeRegex = /(https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|live\/)|youtu\.be\/)[^\s]+)/i;
+    // General URL regex
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    let text = content;
+    const videos: string[] = [];
+
+    // Extract all URLs
+    const urlMatches = content.match(urlRegex);
+
+    if (urlMatches) {
+        urlMatches.forEach((url) => {
+            // Check if URL is a video file or YouTube link
+            if (url.match(videoExtensions) || url.match(youtubeRegex)) {
+                videos.push(url);
+                text = text.replace(url, "").trim();
+            }
+        });
+    }
+
+    return { text, videos };
+};
+
 export enum NoteFilterOptions {
     Notes = "Notes",
     Replies = "Replies",
@@ -66,3 +93,5 @@ export const formatTimestamp = (timestamp: number): string => {
 };
 
 export const SCROLL_POS_DEBOUNCE_TIME = 350;
+
+export const DEFAULT_VOLUME_FOR_VIDEOS = 0.3;
