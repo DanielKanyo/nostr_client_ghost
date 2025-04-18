@@ -15,11 +15,13 @@ interface NotesProps {
 }
 
 export default function Notes({ notes, usersMetadata, loading, loadNotes }: NotesProps) {
+    const hasNotes = notes.length > 0;
+
     return (
         <>
-            {notes.length === 0 && !loading && <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />}
+            {!hasNotes && !loading && <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />}
 
-            {notes.map((note: NostrEvent) => (
+            {hasNotes && notes.map((note: NostrEvent) => (
                 <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} />
             ))}
             {loading && (
@@ -27,7 +29,7 @@ export default function Notes({ notes, usersMetadata, loading, loadNotes }: Note
                     <Loader size={36} my="md" color="var(--mantine-color-dark-0)" type="dots" />
                 </Center>
             )}
-            {notes.length > 0 && !loading && (
+            {hasNotes && !loading && (
                 <Container m="md" p={0}>
                     <Button
                         variant="subtle"

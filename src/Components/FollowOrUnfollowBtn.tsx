@@ -19,7 +19,9 @@ export default function FollowOrUnfollowBtn({ loggedInUser, pubkey, color }: { l
         return null;
     }
 
-    const follow = async () => {
+    const follow = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
         setLoading(true);
 
         const pool = new SimplePool();
@@ -40,7 +42,9 @@ export default function FollowOrUnfollowBtn({ loggedInUser, pubkey, color }: { l
         }
     };
 
-    const unfollow = async () => {
+    const unfollow = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
         setLoading(true);
 
         const pool = new SimplePool();
@@ -61,13 +65,29 @@ export default function FollowOrUnfollowBtn({ loggedInUser, pubkey, color }: { l
 
     return loggedInUser.following.includes(pubkey) ? (
         <Tooltip label="Unfollow User" withArrow>
-            <ActionIcon aria-label="follow" variant="filled" size="xl" radius="xl" color="red" onClick={unfollow} disabled={loading}>
+            <ActionIcon
+                aria-label="unfollow"
+                variant="filled"
+                size="xl"
+                radius="xl"
+                color="red"
+                onClick={(e) => unfollow(e)}
+                disabled={loading}
+            >
                 <IconUserMinus />
             </ActionIcon>
         </Tooltip>
     ) : (
         <Tooltip label="Follow User" withArrow>
-            <ActionIcon aria-label="follow" variant="filled" size="xl" radius="xl" color={color} onClick={follow} disabled={loading}>
+            <ActionIcon
+                aria-label="follow"
+                variant="filled"
+                size="xl"
+                radius="xl"
+                color={color}
+                onClick={(e) => follow(e)}
+                disabled={loading}
+            >
                 <IconUserPlus />
             </ActionIcon>
         </Tooltip>

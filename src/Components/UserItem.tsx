@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Flex, Group, Avatar, Box, Tooltip, ActionIcon, Text, MantineColor, Divider } from "@mantine/core";
-import { IconEyeShare } from "@tabler/icons-react";
+import { Avatar, Box, Divider, Flex, Group, MantineColor, Text, useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import { useHover } from "@mantine/hooks";
 
 import { PROFILE_ROUTE_BASE } from "../Routes/routes";
-import { encodeNPub, encodeNProfile } from "../Services/userService";
+import { encodeNProfile, encodeNPub } from "../Services/userService";
 import { useAppSelector } from "../Store/hook";
 import FollowOrUnfollowBtn from "./FollowOrUnfollowBtn";
 
@@ -16,19 +17,37 @@ interface UserItemProps {
 }
 
 export default function UserItem({ pubkey, name, picture, displayName }: UserItemProps) {
+    const theme = useMantineTheme();
+    const computedColorScheme = useComputedColorScheme("light");
     const primaryColor = useAppSelector((state) => state.primaryColor) as MantineColor;
     const loggedInUser = useAppSelector((state) => state.user);
+    const { hovered, ref } = useHover();
+    const navigate = useNavigate();
 
-    const iconProps = {
-        variant: "light" as const,
-        color: "gray",
-        size: "xl" as const,
-        radius: "xl" as const,
+    const bgColor = useMemo(() => {
+        return computedColorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[1];
+    }, [computedColorScheme, theme.colors]);
+
+    const handleContainerClick = (event: React.MouseEvent) => {
+        if (
+            event.target instanceof HTMLElement &&
+            (event.target.closest("a") || event.target.closest("button") || event.target.closest("[role='button']"))
+        ) {
+            return;
+        }
+        navigate(`${PROFILE_ROUTE_BASE}/${encodeNProfile(pubkey)}`);
     };
 
     return (
         <>
-            <Flex justify="space-between" align="center" p="md">
+            <Flex
+                justify="space-between"
+                align="center"
+                p="md"
+                ref={ref}
+                style={{ backgroundColor: hovered ? bgColor : "transparent", cursor: "pointer" }}
+                onClick={handleContainerClick}
+            >
                 <Group>
                     <Avatar src={picture} radius={45} size={45} />
                     <Flex direction="column" align="flex-start" justify="center">
@@ -42,19 +61,7 @@ export default function UserItem({ pubkey, name, picture, displayName }: UserIte
                         </Box>
                     </Flex>
                 </Group>
-                <Group gap="xs">
-                    <Tooltip label="View Profile" withArrow>
-                        <ActionIcon
-                            aria-label="dots"
-                            {...iconProps}
-                            component={Link}
-                            to={`${PROFILE_ROUTE_BASE}/${encodeNProfile(pubkey)}`}
-                        >
-                            <IconEyeShare />
-                        </ActionIcon>
-                    </Tooltip>
-                    <FollowOrUnfollowBtn loggedInUser={loggedInUser} pubkey={pubkey} color={primaryColor} />
-                </Group>
+                <FollowOrUnfollowBtn loggedInUser={loggedInUser} pubkey={pubkey} color={primaryColor} />
             </Flex>
             <Divider />
         </>
