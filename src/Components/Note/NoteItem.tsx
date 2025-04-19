@@ -1,21 +1,9 @@
-import { JSX, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { NostrEvent } from "nostr-tools";
 
-import {
-    Avatar,
-    Card,
-    Container,
-    Divider,
-    Flex,
-    Image,
-    Stack,
-    Text,
-    TypographyStylesProvider,
-    useComputedColorScheme,
-    useMantineTheme,
-} from "@mantine/core";
+import { Avatar, Container, Divider, Flex, Stack, useComputedColorScheme, useMantineTheme } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 
 import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
@@ -24,44 +12,14 @@ import { encodeNProfile } from "../../Services/userService";
 import { extractImageUrls, extractVideoUrls } from "../../Shared/utils";
 import { UserMetadata } from "../../Types/userMetadata";
 import NoteActionMore from "./NoteActionMore";
-import NoteActions from "./NoteActions";
+import NoteBody from "./NoteBody";
+import NoteFooter from "./NoteFooter";
 import NoteHeader from "./NoteHeader";
-import VideoRenderer from "./VideoRenderer";
 
 interface NoteItemProps {
     note: NostrEvent;
     usersMetadata: UserMetadata[];
 }
-
-const replaceNostrTags = (content: string, replaceWithString: string = "user"): JSX.Element[] => {
-    const nostrTagRegex = /nostr:(nprofile[0-9a-z]+|npub1[0-9a-z]+)/g;
-    const parts = content.split(nostrTagRegex);
-    const matches = content.match(nostrTagRegex) || [];
-
-    const elements: JSX.Element[] = [];
-
-    let matchIndex = 0;
-
-    parts.forEach((part, index) => {
-        if (index % 2 === 0) {
-            // Even index: plain text
-            elements.push(<span key={`part-${index}`}>{part}</span>);
-        } else {
-            // Odd index: matched tag
-            const match = matches[matchIndex++] || "";
-            const nostrId = match.replace("nostr:", "");
-            const to = `${PROFILE_ROUTE_BASE}/${nostrId}`;
-
-            elements.push(
-                <Link key={`link-${index}`} to={to}>
-                    @{replaceWithString}
-                </Link>
-            );
-        }
-    });
-
-    return elements;
-};
 
 export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
     const theme = useMantineTheme();
@@ -129,27 +87,11 @@ export default function NoteItem({ note, usersMetadata }: NoteItemProps) {
                         <Flex>
                             <Stack w="100%" gap="sm" pl="lg">
                                 <NoteHeader displayName={displayName} createdAt={note.created_at} />
-                                {textToDisplay && (
-                                    <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
-                                        <TypographyStylesProvider>
-                                            <div>{replaceNostrTags(textToDisplay)}</div>
-                                        </TypographyStylesProvider>
-                                    </Text>
-                                )}
-                                {images.length > 0 && (
-                                    <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
-                                        <Image src={images[0]} alt={`${note.id}-video`} style={{ width: "100%" }} />
-                                    </Card>
-                                )}
-                                {videos.length > 0 && (
-                                    <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
-                                        <VideoRenderer url={videos[0]} />
-                                    </Card>
-                                )}
+                                <NoteBody noteId={note.id} text={textToDisplay} images={images} videos={videos} />
                             </Stack>
                             <NoteActionMore note={note} usersMetadata={userMetadata} nevent={nevent} />
                         </Flex>
-                        <NoteActions handleActionIconClick={handleActionIconClick} />
+                        <NoteFooter handleActionIconClick={handleActionIconClick} />
                     </Container>
                 </Flex>
             </Container>

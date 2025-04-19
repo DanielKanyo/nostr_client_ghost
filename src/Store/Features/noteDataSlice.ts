@@ -2,6 +2,7 @@ import { NostrEvent } from "nostr-tools";
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { NoteFilterOptions } from "../../Shared/utils";
 import { UserMetadata } from "../../Types/userMetadata";
 
 interface NoteDataState {
@@ -9,6 +10,7 @@ interface NoteDataState {
     usersMetadata: UserMetadata[];
     until: number | undefined;
     loading: boolean;
+    filter: NoteFilterOptions;
 }
 
 const initialState: NoteDataState = {
@@ -16,6 +18,7 @@ const initialState: NoteDataState = {
     usersMetadata: [],
     until: undefined,
     loading: false,
+    filter: NoteFilterOptions.Notes,
 };
 
 const noteDataSlice = createSlice({
@@ -37,6 +40,9 @@ const noteDataSlice = createSlice({
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
         },
+        setFilter: (state, action: PayloadAction<NoteFilterOptions>) => {
+            state.filter = action.payload;
+        },
         resetNotes: (state) => {
             state.notes = [];
             state.until = undefined;
@@ -44,5 +50,5 @@ const noteDataSlice = createSlice({
     },
 });
 
-export const { setNoteData, appendNoteData, setUsersMetadata, setUntil, setLoading, resetNotes } = noteDataSlice.actions;
+export const { setNoteData, appendNoteData, setUsersMetadata, setUntil, setLoading, setFilter, resetNotes } = noteDataSlice.actions;
 export default noteDataSlice.reducer;

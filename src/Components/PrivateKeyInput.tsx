@@ -23,8 +23,9 @@ export default function PrivateKeyInput({ privateKey }: PrivateKeyInput) {
                         withArrow
                         multiline
                         w={300}
+                        color="red"
                     >
-                        <ThemeIcon variant="light" radius="md" color="gray">
+                        <ThemeIcon variant="light" radius="md" color="red">
                             <IconInfoSquareRounded size={17} />
                         </ThemeIcon>
                     </Tooltip>
