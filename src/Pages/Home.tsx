@@ -4,9 +4,9 @@ import { useDispatch } from "react-redux";
 import isEqual from "lodash/isEqual";
 import { SimplePool } from "nostr-tools";
 
-import { Divider, Flex } from "@mantine/core";
+import { Divider } from "@mantine/core";
 
-import Filter from "../Components/Note/Filter";
+import Filter from "../Components/Note/Filter/Filter";
 import Content from "../Layouts/Content";
 import CreateNote from "../Layouts/CreateNote/CreateNote";
 import MainContainer from "../Layouts/MainContainer";
@@ -30,7 +30,7 @@ import { useAppSelector } from "../Store/hook";
 export default function Home() {
     const { notes, usersMetadata, until, filter, loading } = useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
-    const previousFollowing = useRef([...user.following, user.publicKey]);
+    const previousFollowing = useRef(user.following);
     const dispatch = useDispatch();
 
     const loadNotes = async (reset: boolean = false) => {
@@ -83,14 +83,17 @@ export default function Home() {
         dispatch(setFilter(option));
     };
 
+    const reloadNotes = () => {
+        dispatch(resetNotes());
+        loadNotes(true);
+    };
+
     return (
         <Content>
             <MainContainer width={680}>
                 <ScrollContainer>
-                    <CreateNote />
-                    <Flex align="center" justify="flex-end" gap="sm" py="xs" px="md">
-                        <Filter filter={filter} handleFilterChange={handleFilterChange} />
-                    </Flex>
+                    <CreateNote reloadNotes={reloadNotes} />
+                    <Filter filter={filter} handleFilterChange={handleFilterChange} />
                     <Divider />
                     <Notes notes={notes} usersMetadata={usersMetadata} loading={loading} loadNotes={loadNotes} />
                 </ScrollContainer>

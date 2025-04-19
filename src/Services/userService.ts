@@ -1,33 +1,11 @@
 import { finalizeEvent, generateSecretKey, getPublicKey, nip19, SimplePool, verifyEvent, type Event as NostrEvent } from "nostr-tools";
 
-import { hexToBytes } from "@noble/hashes/utils";
-
-import { RELAYS } from "../Shared/utils";
+import { convertPrivateKeyToPrivateKeyBytes, RELAYS } from "../Shared/utils";
 import { UserMetadata } from "../Types/userMetadata";
 
 export const authenticateUser = async (privateKey: string): Promise<string> => {
     try {
-        let privateKeyBytes: Uint8Array;
-
-        if (privateKey.startsWith("nsec")) {
-            try {
-                const decoded = nip19.decode(privateKey);
-                if (decoded.type !== "nsec") {
-                    throw new Error("Invalid nsec format...");
-                }
-                privateKeyBytes = decoded.data as Uint8Array;
-            } catch {
-                throw new Error("Invalid nsec key...");
-            }
-        } else {
-            // Validate hex format first
-            if (!privateKey.match(/^[0-9a-fA-F]{64}$/)) {
-                throw new Error("Invalid private key format. Must be 64 hexadecimal characters...");
-            }
-
-            privateKeyBytes = hexToBytes(privateKey);
-        }
-
+        const privateKeyBytes = convertPrivateKeyToPrivateKeyBytes(privateKey);
         const pubkey = getPublicKey(privateKeyBytes);
         const testEvent = {
             kind: 1,
@@ -64,7 +42,9 @@ export const fetchUserMetadata = async (pool: SimplePool, publicKey: string): Pr
         }, null);
 
         if (latestEvent) {
-            return JSON.parse(latestEvent.content) as UserMetadata;
+            const metadata = JSON.parse(latestEvent.content);
+
+            return { pubkey: latestEvent.pubkey, ...metadata };
         }
 
         return null;

@@ -28,7 +28,7 @@ export default function Notes({ notes, usersMetadata, loading, loadNotes }: Note
                 </Center>
             )}
             {hasNotes && !loading && (
-                <Container m="md" p={0}>
+                <Container m="xs" p={0}>
                     <Button
                         variant="subtle"
                         color="gray"

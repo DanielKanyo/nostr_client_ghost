@@ -1,6 +1,6 @@
-import { nip19, NostrEvent, SimplePool } from "nostr-tools";
+import { finalizeEvent, getPublicKey, nip19, NostrEvent, SimplePool } from "nostr-tools";
 
-import { NoteFilterOptions, RELAYS } from "../Shared/utils";
+import { convertPrivateKeyToPrivateKeyBytes, NoteFilterOptions, RELAYS } from "../Shared/utils";
 
 export const fetchNotes = async (
     pool: SimplePool,
@@ -44,6 +44,31 @@ export const fetchNotes = async (
     } catch (error) {
         console.error("Failed to fetch notes:", error);
         return [];
+    }
+};
+
+export const publishNote = async (pool: SimplePool, content: string, privateKey: string, tags: string[][] = []): Promise<string> => {
+    try {
+        const privateKeyBytes = convertPrivateKeyToPrivateKeyBytes(privateKey);
+        const pubkey = getPublicKey(privateKeyBytes);
+
+        const event = {
+            kind: 1,
+            pubkey,
+            created_at: Math.floor(Date.now() / 1000),
+            content,
+            tags,
+        };
+
+        const signedEvent = finalizeEvent(event, privateKeyBytes);
+        const pubs = pool.publish(RELAYS, signedEvent);
+
+        await Promise.all(pubs);
+
+        return signedEvent.id;
+    } catch (error) {
+        console.error("Failed to publish note:", error);
+        throw new Error("Unable to publish note! Please try again later...");
     }
 };
 

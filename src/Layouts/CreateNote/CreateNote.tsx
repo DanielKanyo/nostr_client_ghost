@@ -1,17 +1,26 @@
 import { CSSProperties, useState } from "react";
 
-import { Avatar, Box, Button, Divider, Flex, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconSend } from "@tabler/icons-react";
+import { SimplePool } from "nostr-tools";
 
+import { Alert, Avatar, Box, Button, Divider, Flex, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconExclamationCircle, IconSend } from "@tabler/icons-react";
+
+import { publishNote } from "../../Services/noteService";
+import { closePool } from "../../Services/userService";
 import { useAppSelector } from "../../Store/hook";
 import classes from "./textarea.module.css";
 
-export default function CreateNote() {
+interface CreateNoteProps {
+    reloadNotes: () => void;
+}
+
+export default function CreateNote({ reloadNotes }: CreateNoteProps) {
     const user = useAppSelector((state) => state.user);
     const { color, borderColor } = useAppSelector((state) => state.primaryColor);
     const [opened, { open, close }] = useDisclosure(false);
     const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>("");
     const [noteContent, setNoteContent] = useState("");
 
     const handleClose = () => {
@@ -20,13 +29,23 @@ export default function CreateNote() {
         close();
     };
 
-    const postNote = () => {
+    const postNote = async () => {
         setLoading(true);
 
-        // TODO: Add logic here
-    };
+        const pool = new SimplePool();
 
-    // const borderColor = theme.colors[primaryColor]?.[5] || primaryColor;
+        try {
+            await publishNote(pool, noteContent, user.privateKey);
+
+            reloadNotes();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Unable to publish note! Please try again later...");
+        } finally {
+            closePool(pool);
+            setLoading(false);
+            close();
+        }
+    };
 
     return (
         <>
@@ -62,6 +81,18 @@ export default function CreateNote() {
                             style={{ "--input-border-color-focus": borderColor } as CSSProperties}
                         />
                     </Flex>
+                    {error && (
+                        <Alert
+                            variant="light"
+                            color="red"
+                            radius="md"
+                            title="Something went wrong!"
+                            icon={<IconExclamationCircle />}
+                            ml={50}
+                        >
+                            {error}
+                        </Alert>
+                    )}
                     <Group justify="flex-end" gap="sm">
                         <Button variant="light" radius="xl" color="gray" size="md" onClick={handleClose}>
                             Cancel

@@ -54,12 +54,12 @@ export default function NoteBody({ noteId, text, images, videos }: NoteBodyProps
                 </Text>
             )}
             {images.length > 0 && (
-                <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
+                <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }} mih={250} shadow="md">
                     <Image src={images[0]} alt={`${noteId}-video`} style={{ width: "100%" }} />
                 </Card>
             )}
             {videos.length > 0 && (
-                <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
+                <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }} shadow="md">
                     <VideoRenderer url={videos[0]} />
                 </Card>
             )}

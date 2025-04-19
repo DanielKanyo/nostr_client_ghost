@@ -1,3 +1,7 @@
+import { nip19 } from "nostr-tools";
+
+import { hexToBytes } from "@noble/hashes/utils";
+
 export const HIDE_ALERT_TIMEOUT_IN_MS = 6000;
 export const DEFAULT_NUM_OF_DISPLAYED_USERS = 15;
 export const DEFAULT_NUM_OF_DISPLAYED_NOTES = 15;
@@ -68,18 +72,26 @@ export enum NoteFilterOptions {
     All = "All",
 }
 
-const MONTHS = ["jan.", "feb.", "mar.", "apr.", "may", "jun.", "jul.", "aug.", "sep.", "oct.", "nov.", "dec."];
+const MONTHS = ["Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 
 export const formatTimestamp = (timestamp: number): string => {
     const now = new Date();
     const date = new Date(timestamp);
     const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
+    // Check if less than 1 hour (60 minutes)
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    if (diffMinutes < 60) {
+        return `${diffMinutes}m`;
+    }
+
+    // Check if less than 24 hours
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     if (diffHours < 24) {
         return `${diffHours}h`;
     }
 
+    // Check if same year
     const isSameYear = now.getFullYear() === date.getFullYear();
     const month = MONTHS[date.getMonth()];
     const day = date.getDate();
@@ -95,3 +107,28 @@ export const formatTimestamp = (timestamp: number): string => {
 export const SCROLL_POS_DEBOUNCE_TIME = 350;
 
 export const DEFAULT_VOLUME_FOR_VIDEOS = 0.3;
+
+export const convertPrivateKeyToPrivateKeyBytes = (privateKey: string): Uint8Array => {
+    let privateKeyBytes: Uint8Array;
+
+    if (privateKey.startsWith("nsec")) {
+        try {
+            const decoded = nip19.decode(privateKey);
+            if (decoded.type !== "nsec") {
+                throw new Error("Invalid nsec format...");
+            }
+            privateKeyBytes = decoded.data as Uint8Array;
+        } catch {
+            throw new Error("Invalid nsec key...");
+        }
+    } else {
+        // Validate hex format first
+        if (!privateKey.match(/^[0-9a-fA-F]{64}$/)) {
+            throw new Error("Invalid private key format. Must be 64 hexadecimal characters...");
+        }
+
+        privateKeyBytes = hexToBytes(privateKey);
+    }
+
+    return privateKeyBytes;
+};
