@@ -12,8 +12,8 @@ interface FilterProps {
 }
 
 const data: ComboboxItem[] = [
-    { value: NoteFilterOptions.Notes, label: "Latest Notes By Your Follows" },
-    { value: NoteFilterOptions.All, label: "Latest Notes And Replies By Your Follows" },
+    { value: NoteFilterOptions.Notes, label: "Latest Notes" },
+    { value: NoteFilterOptions.All, label: "Latest Notes And Replies" },
 ];
 
 export default function Filter({ filter, handleFilterChange }: FilterProps) {

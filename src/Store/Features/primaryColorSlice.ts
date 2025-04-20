@@ -7,8 +7,8 @@ type PrimaryColorState = {
 };
 
 const initValue = {
-    color: "violet",
-    borderColor: "violet",
+    color: "",
+    borderColor: "",
 };
 
 export const primaryColorSlice = createSlice({

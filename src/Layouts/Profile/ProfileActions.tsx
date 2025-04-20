@@ -80,6 +80,7 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
                 centered
                 padding="lg"
                 radius="lg"
+                size={495}
                 overlayProps={{ blur: 3 }}
             >
                 {npub && (

@@ -24,6 +24,8 @@ export default function Layout() {
 
         if (primaryColor) {
             dispatch(updatePrimaryColor({ color: primaryColor, borderColor: theme.colors[primaryColor]?.[5] || primaryColor }));
+        } else {
+            dispatch(updatePrimaryColor({ color: "violet", borderColor: theme.colors.violet[5] }));
         }
     }, [dispatch]);
 
