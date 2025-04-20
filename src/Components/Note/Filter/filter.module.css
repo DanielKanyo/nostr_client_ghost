@@ -5,3 +5,11 @@
 .input:focus {
     border: 0;
 }
+
+.dropdown {
+    border-radius: var(--mantine-radius-md);
+}
+
+.option {
+    border-radius: var(--mantine-radius-md);
+}

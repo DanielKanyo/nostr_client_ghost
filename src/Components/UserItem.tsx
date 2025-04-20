@@ -7,7 +7,7 @@ import { useHover } from "@mantine/hooks";
 import { PROFILE_ROUTE_BASE } from "../Routes/routes";
 import { encodeNProfile, encodeNPub } from "../Services/userService";
 import { useAppSelector } from "../Store/hook";
-import FollowOrUnfollowBtn from "./FollowOrUnfollowBtn";
+import FollowOrUnfollowButton from "./FollowOrUnfollowButton";
 
 interface UserItemProps {
     pubkey: string;
@@ -61,7 +61,7 @@ export default function UserItem({ pubkey, name, picture, displayName }: UserIte
                         </Box>
                     </Flex>
                 </Group>
-                <FollowOrUnfollowBtn loggedInUser={loggedInUser} pubkey={pubkey} color={color} />
+                <FollowOrUnfollowButton loggedInUser={loggedInUser} pubkey={pubkey} color={color} />
             </Flex>
             <Divider />
         </>

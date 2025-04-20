@@ -5,7 +5,7 @@ import { ActionIcon, Center, Group, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconDots, IconMail, IconQrcode, IconUserEdit, IconWorldWww } from "@tabler/icons-react";
 
-import FollowOrUnfollowBtn from "../../Components/FollowOrUnfollowBtn";
+import FollowOrUnfollowButton from "../../Components/FollowOrUnfollowButton";
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
 import { ROUTES } from "../../Routes/routes";
@@ -69,7 +69,7 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
                         </Tooltip>
                     </>
                 ) : (
-                    <FollowOrUnfollowBtn loggedInUser={user} pubkey={pubkey} color={color} />
+                    <FollowOrUnfollowButton loggedInUser={user} pubkey={pubkey} color={color} />
                 )}
             </Group>
 

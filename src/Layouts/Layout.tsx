@@ -10,6 +10,7 @@ import PageLoader from "../Components/PageLoader";
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { DEFAULT_SIDE_CONTAINER_WIDTH } from "../Shared/utils";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
+import { setRelays } from "../Store/Features/relaysSlice";
 import { updateUser, updateUserLoading } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
 import GetStarted from "./GetStarted";
@@ -20,14 +21,23 @@ export default function Layout() {
     const dispatch = useDispatch();
     const theme = useMantineTheme();
 
-    useEffect(() => {
-        const primaryColor = localStorage.getItem("nostrPrimaryColor");
-
+    const handlePrimaryColorInLocalStorage = (primaryColor: string | null) => {
         if (primaryColor) {
             dispatch(updatePrimaryColor({ color: primaryColor, borderColor: theme.colors[primaryColor]?.[5] || primaryColor }));
         } else {
             dispatch(updatePrimaryColor({ color: "violet", borderColor: theme.colors.violet[5] }));
         }
+    };
+
+    const handleRelaysInLocalStorage = (relays: string | null) => {
+        if (relays) {
+            dispatch(setRelays(JSON.parse(relays)));
+        }
+    };
+
+    useEffect(() => {
+        handlePrimaryColorInLocalStorage(localStorage.getItem("nostrPrimaryColor"));
+        handleRelaysInLocalStorage(localStorage.getItem("nostrRelays"));
     }, [dispatch]);
 
     useEffect(() => {

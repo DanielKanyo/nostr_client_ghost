@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { ComboboxItem, Select } from "@mantine/core";
-import { IconSelector } from "@tabler/icons-react";
 
 import { NoteFilterOptions } from "../../../Shared/utils";
 import classes from "./filter.module.css";
@@ -35,7 +34,7 @@ export default function Filter({ filter, handleFilterChange }: FilterProps) {
             value={value?.value ?? null}
             onChange={(_val, option) => handleChange(option)}
             classNames={classes}
-            rightSection={<IconSelector size={18} />}
+            rightSection={<></>}
         />
     );
 }

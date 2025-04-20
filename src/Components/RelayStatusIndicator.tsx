@@ -5,21 +5,23 @@ import { IconAccessPoint } from "@tabler/icons-react";
 
 import { checkRelaysStatus, RELAY_STATUSES, RelayStatus } from "../Services/relayService";
 import { RELAYS } from "../Shared/utils";
+import { useAppSelector } from "../Store/hook";
 
 interface RelayStatusIndicatorProps {
-    toggleAccordion?: boolean;
+    showList?: boolean;
 }
 
-export default function RelayStatusIndicator({ toggleAccordion }: RelayStatusIndicatorProps) {
+export default function RelayStatusIndicator({ showList }: RelayStatusIndicatorProps) {
     const [statusMap, setStatusMap] = useState<Map<string, RelayStatus> | null>(null);
     const [overallStatus, setOverallStatus] = useState<RELAY_STATUSES>(RELAY_STATUSES.UNKNOWN);
     const [loading, setLoading] = useState<boolean>(false);
+    const relays = useAppSelector((state) => state.relays);
 
     const fetchStatus = async () => {
         setLoading(true);
 
         try {
-            const newStatusMap = await checkRelaysStatus();
+            const newStatusMap = await checkRelaysStatus(relays);
             let onlineCount = 0;
 
             newStatusMap.forEach((value) => {
@@ -51,10 +53,10 @@ export default function RelayStatusIndicator({ toggleAccordion }: RelayStatusInd
     useEffect(() => {
         fetchStatus();
 
-        const intervalId = setInterval(fetchStatus, 5 * 60 * 1000); // 5 minutes in milliseconds
+        const intervalId = setInterval(fetchStatus, 60 * 1000); // 1 minutes in milliseconds
 
         return () => clearInterval(intervalId);
-    }, []);
+    }, [relays]);
 
     const determineRelayStatus = (status: RELAY_STATUSES) => {
         switch (status) {
@@ -84,7 +86,7 @@ export default function RelayStatusIndicator({ toggleAccordion }: RelayStatusInd
                         <Box w={5}></Box>
                     </Indicator>
                 }
-                defaultValue={toggleAccordion ? "status" : null}
+                defaultValue={showList ? "status" : null}
             >
                 <Accordion.Item value="status">
                     <Accordion.Control icon={<IconAccessPoint size={22} />}>Network</Accordion.Control>

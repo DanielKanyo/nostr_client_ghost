@@ -1,7 +1,5 @@
 import { Relay } from "nostr-tools/relay";
 
-import { RELAYS } from "../Shared/utils";
-
 export enum RELAY_STATUSES {
     ONLINE = "ONLINE",
     OFFLINE = "OFFLINE",
@@ -11,8 +9,8 @@ export enum RELAY_STATUSES {
 
 export type RelayStatus = RELAY_STATUSES.ONLINE | RELAY_STATUSES.OFFLINE | RELAY_STATUSES.WARNING | RELAY_STATUSES.UNKNOWN;
 
-export async function checkRelaysStatus(): Promise<Map<string, RelayStatus>> {
-    const connectionPromises = RELAYS.map(async (relayUrl) => {
+export async function checkRelaysStatus(relays: string[]): Promise<Map<string, RelayStatus>> {
+    const connectionPromises = relays.map(async (relayUrl) => {
         try {
             const relay = await Relay.connect(relayUrl);
             relay.close();

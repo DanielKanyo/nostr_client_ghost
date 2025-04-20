@@ -11,7 +11,13 @@ import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
 import { UserState, updateUserFollowing } from "../Store/Features/userSlice";
 import { useAppDispatch } from "../Store/hook";
 
-export default function FollowOrUnfollowBtn({ loggedInUser, pubkey, color }: { loggedInUser: UserState; pubkey: string; color: string }) {
+interface FollowOrUnfollowButtonProps {
+    loggedInUser: UserState;
+    pubkey: string;
+    color: string;
+}
+
+export default function FollowOrUnfollowButton({ loggedInUser, pubkey, color }: FollowOrUnfollowButtonProps) {
     const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
 
