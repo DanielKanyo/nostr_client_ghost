@@ -14,6 +14,7 @@ import ScrollContainer from "../../Layouts/ScrollContainer";
 import SideContainer from "../../Layouts/SideContainer";
 import { ROUTES } from "../../Routes/routes";
 import { encodeNPub } from "../../Services/userService";
+import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH } from "../../Shared/utils";
 import { resetUser } from "../../Store/Features/userSlice";
 import { useAppSelector } from "../../Store/hook";
 
@@ -36,7 +37,7 @@ export default function KeyManagement() {
 
     return (
         <Content>
-            <MainContainer width={680}>
+            <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <PageTitle title="Key Management" withBackBtn />
                 <ScrollContainer>
                     <Container mx={0} px="lg" mt="lg">
@@ -71,7 +72,7 @@ export default function KeyManagement() {
                     </Container>
                 </ScrollContainer>
             </MainContainer>
-            <SideContainer width={320}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
         </Content>
     );
 }

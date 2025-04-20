@@ -8,8 +8,8 @@ import { IconExclamationCircle, IconSend } from "@tabler/icons-react";
 
 import { publishNote } from "../../Services/noteService";
 import { closePool } from "../../Services/userService";
+import classes from "../../Shared/Styles/inputFocus.module.css";
 import { useAppSelector } from "../../Store/hook";
-import classes from "./textarea.module.css";
 
 interface CreateNoteProps {
     reloadNotes: () => void;

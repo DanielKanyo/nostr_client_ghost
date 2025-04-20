@@ -1,4 +1,5 @@
 import { finalizeEvent, generateSecretKey, getPublicKey, nip19, SimplePool, verifyEvent, type Event as NostrEvent } from "nostr-tools";
+import { DecodeResult } from "nostr-tools/nip19";
 
 import { convertPrivateKeyToPrivateKeyBytes, RELAYS } from "../Shared/utils";
 import { UserMetadata } from "../Types/userMetadata";
@@ -172,6 +173,7 @@ export const decodeNProfileOrNPub = (key: string | undefined) => {
     }
 };
 export const encodeNPub = (pubkey: string): string => nip19.npubEncode(pubkey);
+export const decodeNPub = (npub: string): DecodeResult => nip19.decode(npub);
 
 export const updateFollowList = async (pool: SimplePool, privateKey: string, newFollowing: string[]): Promise<void> => {
     const { type, data: sk } = nip19.decode(privateKey);

@@ -13,7 +13,7 @@ import ProfileHeader from "../Layouts/Profile/ProfileHeader";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
 import { closePool, decodeNProfileOrNPub, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
-import { NoteFilterOptions, PROFILE_CONTENT_TABS } from "../Shared/utils";
+import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../Shared/utils";
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
 
@@ -101,7 +101,7 @@ export default function Profile() {
 
     return (
         <Content>
-            <MainContainer width={680}>
+            <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <ScrollContainer>
                     {profile ? (
                         <>
@@ -148,7 +148,7 @@ export default function Profile() {
                     )}
                 </ScrollContainer>
             </MainContainer>
-            <SideContainer width={320}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
         </Content>
     );
 }

@@ -2,6 +2,8 @@ import { nip19 } from "nostr-tools";
 
 import { hexToBytes } from "@noble/hashes/utils";
 
+export const DEFAULT_MAIN_CONTAINER_WIDTH = 680;
+export const DEFAULT_SIDE_CONTAINER_WIDTH = 320;
 export const HIDE_ALERT_TIMEOUT_IN_MS = 6000;
 export const DEFAULT_NUM_OF_DISPLAYED_USERS = 15;
 export const DEFAULT_NUM_OF_DISPLAYED_NOTES = 15;
@@ -131,4 +133,8 @@ export const convertPrivateKeyToPrivateKeyBytes = (privateKey: string): Uint8Arr
     }
 
     return privateKeyBytes;
+};
+
+export const isHexPubkey = (input: string): boolean => {
+    return /^[a-fA-F0-9]{64}$/.test(input);
 };

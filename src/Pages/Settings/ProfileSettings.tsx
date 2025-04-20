@@ -13,7 +13,7 @@ import MainContainer from "../../Layouts/MainContainer";
 import ScrollContainer from "../../Layouts/ScrollContainer";
 import SideContainer from "../../Layouts/SideContainer";
 import { closePool, fetchUserMetadata, publishProfile } from "../../Services/userService";
-import { HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
+import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH, HIDE_ALERT_TIMEOUT_IN_MS } from "../../Shared/utils";
 import { updateUserProfile } from "../../Store/Features/userSlice";
 import { useAppSelector } from "../../Store/hook";
 import { UserMetadata } from "../../Types/userMetadata";
@@ -73,7 +73,7 @@ export default function ProfileSettings() {
 
     return (
         <Content>
-            <MainContainer width={680}>
+            <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <PageTitle title="Profile Settings" withBackBtn />
                 <ScrollContainer>
                     <Container mx={0} px="lg" mt="lg">
@@ -126,7 +126,7 @@ export default function ProfileSettings() {
                     </Container>
                 </ScrollContainer>
             </MainContainer>
-            <SideContainer width={320}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
         </Content>
     );
 }

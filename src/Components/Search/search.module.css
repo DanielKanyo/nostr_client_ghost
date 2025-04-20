@@ -1,0 +1,7 @@
+.dropdown {
+    border-radius: var(--mantine-radius-md);
+    padding-top: var(--mantine-radius-md);
+    padding-bottom: var(--mantine-radius-md);
+    padding-left: 0;
+    padding-right: 0;
+}

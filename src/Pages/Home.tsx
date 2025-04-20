@@ -7,6 +7,7 @@ import { SimplePool } from "nostr-tools";
 import { Divider } from "@mantine/core";
 
 import Filter from "../Components/Note/Filter/Filter";
+import Search from "../Components/Search/Search";
 import Content from "../Layouts/Content";
 import CreateNote from "../Layouts/CreateNote/CreateNote";
 import MainContainer from "../Layouts/MainContainer";
@@ -15,7 +16,12 @@ import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
 import { fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
-import { DEFAULT_NUM_OF_DISPLAYED_NOTES, NoteFilterOptions } from "../Shared/utils";
+import {
+    DEFAULT_MAIN_CONTAINER_WIDTH,
+    DEFAULT_NUM_OF_DISPLAYED_NOTES,
+    DEFAULT_SIDE_CONTAINER_WIDTH,
+    NoteFilterOptions,
+} from "../Shared/utils";
 import {
     appendNoteData,
     resetNotes,
@@ -90,7 +96,7 @@ export default function Home() {
 
     return (
         <Content>
-            <MainContainer width={680}>
+            <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <ScrollContainer>
                     <CreateNote reloadNotes={reloadNotes} />
                     <Filter filter={filter} handleFilterChange={handleFilterChange} />
@@ -98,7 +104,9 @@ export default function Home() {
                     <Notes notes={notes} usersMetadata={usersMetadata} loading={loading} loadNotes={loadNotes} />
                 </ScrollContainer>
             </MainContainer>
-            <SideContainer width={320}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>
+                <Search />
+            </SideContainer>
         </Content>
     );
 }

@@ -19,6 +19,7 @@ import PageTitle from "../../Components/PageTitle";
 import Content from "../../Layouts/Content";
 import MainContainer from "../../Layouts/MainContainer";
 import SideContainer from "../../Layouts/SideContainer";
+import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH } from "../../Shared/utils";
 import { updatePrimaryColor } from "../../Store/Features/primaryColorSlice";
 import { useAppSelector } from "../../Store/hook";
 
@@ -77,7 +78,7 @@ export default function AppearanceSettings() {
 
     return (
         <Content>
-            <MainContainer width={680}>
+            <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <PageTitle title="Appearance Settings" withBackBtn />
                 <Container p="lg" m={0}>
                     <Flex justify="space-between" align="center">
@@ -117,7 +118,7 @@ export default function AppearanceSettings() {
                 </Container>
                 <Divider />
             </MainContainer>
-            <SideContainer width={320}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
         </Content>
     );
 }

@@ -8,6 +8,7 @@ import { Box, Flex, useMantineTheme } from "@mantine/core";
 
 import PageLoader from "../Components/PageLoader";
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
+import { DEFAULT_SIDE_CONTAINER_WIDTH } from "../Shared/utils";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
 import { updateUser, updateUserLoading } from "../Store/Features/userSlice";
 import { useAppSelector } from "../Store/hook";
@@ -86,7 +87,7 @@ export default function Layout() {
     return (
         <Box m="0 auto">
             <Flex mih="100vh" justify="center" direction="row">
-                <Box w={320} py="md" px="lg">
+                <Box w={DEFAULT_SIDE_CONTAINER_WIDTH} py="md" px="lg">
                     <Navigation />
                 </Box>
                 <Box>

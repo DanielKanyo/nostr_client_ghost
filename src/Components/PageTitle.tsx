@@ -19,7 +19,7 @@ export default function PageTitle({ title, withBackBtn }: PageTitleProps) {
         <>
             <Flex p="lg" align="center" justify="flex-start">
                 {withBackBtn && (
-                    <ActionIcon mr={14} variant="subtle" color="gray" size="xl" radius="xl" aria-label="back" onClick={goBack}>
+                    <ActionIcon mr={14} variant="subtle" color="gray" size="lg" radius="xl" aria-label="back" onClick={goBack}>
                         <IconChevronLeft className="mantine-rotate-rtl" />
                     </ActionIcon>
                 )}

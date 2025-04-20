@@ -11,5 +11,6 @@ export const ROUTES = {
     SETTINGS_KEY_MANAGEMENT: "/settings/key-management",
     SETTINGS_APPEARANCE: "/settings/appearance",
     SETTINGS_PROFILE: "/settings/profile",
+    SETTINGS_NETWORK: "/settings/network",
     EVENT: `${EVENT_ROUTE_BASE}/:nevent`,
 };
