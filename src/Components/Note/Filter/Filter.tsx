@@ -27,6 +27,7 @@ export default function Filter({ filter, handleFilterChange }: FilterProps) {
     return (
         <Select
             my={0}
+            w={400}
             mr="md"
             pl="md"
             variant="unstyled"

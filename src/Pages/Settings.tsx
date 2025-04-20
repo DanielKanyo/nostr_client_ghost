@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 
-import { Container, Divider, NavLink, Text } from "@mantine/core";
+import { Container, Divider, Flex, NavLink, Text } from "@mantine/core";
 import { IconAntenna, IconBrush, IconChevronRight, IconKey, IconUserCog } from "@tabler/icons-react";
 
+import pkg from "../../package.json";
 import PageTitle from "../Components/PageTitle";
 import Content from "../Layouts/Content";
 import MainContainer from "../Layouts/MainContainer";
@@ -37,6 +38,12 @@ export default function Settings() {
             <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <PageTitle title="Settings" />
                 {items}
+                <Flex p="lg" justify="space-between">
+                    <Text c="dimmed">Version</Text>
+                    <Text c="dimmed" fw={700}>
+                        {pkg.version}
+                    </Text>
+                </Flex>
             </MainContainer>
             <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
         </Content>

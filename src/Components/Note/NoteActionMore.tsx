@@ -19,7 +19,7 @@ export default function NoteActionMore({ note, nevent }: NoteActionMorePorps) {
     const npub = useMemo(() => encodeNPub(note.pubkey), [note.pubkey]);
 
     return (
-        <Menu shadow="lg" position="bottom-end" radius="md" width={250}>
+        <Menu shadow="lg" position="bottom-end" radius="md" width={250} withArrow>
             <Menu.Target>
                 <ActionIcon aria-label="dots" variant="subtle" size={32} color="gray" radius="xl" onClick={(e) => e.stopPropagation()}>
                     <IconDots size={18} color="gray" />

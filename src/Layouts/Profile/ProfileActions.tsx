@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import { ActionIcon, Center, Group, Modal, Tooltip } from "@mantine/core";
+import { ActionIcon, Center, CopyButton, Group, Menu, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconMail, IconQrcode, IconUserEdit, IconWorldWww } from "@tabler/icons-react";
+import { IconDots, IconKey, IconLink, IconMail, IconQrcode, IconUserCancel, IconUserEdit, IconWorldWww } from "@tabler/icons-react";
 
 import FollowOrUnfollowButton from "../../Components/FollowOrUnfollowButton";
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
-import { ROUTES } from "../../Routes/routes";
-import { encodeNPub } from "../../Services/userService";
+import { PROFILE_ROUTE_BASE, ROUTES } from "../../Routes/routes";
+import { encodeNProfile, encodeNPub } from "../../Services/userService";
 import { useAppSelector } from "../../Store/hook";
 
 interface ProfileActionsProps {
@@ -34,11 +34,36 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
     return (
         <>
             <Group justify="flex-end" gap="xs" p="lg">
-                <Tooltip label="More options" withArrow>
-                    <ActionIcon aria-label="dots" {...iconProps}>
-                        <IconDots />
-                    </ActionIcon>
-                </Tooltip>
+                <Menu shadow="lg" radius="md" width={250} withArrow>
+                    <Menu.Target>
+                        <Tooltip label="More options" withArrow>
+                            <ActionIcon aria-label="dots" {...iconProps}>
+                                <IconDots />
+                            </ActionIcon>
+                        </Tooltip>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <CopyButton value={npub} timeout={2000}>
+                            {({ copy }) => (
+                                <Menu.Item fz="md" leftSection={<IconKey size={18} />} onClick={copy}>
+                                    Copy User Public Key
+                                </Menu.Item>
+                            )}
+                        </CopyButton>
+                        <CopyButton value={`${window.location.origin}${PROFILE_ROUTE_BASE}/${encodeNProfile(pubkey)}`} timeout={2000}>
+                            {({ copy }) => (
+                                <Menu.Item fz="md" leftSection={<IconLink size={18} />} onClick={copy}>
+                                    Copy User Link
+                                </Menu.Item>
+                            )}
+                        </CopyButton>
+                        {!ownKey && (
+                            <Menu.Item fz="md" leftSection={<IconUserCancel size={18} />} color="red">
+                                Mute User
+                            </Menu.Item>
+                        )}
+                    </Menu.Dropdown>
+                </Menu>
 
                 {website && (
                     <Tooltip label="Open Website" withArrow>
