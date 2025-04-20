@@ -2,6 +2,10 @@
     background-color: transparent;
 }
 
+.input[data-error]:focus {
+    border-color: red;
+}
+
 .input:focus {
     border-color: var(--input-border-color-focus);
 }

@@ -5,3 +5,8 @@
     padding-left: 0;
     padding-right: 0;
 }
+
+.error {
+    margin-top: 8px;
+    text-align: center;
+}

@@ -1,4 +1,5 @@
 import PageTitle from "../../Components/PageTitle";
+import RelayStatusIndicator from "../../Components/RelayStatusIndicator";
 import Content from "../../Layouts/Content";
 import MainContainer from "../../Layouts/MainContainer";
 import SideContainer from "../../Layouts/SideContainer";
@@ -10,7 +11,9 @@ export default function Network() {
             <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <PageTitle title="Network" withBackBtn />
             </MainContainer>
-            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>
+                <RelayStatusIndicator toggleAccordion />
+            </SideContainer>
         </Content>
     );
 }

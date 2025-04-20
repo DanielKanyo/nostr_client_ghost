@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
 
-import { Avatar, Box, Center, Combobox, CSSProperties, Flex, Group, InputBase, Loader, Text, useCombobox } from "@mantine/core";
+import { Avatar, Box, Center, Combobox, CSSProperties, Flex, Group, Input, InputBase, Loader, Text, useCombobox } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 
 import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
@@ -14,12 +14,15 @@ import { useAppSelector } from "../../Store/hook";
 import { UserMetadata } from "../../Types/userMetadata";
 import seachClasses from "./search.module.css";
 
+const INVALID_KEY_TEXT = "Invalid key! Make sure you're using a valid npub, nprofile or hexadecimal key...";
+
 export default function Search() {
     const { borderColor } = useAppSelector((state) => state.primaryColor);
     const combobox = useCombobox({ onDropdownClose: () => combobox.resetSelectedOption() });
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [optionsData, setOptionsData] = useState<UserMetadata[]>([]);
+    const [error, setError] = useState<string>("");
     const navigate = useNavigate();
 
     const fetchSearchResults = async (input: string) => {
@@ -36,6 +39,7 @@ export default function Search() {
                 pubkey = (data as any).pubkey;
             } else {
                 // Unsupported type
+                setError(INVALID_KEY_TEXT);
                 setOptionsData([]);
                 combobox.closeDropdown();
                 return;
@@ -44,7 +48,7 @@ export default function Search() {
             if (isHexPubkey(input.trim())) {
                 pubkey = input.trim();
             } else {
-                console.error("Invalid identifier:", e);
+                setError(INVALID_KEY_TEXT);
                 setOptionsData([]);
                 combobox.closeDropdown();
                 return;
@@ -63,7 +67,6 @@ export default function Search() {
                 setOptionsData([metadata]);
             }
         } catch (error) {
-            console.error("Search error:", error);
             setOptionsData([]);
             combobox.closeDropdown();
         } finally {
@@ -101,29 +104,34 @@ export default function Search() {
     ));
 
     return (
-        <Box p="md">
-            <Combobox store={combobox} withinPortal={false}>
+        <Box py="md" ml="md">
+            <Combobox store={combobox} withinPortal={false} withArrow>
                 <Combobox.Target>
-                    <InputBase
-                        radius="xl"
-                        size="md"
-                        rightSection={null}
-                        leftSection={<IconSearch size={18} />}
-                        value={search}
-                        onChange={(event) => {
-                            const newValue = event.currentTarget.value;
-                            setSearch(newValue);
-                            combobox.updateSelectedOptionIndex();
-                        }}
-                        onBlur={() => {
-                            combobox.closeDropdown();
-                            setOptionsData([]);
-                            setSearch("");
-                        }}
-                        placeholder="Search public key..."
-                        classNames={inputClasses}
-                        style={{ "--input-border-color-focus": borderColor } as CSSProperties}
-                    />
+                    <Input.Wrapper error={error} classNames={seachClasses}>
+                        <InputBase
+                            radius="xl"
+                            size="md"
+                            rightSection={null}
+                            leftSection={<IconSearch size={18} />}
+                            value={search}
+                            onChange={(event) => {
+                                setError("");
+                                setOptionsData([]);
+                                setSearch(event.currentTarget.value);
+                                combobox.updateSelectedOptionIndex();
+                            }}
+                            onBlur={() => {
+                                combobox.closeDropdown();
+                                setOptionsData([]);
+                                setError("");
+                                setSearch("");
+                            }}
+                            placeholder="Search public key..."
+                            classNames={inputClasses}
+                            style={{ "--input-border-color-focus": borderColor } as CSSProperties}
+                            error={!!error}
+                        />
+                    </Input.Wrapper>
                 </Combobox.Target>
 
                 <Combobox.Dropdown classNames={seachClasses}>

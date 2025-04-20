@@ -9,19 +9,19 @@ export default function NoteFooter({ handleActionIconClick }: NoteFooterProps) {
     return (
         <Group justify="space-between" pl="sm" mt="sm">
             <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconMessageCircle size={18} />
+                <IconMessageCircle size={18} color="gray" />
             </ActionIcon>
             <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconBolt size={18} />
+                <IconBolt size={18} color="gray" />
             </ActionIcon>
             <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconHeart size={18} />
+                <IconHeart size={18} color="gray" />
             </ActionIcon>
             <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconRepeat size={18} />
+                <IconRepeat size={18} color="gray" />
             </ActionIcon>
             <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconBookmark size={18} />
+                <IconBookmark size={18} color="gray" />
             </ActionIcon>
         </Group>
     );

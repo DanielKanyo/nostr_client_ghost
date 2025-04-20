@@ -4,9 +4,10 @@ import { useDispatch } from "react-redux";
 import isEqual from "lodash/isEqual";
 import { SimplePool } from "nostr-tools";
 
-import { Divider } from "@mantine/core";
+import { Divider, Flex } from "@mantine/core";
 
 import Filter from "../Components/Note/Filter/Filter";
+import RelayStatusIndicator from "../Components/RelayStatusIndicator";
 import Search from "../Components/Search/Search";
 import Content from "../Layouts/Content";
 import CreateNote from "../Layouts/CreateNote/CreateNote";
@@ -105,7 +106,10 @@ export default function Home() {
                 </ScrollContainer>
             </MainContainer>
             <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>
-                <Search />
+                <Flex h="100vh" direction="column" justify="space-between">
+                    <Search />
+                    <RelayStatusIndicator />
+                </Flex>
             </SideContainer>
         </Content>
     );

@@ -22,7 +22,7 @@ export default function NoteActionMore({ note, nevent }: NoteActionMorePorps) {
         <Menu shadow="lg" position="bottom-end" radius="md" width={250}>
             <Menu.Target>
                 <ActionIcon aria-label="dots" variant="subtle" size={32} color="gray" radius="xl" onClick={(e) => e.stopPropagation()}>
-                    <IconDots size={18} />
+                    <IconDots size={18} color="gray" />
                 </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
