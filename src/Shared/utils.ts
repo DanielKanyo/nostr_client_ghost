@@ -106,7 +106,7 @@ export const formatTimestamp = (timestamp: number): string => {
     }
 };
 
-export const SCROLL_POS_DEBOUNCE_TIME = 350;
+export const SCROLL_POS_DEBOUNCE_TIME = 300;
 
 export const DEFAULT_VOLUME_FOR_VIDEOS = 0.3;
 

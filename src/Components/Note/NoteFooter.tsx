@@ -1,28 +1,60 @@
-import { Group, ActionIcon } from "@mantine/core";
+import { useMemo } from "react";
+
+import { Group, ActionIcon, Text } from "@mantine/core";
 import { IconMessageCircle, IconBolt, IconHeart, IconRepeat, IconBookmark } from "@tabler/icons-react";
 
+import { InteractionCounts } from "../../Types/interactionCounts";
+
 interface NoteFooterProps {
+    noteId: string;
+    interactionCounts: { [noteId: string]: InteractionCounts };
     handleActionIconClick: (event: React.MouseEvent) => void;
 }
 
-export default function NoteFooter({ handleActionIconClick }: NoteFooterProps) {
+const ACTION_ICONS: {
+    Icon: React.FC<{ size: number; color: string }>;
+    label: string;
+    countKey?: keyof InteractionCounts;
+}[] = [
+    { Icon: IconMessageCircle, label: "comments", countKey: "comments" },
+    { Icon: IconBolt, label: "zap" },
+    { Icon: IconHeart, label: "likes", countKey: "likes" },
+    { Icon: IconRepeat, label: "reposts", countKey: "reposts" },
+    { Icon: IconBookmark, label: "bookmarks" },
+];
+
+export default function NoteFooter({ noteId, interactionCounts, handleActionIconClick }: NoteFooterProps) {
+    const interactions = useMemo(() => interactionCounts[noteId] || null, [interactionCounts, noteId]);
+
+    const actionProps = {
+        variant: "subtle" as const,
+        color: "gray",
+        radius: "xl" as const,
+        pos: "relative" as const,
+        size: 32,
+    };
+
     return (
         <Group justify="space-between" pl="sm" mt="sm">
-            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconMessageCircle size={18} color="gray" />
-            </ActionIcon>
-            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconBolt size={18} color="gray" />
-            </ActionIcon>
-            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconHeart size={18} color="gray" />
-            </ActionIcon>
-            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconRepeat size={18} color="gray" />
-            </ActionIcon>
-            <ActionIcon aria-label="comments" variant="subtle" size={32} color="gray" radius="xl" onClick={handleActionIconClick}>
-                <IconBookmark size={18} color="gray" />
-            </ActionIcon>
+            {ACTION_ICONS.map(({ Icon, label, countKey }) => (
+                <ActionIcon key={label} aria-label={label} {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
+                    <Icon size={18} color="gray" />
+                    {countKey && interactions?.[countKey] > 0 && (
+                        <Text
+                            fz={12}
+                            c="dimmed"
+                            style={{
+                                position: "absolute",
+                                left: 28,
+                                top: 7,
+                                pointerEvents: "none",
+                            }}
+                        >
+                            {interactions[countKey]}
+                        </Text>
+                    )}
+                </ActionIcon>
+            ))}
         </Group>
     );
 }

@@ -1,6 +1,7 @@
-import { finalizeEvent, getPublicKey, nip19, NostrEvent, SimplePool } from "nostr-tools";
+import { Filter, finalizeEvent, getPublicKey, nip19, NostrEvent, SimplePool } from "nostr-tools";
 
 import { convertPrivateKeyToPrivateKeyBytes, NoteFilterOptions, RELAYS } from "../Shared/utils";
+import { InteractionCounts } from "../Types/interactionCounts";
 
 export const fetchNotes = async (
     pool: SimplePool,
@@ -81,4 +82,50 @@ export const decodeNEvent = (nprofile: string): { id: string; relays?: string[] 
     }
 
     return decoded.data;
+};
+
+export const fetchInteractionCounts = async (
+    pool: SimplePool,
+    noteIds: string[],
+    relays: string[]
+): Promise<{ [noteId: string]: InteractionCounts }> => {
+    const interactionCounts: { [noteId: string]: InteractionCounts } = {};
+
+    // Initialize counts for each note
+    noteIds.forEach((noteId) => {
+        interactionCounts[noteId] = { likes: 0, reposts: 0, comments: 0 };
+    });
+
+    try {
+        // Define individual filters
+        const repostsAndLikesFilter: Filter = { kinds: [6, 7], "#e": noteIds };
+        const commentsFilter: Filter = { kinds: [1], "#e": noteIds };
+
+        // Run queries separately
+        const [repostLikeEvents, commentEvents] = await Promise.all([
+            pool.querySync(relays, repostsAndLikesFilter),
+            pool.querySync(relays, commentsFilter),
+        ]);
+
+        const events = [...repostLikeEvents, ...commentEvents];
+
+        // Process events
+        events.forEach((event: NostrEvent) => {
+            const noteId = event.tags.find((tag) => tag[0] === "e")?.[1];
+            if (!noteId || !interactionCounts[noteId]) return;
+
+            if (event.kind === 7 && event.content === "+") {
+                interactionCounts[noteId].likes += 1;
+            } else if (event.kind === 6) {
+                interactionCounts[noteId].reposts += 1;
+            } else if (event.kind === 1) {
+                interactionCounts[noteId].comments += 1;
+            }
+        });
+
+        return interactionCounts;
+    } catch (error) {
+        console.error("Error fetching interaction counts:", error);
+        return interactionCounts;
+    }
 };

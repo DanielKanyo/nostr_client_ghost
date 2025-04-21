@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { Accordion, Box, Center, Group, Indicator, Loader, Stack, Text } from "@mantine/core";
+import { Accordion, Box, Center, Group, Indicator, Loader, ScrollArea, Stack, Text } from "@mantine/core";
 import { IconAccessPoint } from "@tabler/icons-react";
 
 import { checkRelaysStatus, RELAY_STATUSES, RelayStatus } from "../Services/relayService";
-import { RELAYS } from "../Shared/utils";
 import { useAppSelector } from "../Store/hook";
 
 interface RelayStatusIndicatorProps {
@@ -42,7 +41,7 @@ export default function RelayStatusIndicator({ showList }: RelayStatusIndicatorP
         } catch (error) {
             const fallbackMap = new Map<string, RelayStatus>();
 
-            RELAYS.forEach((relay) => fallbackMap.set(relay, RELAY_STATUSES.OFFLINE));
+            relays.forEach((relay) => fallbackMap.set(relay, RELAY_STATUSES.OFFLINE));
 
             setStatusMap(fallbackMap);
         } finally {
@@ -91,27 +90,29 @@ export default function RelayStatusIndicator({ showList }: RelayStatusIndicatorP
                 <Accordion.Item value="status">
                     <Accordion.Control icon={<IconAccessPoint size={22} />}>Network</Accordion.Control>
                     <Accordion.Panel>
-                        {loading && (
-                            <Center>
-                                <Loader size={36} color="var(--mantine-color-dark-0)" type="dots" />
-                            </Center>
-                        )}
-                        <Stack>
-                            {!loading &&
-                                statusMap &&
-                                [...statusMap.entries()].map(([relay, status]) => (
-                                    <Group key={relay} justify="space-between" align="center">
-                                        <Box w={230}>
-                                            <Text c="dimmed" truncate="end">
-                                                {relay}
-                                            </Text>
-                                        </Box>
-                                        <Indicator size={5} position="middle-center" color={determineRelayStatus(status)}>
-                                            <Box w={24}></Box>
-                                        </Indicator>
-                                    </Group>
-                                ))}
-                        </Stack>
+                        <ScrollArea scrollbarSize={6}>
+                            {loading && (
+                                <Center>
+                                    <Loader size={36} color="var(--mantine-color-dark-0)" type="dots" />
+                                </Center>
+                            )}
+                            <Stack>
+                                {!loading &&
+                                    statusMap &&
+                                    [...statusMap.entries()].map(([relay, status]) => (
+                                        <Group key={relay} justify="space-between" align="center">
+                                            <Box w={220}>
+                                                <Text c="dimmed" truncate="end">
+                                                    {relay}
+                                                </Text>
+                                            </Box>
+                                            <Indicator size={5} position="middle-center" color={determineRelayStatus(status)}>
+                                                <Box w={26}></Box>
+                                            </Indicator>
+                                        </Group>
+                                    ))}
+                            </Stack>
+                        </ScrollArea>
                     </Accordion.Panel>
                 </Accordion.Item>
             </Accordion>

@@ -1,11 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
 
 import isEqual from "lodash/isEqual";
 import { SimplePool } from "nostr-tools";
 
 import { Divider, Flex } from "@mantine/core";
+import { IconNoteOff } from "@tabler/icons-react";
 
+import Empty from "../Components/Empty";
 import Filter from "../Components/Note/Filter/Filter";
 import RelayStatusIndicator from "../Components/RelayStatusIndicator";
 import Search from "../Components/Search/Search";
@@ -15,7 +17,7 @@ import MainContainer from "../Layouts/MainContainer";
 import Notes from "../Layouts/Notes";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
-import { fetchNotes } from "../Services/noteService";
+import { fetchInteractionCounts, fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
 import {
     DEFAULT_MAIN_CONTAINER_WIDTH,
@@ -24,9 +26,11 @@ import {
     NoteFilterOptions,
 } from "../Shared/utils";
 import {
+    appendInteractionCounts,
     appendNoteData,
     resetNotes,
     setFilter,
+    setInteractionCounts,
     setLoading,
     setNoteData,
     setUntil,
@@ -35,48 +39,59 @@ import {
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, usersMetadata, until, filter, loading } = useAppSelector((state) => state.noteData);
+    const { notes, usersMetadata, until, filter, interactionCounts, loading } = useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
+    const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
     const dispatch = useDispatch();
 
-    const loadNotes = async (reset: boolean = false) => {
-        dispatch(setLoading(true));
+    const loadNotes = useCallback(
+        async (reset: boolean = false) => {
+            if (loading) return;
 
-        const pool = new SimplePool();
+            dispatch(setLoading(true));
+            const pool = new SimplePool();
 
-        try {
-            const newNotes = await fetchNotes(
-                pool,
-                [...user.following, user.publicKey],
-                DEFAULT_NUM_OF_DISPLAYED_NOTES,
-                filter,
-                reset ? undefined : until
-            );
+            try {
+                const newNotes = await fetchNotes(
+                    pool,
+                    [...user.following, user.publicKey],
+                    DEFAULT_NUM_OF_DISPLAYED_NOTES,
+                    filter,
+                    reset ? undefined : until
+                );
 
-            if (newNotes.length > 0) {
-                const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
+                if (newNotes.length > 0) {
+                    const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
+                    const noteIds = newNotes.map((note) => note.id);
+                    const newInteractionCounts = await fetchInteractionCounts(pool, noteIds, relays);
 
-                dispatch(setUsersMetadata([...Array.from(metadataMap.values()), user.profile!]));
-                dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
+                    const combinedMetadata = new Map(metadataMap);
+                    combinedMetadata.set(user.publicKey, user.profile!);
 
-                dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
+                    dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
+                    dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
+                    dispatch(reset ? setInteractionCounts(newInteractionCounts) : appendInteractionCounts(newInteractionCounts));
+
+                    dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
+                }
+            } catch (error) {
+                console.error("Error loading notes:", error);
+            } finally {
+                closePool(pool);
+                dispatch(setLoading(false));
             }
-        } catch (error) {
-            console.error("Error loading notes:", error);
-        } finally {
-            closePool(pool);
-            dispatch(setLoading(false));
-        }
-    };
+        },
+        [user.following, user.publicKey, filter, until, relays, user.profile, dispatch, loading]
+    );
 
     useEffect(() => {
         const hasData = notes.length > 0 && usersMetadata.length > 0;
 
-        if (user.following.length > 0 && !hasData) {
+        if (user.following.length > 0 && !hasData && relays.length) {
             loadNotes(true);
         }
-    }, [user.following, filter]);
+    }, [user.following, filter, relays, notes.length, usersMetadata.length, loadNotes]);
 
     useEffect(() => {
         if (!isEqual(user.following, previousFollowing.current)) {
@@ -85,15 +100,18 @@ export default function Home() {
         }
     }, [user.following, dispatch]);
 
-    const handleFilterChange = (option: NoteFilterOptions) => {
-        dispatch(resetNotes());
-        dispatch(setFilter(option));
-    };
+    const handleFilterChange = useCallback(
+        (option: NoteFilterOptions) => {
+            dispatch(resetNotes());
+            dispatch(setFilter(option));
+        },
+        [dispatch]
+    );
 
-    const reloadNotes = () => {
+    const reloadNotes = useCallback(() => {
         dispatch(resetNotes());
         loadNotes(true);
-    };
+    }, [dispatch, loadNotes]);
 
     return (
         <Content>
@@ -102,7 +120,17 @@ export default function Home() {
                     <CreateNote reloadNotes={reloadNotes} />
                     <Filter filter={filter} handleFilterChange={handleFilterChange} />
                     <Divider />
-                    <Notes notes={notes} usersMetadata={usersMetadata} loading={loading} loadNotes={loadNotes} />
+                    {!loading && notes.length === 0 ? (
+                        <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />
+                    ) : (
+                        <Notes
+                            notes={notes}
+                            usersMetadata={usersMetadata}
+                            loading={loading}
+                            loadNotes={loadNotes}
+                            interactionCounts={interactionCounts}
+                        />
+                    )}
                 </ScrollContainer>
             </MainContainer>
             <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>

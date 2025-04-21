@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
@@ -25,55 +25,58 @@ export default function Search() {
     const [error, setError] = useState<string>("");
     const navigate = useNavigate();
 
-    const fetchSearchResults = async (input: string) => {
-        if (!input) return;
+    const fetchSearchResults = useCallback(
+        async (input: string) => {
+            if (!input) return;
 
-        let pubkey: string | null = null;
+            let pubkey: string | null = null;
 
-        try {
-            const { type, data } = decodeNPub(input.trim());
+            try {
+                const { type, data } = decodeNPub(input.trim());
 
-            if (type === "npub") {
-                pubkey = data as string;
-            } else if (type === "nprofile") {
-                pubkey = (data as any).pubkey;
-            } else {
-                // Unsupported type
-                setError(INVALID_KEY_TEXT);
+                if (type === "npub") {
+                    pubkey = data as string;
+                } else if (type === "nprofile") {
+                    pubkey = (data as any).pubkey;
+                } else {
+                    // Unsupported type
+                    setError(INVALID_KEY_TEXT);
+                    setOptionsData([]);
+                    combobox.closeDropdown();
+                    return;
+                }
+            } catch (e) {
+                if (isHexPubkey(input.trim())) {
+                    pubkey = input.trim();
+                } else {
+                    setError(INVALID_KEY_TEXT);
+                    setOptionsData([]);
+                    combobox.closeDropdown();
+                    return;
+                }
+            }
+
+            setLoading(true);
+            combobox.openDropdown();
+
+            const pool = new SimplePool();
+
+            try {
+                const metadata = await fetchUserMetadata(pool, pubkey!);
+
+                if (metadata) {
+                    setOptionsData([metadata]);
+                }
+            } catch (error) {
                 setOptionsData([]);
                 combobox.closeDropdown();
-                return;
+            } finally {
+                closePool(pool);
+                setLoading(false);
             }
-        } catch (e) {
-            if (isHexPubkey(input.trim())) {
-                pubkey = input.trim();
-            } else {
-                setError(INVALID_KEY_TEXT);
-                setOptionsData([]);
-                combobox.closeDropdown();
-                return;
-            }
-        }
-
-        setLoading(true);
-        combobox.openDropdown();
-
-        const pool = new SimplePool();
-
-        try {
-            const metadata = await fetchUserMetadata(pool, pubkey!);
-
-            if (metadata) {
-                setOptionsData([metadata]);
-            }
-        } catch (error) {
-            setOptionsData([]);
-            combobox.closeDropdown();
-        } finally {
-            closePool(pool);
-            setLoading(false);
-        }
-    };
+        },
+        [combobox]
+    );
 
     useEffect(() => {
         const timer = setTimeout(() => {

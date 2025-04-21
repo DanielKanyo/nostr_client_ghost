@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { NostrEvent, SimplePool } from "nostr-tools";
 
 import { Tabs } from "@mantine/core";
 
-import { fetchNotes } from "../../Services/noteService";
+import { fetchInteractionCounts, fetchNotes } from "../../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import classes from "../../Shared/Styles/tabs.module.css";
 import { DEFAULT_NUM_OF_DISPLAYED_NOTES, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
+import { InteractionCounts } from "../../Types/interactionCounts";
 import { UserMetadata } from "../../Types/userMetadata";
 import Notes from "../Notes";
 import UserList from "../UserList";
@@ -31,35 +32,51 @@ export default function ProfileContent({
     following,
 }: ProfileContentProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
+    const relays = useAppSelector((state) => state.relays);
     const [notes, setNotes] = useState<NostrEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
+    const [interactionCounts, setInteractionCounts] = useState<{ [noteId: string]: InteractionCounts }>({});
     const [until, setUntil] = useState<number | undefined>(undefined);
-    const limit = DEFAULT_NUM_OF_DISPLAYED_NOTES;
 
-    const loadNotes = async (reset: boolean = false) => {
-        setLoading(true);
+    const loadNotes = useCallback(
+        async (reset = false) => {
+            setLoading(true);
+            const pool = new SimplePool();
 
-        const pool = new SimplePool();
+            try {
+                const fetchedNotes = await fetchNotes(
+                    pool,
+                    [pubkey],
+                    DEFAULT_NUM_OF_DISPLAYED_NOTES,
+                    filterOption,
+                    reset ? undefined : until
+                );
+                if (fetchedNotes.length > 0) {
+                    const metadataMap = await fetchMultipleUserMetadata(pool, [pubkey]);
+                    const noteIds = fetchedNotes.map((note) => note.id);
+                    const newInteractionCounts = await fetchInteractionCounts(pool, noteIds, relays);
 
-        try {
-            const newNotes = await fetchNotes(pool, [pubkey], limit, filterOption, reset ? undefined : until);
+                    if (reset) {
+                        setNotes(fetchedNotes);
+                        setInteractionCounts(newInteractionCounts);
+                    } else {
+                        setNotes((prev) => [...prev, ...fetchedNotes]);
+                        setInteractionCounts((prev) => ({ ...prev, ...newInteractionCounts }));
+                    }
 
-            if (newNotes.length > 0) {
-                const metadataMap = await fetchMultipleUserMetadata(pool, [pubkey]);
-
-                setUsersMetadata(Array.from(metadataMap.values()));
-                setNotes((prev) => (reset ? newNotes : [...prev, ...newNotes]));
-
-                setUntil(newNotes[newNotes.length - 1].created_at - 1);
+                    setUsersMetadata(Array.from(metadataMap.values()));
+                    setUntil(fetchedNotes[fetchedNotes.length - 1].created_at - 1);
+                }
+            } catch (error) {
+                console.error("Error loading notes:", error);
+            } finally {
+                closePool(pool);
+                setLoading(false);
             }
-        } catch (error) {
-            console.error("Error loading notes:", error);
-        } finally {
-            closePool(pool);
-            setLoading(false);
-        }
-    };
+        },
+        [pubkey, relays, filterOption, until]
+    );
 
     useEffect(() => {
         setNotes([]);
@@ -87,7 +104,13 @@ export default function ProfileContent({
             </Tabs.List>
 
             <Tabs.Panel value="notes">
-                <Notes notes={notes} usersMetadata={usersMetadata} loading={loading} loadNotes={loadNotes} />
+                <Notes
+                    notes={notes}
+                    usersMetadata={usersMetadata}
+                    loading={loading}
+                    interactionCounts={interactionCounts}
+                    loadNotes={loadNotes}
+                />
             </Tabs.Panel>
 
             <Tabs.Panel value="reads" p="md">
@@ -95,7 +118,13 @@ export default function ProfileContent({
             </Tabs.Panel>
 
             <Tabs.Panel value="replies">
-                <Notes notes={notes} usersMetadata={usersMetadata} loading={loading} loadNotes={loadNotes} />
+                <Notes
+                    notes={notes}
+                    usersMetadata={usersMetadata}
+                    loading={loading}
+                    interactionCounts={interactionCounts}
+                    loadNotes={loadNotes}
+                />
             </Tabs.Panel>
 
             <Tabs.Panel value="followers">

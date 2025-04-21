@@ -5,23 +5,28 @@ import { IconDots, IconNoteOff } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
+import { InteractionCounts } from "../Types/interactionCounts";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface NotesProps {
     notes: NostrEvent[];
     usersMetadata: UserMetadata[];
     loading: boolean;
+    interactionCounts: { [noteId: string]: InteractionCounts };
     loadNotes: () => void;
 }
 
-export default function Notes({ notes, usersMetadata, loading, loadNotes }: NotesProps) {
+export default function Notes({ notes, usersMetadata, loading, interactionCounts, loadNotes }: NotesProps) {
     const hasNotes = notes.length > 0;
 
     return (
         <>
             {!hasNotes && !loading && <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />}
 
-            {hasNotes && notes.map((note: NostrEvent) => <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} />)}
+            {hasNotes &&
+                notes.map((note: NostrEvent) => (
+                    <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} interactionCounts={interactionCounts} />
+                ))}
             {loading && (
                 <Center>
                     <Loader size={36} my="md" color="var(--mantine-color-dark-0)" type="dots" />

@@ -1,13 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-const initRelays = [
-    "wss://relay.damus.io",
-    "wss://nos.lol",
-    "wss://relay.snort.social",
-    "wss://nostr.wine",
-    "wss://relay.nostr.band",
-    "wss://nostr.mom",
-];
+const initRelays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net", "wss://nostr.wine"];
 
 export const relaysSlice = createSlice({
     name: "relays",

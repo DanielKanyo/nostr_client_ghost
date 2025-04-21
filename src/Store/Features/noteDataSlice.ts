@@ -3,6 +3,7 @@ import { NostrEvent } from "nostr-tools";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { NoteFilterOptions } from "../../Shared/utils";
+import { InteractionCounts } from "../../Types/interactionCounts";
 import { UserMetadata } from "../../Types/userMetadata";
 
 interface NoteDataState {
@@ -11,6 +12,7 @@ interface NoteDataState {
     until: number | undefined;
     loading: boolean;
     filter: NoteFilterOptions;
+    interactionCounts: { [noteId: string]: InteractionCounts }; // Per-note counts
 }
 
 const initialState: NoteDataState = {
@@ -19,6 +21,7 @@ const initialState: NoteDataState = {
     until: undefined,
     loading: false,
     filter: NoteFilterOptions.Notes,
+    interactionCounts: {},
 };
 
 const noteDataSlice = createSlice({
@@ -43,6 +46,12 @@ const noteDataSlice = createSlice({
         setFilter: (state, action: PayloadAction<NoteFilterOptions>) => {
             state.filter = action.payload;
         },
+        setInteractionCounts: (state, action: PayloadAction<{ [noteId: string]: InteractionCounts }>) => {
+            state.interactionCounts = action.payload;
+        },
+        appendInteractionCounts: (state, action: PayloadAction<{ [noteId: string]: InteractionCounts }>) => {
+            state.interactionCounts = { ...state.interactionCounts, ...action.payload };
+        },
         resetNotes: (state) => {
             state.notes = [];
             state.until = undefined;
@@ -50,5 +59,15 @@ const noteDataSlice = createSlice({
     },
 });
 
-export const { setNoteData, appendNoteData, setUsersMetadata, setUntil, setLoading, setFilter, resetNotes } = noteDataSlice.actions;
+export const {
+    setNoteData,
+    appendNoteData,
+    setUsersMetadata,
+    setUntil,
+    setLoading,
+    setFilter,
+    setInteractionCounts,
+    appendInteractionCounts,
+    resetNotes,
+} = noteDataSlice.actions;
 export default noteDataSlice.reducer;

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 import { debounce } from "lodash";
 
 import { ScrollArea } from "@mantine/core";
 
+import { ROUTES } from "../Routes/routes";
 import { SCROLL_POS_DEBOUNCE_TIME } from "../Shared/utils";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
 import { useAppSelector } from "../Store/hook";
@@ -19,6 +21,7 @@ interface ScrollContainerProps {
 }
 
 export default function ScrollContainer({ children }: ScrollContainerProps) {
+    const location = useLocation();
     const viewportRef = useRef<HTMLDivElement>(null);
     const scrollPosition = useAppSelector((state) => state.scrollPosition);
     const dispatch = useDispatch();
@@ -32,7 +35,9 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
 
     const handleScrollPositionChange = useCallback(
         ({ x, y }: ScrollPosition) => {
-            debouncedSetScrollPosition({ x, y });
+            if (location.pathname === ROUTES.HOME) {
+                debouncedSetScrollPosition({ x, y });
+            }
         },
         [debouncedSetScrollPosition]
     );
