@@ -26,10 +26,10 @@ interface ProfileContentProps {
 export default function ProfileContent({
     pubkey,
     activeTab,
-    handleActiveTabChange,
     filterOption,
     followers,
     following,
+    handleActiveTabChange,
 }: ProfileContentProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
     const relays = useAppSelector((state) => state.relays);

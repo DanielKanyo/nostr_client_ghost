@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
@@ -23,29 +23,32 @@ export default function Profile() {
     const [profile, setProfile] = useState<UserMetadata | null>(null);
     const [following, setFollowing] = useState<string[]>([]);
     const [followers, setFollowers] = useState<string[]>([]);
-    const [ownKey, setOwnKey] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-    const [activeTab, setActiveTab] = useState<string | null>(PROFILE_CONTENT_TABS.NOTES);
+    const [error, setError] = useState("");
+    const [activeTab, setActiveTab] = useState<string>(PROFILE_CONTENT_TABS.NOTES);
     const [filterOption, setFilterOption] = useState<NoteFilterOptions>(NoteFilterOptions.Notes);
 
     const nprofileData = useMemo(() => decodeNProfileOrNPub(key!), [key]);
 
-    // Reset states on nprofile change
+    const isOwnProfile = nprofileData?.pubkey === storedUser.publicKey;
+
+    const handleActiveTabChange = useCallback((tab: PROFILE_CONTENT_TABS) => {
+        setActiveTab(tab);
+        setFilterOption(tab === PROFILE_CONTENT_TABS.REPLIES ? NoteFilterOptions.Replies : NoteFilterOptions.Notes);
+    }, []);
+
     useEffect(() => {
+        // Reset states on profile switch
         setProfile(null);
         setFollowers([]);
-        setFollowers([]);
-        setOwnKey(false);
-        handleActiveTabChange(PROFILE_CONTENT_TABS.NOTES);
+        setFollowing([]);
         setError("");
-    }, [key]);
+        handleActiveTabChange(PROFILE_CONTENT_TABS.NOTES);
+    }, [key, handleActiveTabChange]);
 
     useEffect(() => {
-        // TODO: Check what happens when the user opens /profile without nprofile in the url
         if (!nprofileData) return;
 
-        if (nprofileData.pubkey === storedUser.publicKey) {
-            setOwnKey(true);
+        if (isOwnProfile) {
             setProfile(storedUser.profile);
             setFollowers(storedUser.followers);
             setFollowing(storedUser.following);
@@ -61,19 +64,16 @@ export default function Profile() {
                 //     ? nprofileData.relays
                 //     : ["wss://nos.lol", "wss://relay.damus.io"];
 
-                const metadata = await fetchUserMetadata(pool, nprofileData.pubkey);
-                const [following, followers] = await Promise.all([
+                const [metadata, followingList, followersList] = await Promise.all([
+                    fetchUserMetadata(pool, nprofileData.pubkey),
                     getFollowing(pool, nprofileData.pubkey),
                     getFollowers(pool, nprofileData.pubkey),
                 ]);
 
-                setFollowers(followers);
-                setFollowing(following);
-
-                if (metadata) {
-                    setProfile(metadata);
-                }
-            } catch (err) {
+                setProfile(metadata ?? null);
+                setFollowing(followingList);
+                setFollowers(followersList);
+            } catch {
                 setError("Fetching user details failed! Please try again later...");
             } finally {
                 closePool(pool);
@@ -81,23 +81,7 @@ export default function Profile() {
         };
 
         fetchProfile();
-    }, [nprofileData, storedUser.publicKey, storedUser.following]);
-
-    const handleActiveTabChange = (tab: PROFILE_CONTENT_TABS) => {
-        switch (tab) {
-            case PROFILE_CONTENT_TABS.NOTES:
-                setFilterOption(NoteFilterOptions.Notes);
-                break;
-            case PROFILE_CONTENT_TABS.REPLIES:
-                setFilterOption(NoteFilterOptions.Replies);
-                break;
-            default:
-                setFilterOption(NoteFilterOptions.Notes);
-                break;
-        }
-
-        setActiveTab(tab);
-    };
+    }, [nprofileData, isOwnProfile, storedUser]);
 
     return (
         <Content>
@@ -115,7 +99,7 @@ export default function Profile() {
                                 website={profile.website}
                                 followers={followers}
                                 following={following}
-                                ownKey={ownKey}
+                                ownKey={isOwnProfile}
                                 handleActiveTabChange={handleActiveTabChange}
                             />
                             <ProfileContent
