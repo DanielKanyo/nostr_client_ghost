@@ -1,4 +1,4 @@
-export interface InteractionCounts {
+export interface InteractionStats {
     likes: number;
     reposts: number;
     comments: number;

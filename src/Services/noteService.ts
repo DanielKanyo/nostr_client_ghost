@@ -1,7 +1,7 @@
 import { Filter, finalizeEvent, getPublicKey, nip19, NostrEvent, SimplePool } from "nostr-tools";
 
 import { convertPrivateKeyToPrivateKeyBytes, NoteFilterOptions, RELAYS } from "../Shared/utils";
-import { InteractionCounts } from "../Types/interactionCounts";
+import { InteractionStats } from "../Types/interactionStats";
 
 export const fetchNotes = async (
     pool: SimplePool,
@@ -84,16 +84,16 @@ export const decodeNEvent = (nprofile: string): { id: string; relays?: string[] 
     return decoded.data;
 };
 
-export const fetchInteractionCounts = async (
+export const fetchInteractionStats = async (
     pool: SimplePool,
     noteIds: string[],
     relays: string[]
-): Promise<{ [noteId: string]: InteractionCounts }> => {
-    const interactionCounts: { [noteId: string]: InteractionCounts } = {};
+): Promise<{ [noteId: string]: InteractionStats }> => {
+    const interactionStats: { [noteId: string]: InteractionStats } = {};
 
-    // Initialize counts for each note
+    // Initialize stats for each note
     noteIds.forEach((noteId) => {
-        interactionCounts[noteId] = { likes: 0, reposts: 0, comments: 0, zapAmount: 0 };
+        interactionStats[noteId] = { likes: 0, reposts: 0, comments: 0, zapAmount: 0 };
     });
 
     try {
@@ -113,19 +113,19 @@ export const fetchInteractionCounts = async (
 
         events.forEach((event: NostrEvent) => {
             const noteId = event.tags.find((tag) => tag[0] === "e")?.[1];
-            if (!noteId || !interactionCounts[noteId]) return;
+            if (!noteId || !interactionStats[noteId]) return;
 
             switch (event.kind) {
                 case 7:
                     if (event.content === "+") {
-                        interactionCounts[noteId].likes += 1;
+                        interactionStats[noteId].likes += 1;
                     }
                     break;
                 case 6:
-                    interactionCounts[noteId].reposts += 1;
+                    interactionStats[noteId].reposts += 1;
                     break;
                 case 1:
-                    interactionCounts[noteId].comments += 1;
+                    interactionStats[noteId].comments += 1;
                     break;
                 case 9735:
                     try {
@@ -137,7 +137,7 @@ export const fetchInteractionCounts = async (
                         const sats = decodeLightningInvoice(bolt11);
 
                         if (sats !== null) {
-                            interactionCounts[noteId].zapAmount += sats;
+                            interactionStats[noteId].zapAmount += sats;
                         }
                     } catch (e) {
                         console.warn("Failed to parse zap amount:", e);
@@ -146,10 +146,10 @@ export const fetchInteractionCounts = async (
             }
         });
 
-        return interactionCounts;
+        return interactionStats;
     } catch (error) {
         console.error("Error fetching interaction counts:", error);
-        return interactionCounts;
+        return interactionStats;
     }
 };
 

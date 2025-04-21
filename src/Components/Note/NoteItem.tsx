@@ -10,7 +10,7 @@ import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNEvent } from "../../Services/noteService";
 import { encodeNProfile } from "../../Services/userService";
 import { extractImageUrls, extractVideoUrls } from "../../Shared/utils";
-import { InteractionCounts } from "../../Types/interactionCounts";
+import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 import NoteActionMore from "./NoteActionMore";
 import NoteBody from "./NoteBody";
@@ -20,10 +20,10 @@ import NoteHeader from "./NoteHeader";
 interface NoteItemProps {
     note: NostrEvent;
     usersMetadata: UserMetadata[];
-    interactionCounts: { [noteId: string]: InteractionCounts };
+    interactionStats: { [noteId: string]: InteractionStats };
 }
 
-export default function NoteItem({ note, usersMetadata, interactionCounts }: NoteItemProps) {
+export default function NoteItem({ note, usersMetadata, interactionStats }: NoteItemProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const nevent = encodeNEvent(note.id);
@@ -93,7 +93,7 @@ export default function NoteItem({ note, usersMetadata, interactionCounts }: Not
                             </Stack>
                             <NoteActionMore note={note} usersMetadata={userMetadata} nevent={nevent} />
                         </Flex>
-                        <NoteFooter noteId={note.id} interactionCounts={interactionCounts} handleActionIconClick={handleActionIconClick} />
+                        <NoteFooter noteId={note.id} interactionStats={interactionStats} handleActionIconClick={handleActionIconClick} />
                     </Container>
                 </Flex>
             </Container>

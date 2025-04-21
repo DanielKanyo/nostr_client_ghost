@@ -1,7 +1,7 @@
 import { JSX } from "react";
 import { Link } from "react-router-dom";
 
-import { TypographyStylesProvider, Card, Text, Image } from "@mantine/core";
+import { Card, Image, Text, TypographyStylesProvider } from "@mantine/core";
 
 import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import VideoRenderer from "./VideoRenderer";

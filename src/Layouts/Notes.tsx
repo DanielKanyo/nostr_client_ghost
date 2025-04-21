@@ -5,18 +5,18 @@ import { IconDots, IconNoteOff } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
-import { InteractionCounts } from "../Types/interactionCounts";
+import { InteractionStats } from "../Types/interactionStats";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface NotesProps {
     notes: NostrEvent[];
     usersMetadata: UserMetadata[];
     loading: boolean;
-    interactionCounts: { [noteId: string]: InteractionCounts };
+    interactionStats: { [noteId: string]: InteractionStats };
     loadNotes: () => void;
 }
 
-export default function Notes({ notes, usersMetadata, loading, interactionCounts, loadNotes }: NotesProps) {
+export default function Notes({ notes, usersMetadata, loading, interactionStats, loadNotes }: NotesProps) {
     const hasNotes = notes.length > 0;
 
     return (
@@ -25,7 +25,7 @@ export default function Notes({ notes, usersMetadata, loading, interactionCounts
 
             {hasNotes &&
                 notes.map((note: NostrEvent) => (
-                    <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} interactionCounts={interactionCounts} />
+                    <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} interactionStats={interactionStats} />
                 ))}
             {loading && (
                 <Center>

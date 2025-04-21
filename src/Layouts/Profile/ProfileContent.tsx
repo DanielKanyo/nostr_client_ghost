@@ -4,12 +4,12 @@ import { NostrEvent, SimplePool } from "nostr-tools";
 
 import { Tabs } from "@mantine/core";
 
-import { fetchInteractionCounts, fetchNotes } from "../../Services/noteService";
+import { fetchInteractionStats, fetchNotes } from "../../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import classes from "../../Shared/Styles/tabs.module.css";
 import { DEFAULT_NUM_OF_DISPLAYED_NOTES, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
-import { InteractionCounts } from "../../Types/interactionCounts";
+import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 import Notes from "../Notes";
 import UserList from "../UserList";
@@ -36,7 +36,7 @@ export default function ProfileContent({
     const [notes, setNotes] = useState<NostrEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
-    const [interactionCounts, setInteractionCounts] = useState<{ [noteId: string]: InteractionCounts }>({});
+    const [interactionStats, setInteractionStats] = useState<{ [noteId: string]: InteractionStats }>({});
     const [until, setUntil] = useState<number | undefined>(undefined);
 
     const loadNotes = useCallback(
@@ -55,14 +55,14 @@ export default function ProfileContent({
                 if (fetchedNotes.length > 0) {
                     const metadataMap = await fetchMultipleUserMetadata(pool, [pubkey]);
                     const noteIds = fetchedNotes.map((note) => note.id);
-                    const newInteractionCounts = await fetchInteractionCounts(pool, noteIds, relays);
+                    const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
 
                     if (reset) {
                         setNotes(fetchedNotes);
-                        setInteractionCounts(newInteractionCounts);
+                        setInteractionStats(newInteractionCounts);
                     } else {
                         setNotes((prev) => [...prev, ...fetchedNotes]);
-                        setInteractionCounts((prev) => ({ ...prev, ...newInteractionCounts }));
+                        setInteractionStats((prev) => ({ ...prev, ...newInteractionCounts }));
                     }
 
                     setUsersMetadata(Array.from(metadataMap.values()));
@@ -108,7 +108,7 @@ export default function ProfileContent({
                     notes={notes}
                     usersMetadata={usersMetadata}
                     loading={loading}
-                    interactionCounts={interactionCounts}
+                    interactionStats={interactionStats}
                     loadNotes={loadNotes}
                 />
             </Tabs.Panel>
@@ -122,7 +122,7 @@ export default function ProfileContent({
                     notes={notes}
                     usersMetadata={usersMetadata}
                     loading={loading}
-                    interactionCounts={interactionCounts}
+                    interactionStats={interactionStats}
                     loadNotes={loadNotes}
                 />
             </Tabs.Panel>

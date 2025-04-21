@@ -17,7 +17,7 @@ import MainContainer from "../Layouts/MainContainer";
 import Notes from "../Layouts/Notes";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
-import { fetchInteractionCounts, fetchNotes } from "../Services/noteService";
+import { fetchInteractionStats, fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
 import {
     DEFAULT_MAIN_CONTAINER_WIDTH,
@@ -26,11 +26,11 @@ import {
     NoteFilterOptions,
 } from "../Shared/utils";
 import {
-    appendInteractionCounts,
+    appendInteractionStats,
     appendNoteData,
     resetNotes,
     setFilter,
-    setInteractionCounts,
+    setInteractionStats,
     setLoading,
     setNoteData,
     setUntil,
@@ -39,7 +39,7 @@ import {
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, usersMetadata, until, filter, interactionCounts, loading } = useAppSelector((state) => state.noteData);
+    const { notes, usersMetadata, until, filter, interactionStats, loading } = useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
@@ -64,14 +64,14 @@ export default function Home() {
                 if (newNotes.length > 0) {
                     const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
                     const noteIds = newNotes.map((note) => note.id);
-                    const newInteractionCounts = await fetchInteractionCounts(pool, noteIds, relays);
+                    const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
 
                     const combinedMetadata = new Map(metadataMap);
                     combinedMetadata.set(user.publicKey, user.profile!);
 
                     dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
                     dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
-                    dispatch(reset ? setInteractionCounts(newInteractionCounts) : appendInteractionCounts(newInteractionCounts));
+                    dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
                     dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
                 }
@@ -128,7 +128,7 @@ export default function Home() {
                             usersMetadata={usersMetadata}
                             loading={loading}
                             loadNotes={loadNotes}
-                            interactionCounts={interactionCounts}
+                            interactionStats={interactionStats}
                         />
                     )}
                 </ScrollContainer>

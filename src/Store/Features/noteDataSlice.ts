@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { NoteFilterOptions } from "../../Shared/utils";
-import { InteractionCounts } from "../../Types/interactionCounts";
+import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 
 interface NoteDataState {
@@ -12,7 +12,7 @@ interface NoteDataState {
     until: number | undefined;
     loading: boolean;
     filter: NoteFilterOptions;
-    interactionCounts: { [noteId: string]: InteractionCounts }; // Per-note counts
+    interactionStats: { [noteId: string]: InteractionStats }; // Per-note counts
 }
 
 const initialState: NoteDataState = {
@@ -21,7 +21,7 @@ const initialState: NoteDataState = {
     until: undefined,
     loading: false,
     filter: NoteFilterOptions.Notes,
-    interactionCounts: {},
+    interactionStats: {},
 };
 
 const noteDataSlice = createSlice({
@@ -46,11 +46,11 @@ const noteDataSlice = createSlice({
         setFilter: (state, action: PayloadAction<NoteFilterOptions>) => {
             state.filter = action.payload;
         },
-        setInteractionCounts: (state, action: PayloadAction<{ [noteId: string]: InteractionCounts }>) => {
-            state.interactionCounts = action.payload;
+        setInteractionStats: (state, action: PayloadAction<{ [noteId: string]: InteractionStats }>) => {
+            state.interactionStats = action.payload;
         },
-        appendInteractionCounts: (state, action: PayloadAction<{ [noteId: string]: InteractionCounts }>) => {
-            state.interactionCounts = { ...state.interactionCounts, ...action.payload };
+        appendInteractionStats: (state, action: PayloadAction<{ [noteId: string]: InteractionStats }>) => {
+            state.interactionStats = { ...state.interactionStats, ...action.payload };
         },
         resetNotes: (state) => {
             state.notes = [];
@@ -66,8 +66,8 @@ export const {
     setUntil,
     setLoading,
     setFilter,
-    setInteractionCounts,
-    appendInteractionCounts,
+    setInteractionStats,
+    appendInteractionStats,
     resetNotes,
 } = noteDataSlice.actions;
 export default noteDataSlice.reducer;

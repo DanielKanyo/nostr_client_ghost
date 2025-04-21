@@ -3,19 +3,15 @@ import { useMemo } from "react";
 import { Group, ActionIcon, Text, NumberFormatter } from "@mantine/core";
 import { IconMessageCircle, IconBolt, IconHeart, IconRepeat, IconBookmark } from "@tabler/icons-react";
 
-import { InteractionCounts } from "../../Types/interactionCounts";
+import { InteractionStats } from "../../Types/interactionStats";
 
 interface NoteFooterProps {
     noteId: string;
-    interactionCounts: { [noteId: string]: InteractionCounts };
+    interactionStats: { [noteId: string]: InteractionStats };
     handleActionIconClick: (event: React.MouseEvent) => void;
 }
 
-const ACTION_ICONS: {
-    Icon: React.FC<{ size: number; color: string }>;
-    label: string;
-    countKey?: keyof InteractionCounts;
-}[] = [
+const ACTION_ICONS: { Icon: React.FC<{ size: number; color: string }>; label: string; countKey?: keyof InteractionStats }[] = [
     { Icon: IconMessageCircle, label: "comments", countKey: "comments" },
     { Icon: IconBolt, label: "zaps", countKey: "zapAmount" },
     { Icon: IconHeart, label: "likes", countKey: "likes" },
@@ -23,8 +19,8 @@ const ACTION_ICONS: {
     { Icon: IconBookmark, label: "bookmarks" },
 ];
 
-export default function NoteFooter({ noteId, interactionCounts, handleActionIconClick }: NoteFooterProps) {
-    const interactions = useMemo(() => interactionCounts[noteId] || null, [interactionCounts, noteId]);
+export default function NoteFooter({ noteId, interactionStats, handleActionIconClick }: NoteFooterProps) {
+    const interactionsStats = useMemo(() => interactionStats[noteId] || null, [interactionStats, noteId]);
 
     const actionProps = {
         variant: "subtle" as const,
@@ -39,7 +35,7 @@ export default function NoteFooter({ noteId, interactionCounts, handleActionIcon
             {ACTION_ICONS.map(({ Icon, label, countKey }) => (
                 <ActionIcon key={label} aria-label={label} {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
                     <Icon size={18} color="gray" />
-                    {countKey && interactions?.[countKey] > 0 && (
+                    {countKey && interactionsStats?.[countKey] > 0 && (
                         <Text
                             fz={12}
                             c="dimmed"
@@ -50,7 +46,7 @@ export default function NoteFooter({ noteId, interactionCounts, handleActionIcon
                                 pointerEvents: "none",
                             }}
                         >
-                            <NumberFormatter value={interactions[countKey]} thousandSeparator />
+                            <NumberFormatter value={interactionsStats[countKey]} thousandSeparator />
                         </Text>
                     )}
                 </ActionIcon>
