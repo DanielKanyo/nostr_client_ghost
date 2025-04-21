@@ -93,33 +93,56 @@ export const fetchInteractionCounts = async (
 
     // Initialize counts for each note
     noteIds.forEach((noteId) => {
-        interactionCounts[noteId] = { likes: 0, reposts: 0, comments: 0 };
+        interactionCounts[noteId] = { likes: 0, reposts: 0, comments: 0, zapAmount: 0 };
     });
 
     try {
         // Define individual filters
         const repostsAndLikesFilter: Filter = { kinds: [6, 7], "#e": noteIds };
         const commentsFilter: Filter = { kinds: [1], "#e": noteIds };
+        const zapsFilter: Filter = { kinds: [9735], "#e": noteIds };
 
         // Run queries separately
-        const [repostLikeEvents, commentEvents] = await Promise.all([
+        const [repostLikeEvents, commentEvents, zapEvents] = await Promise.all([
             pool.querySync(relays, repostsAndLikesFilter),
             pool.querySync(relays, commentsFilter),
+            pool.querySync(relays, zapsFilter),
         ]);
 
-        const events = [...repostLikeEvents, ...commentEvents];
+        const events = [...repostLikeEvents, ...commentEvents, ...zapEvents];
 
-        // Process events
         events.forEach((event: NostrEvent) => {
             const noteId = event.tags.find((tag) => tag[0] === "e")?.[1];
             if (!noteId || !interactionCounts[noteId]) return;
 
-            if (event.kind === 7 && event.content === "+") {
-                interactionCounts[noteId].likes += 1;
-            } else if (event.kind === 6) {
-                interactionCounts[noteId].reposts += 1;
-            } else if (event.kind === 1) {
-                interactionCounts[noteId].comments += 1;
+            switch (event.kind) {
+                case 7:
+                    if (event.content === "+") {
+                        interactionCounts[noteId].likes += 1;
+                    }
+                    break;
+                case 6:
+                    interactionCounts[noteId].reposts += 1;
+                    break;
+                case 1:
+                    interactionCounts[noteId].comments += 1;
+                    break;
+                case 9735:
+                    try {
+                        const bolt11Tag = event.tags.find((tag) => tag[0] === "bolt11");
+
+                        if (!bolt11Tag) return;
+
+                        const bolt11 = bolt11Tag[1];
+                        const sats = decodeLightningInvoice(bolt11);
+
+                        if (sats !== null) {
+                            interactionCounts[noteId].zapAmount += sats;
+                        }
+                    } catch (e) {
+                        console.warn("Failed to parse zap amount:", e);
+                    }
+                    break;
             }
         });
 
@@ -128,4 +151,45 @@ export const fetchInteractionCounts = async (
         console.error("Error fetching interaction counts:", error);
         return interactionCounts;
     }
+};
+
+const decodeLightningInvoice = (invoice: string): number | null => {
+    const prefixMatch = invoice.match(/^lnbc(\d+)([munp]?)1/i);
+
+    if (!prefixMatch) {
+        console.warn("Invalid Lightning invoice format");
+        return null;
+    }
+
+    const amount = parseInt(prefixMatch[1], 10);
+    const unit = prefixMatch[2];
+
+    let multiplier: number;
+
+    switch (unit) {
+        case "":
+            // No unit means full BTC → convert to sats
+            multiplier = 100_000_000;
+            break;
+        case "m": // milliBTC
+            multiplier = 100_000;
+            break;
+        case "u": // microBTC
+            multiplier = 100;
+            break;
+        case "n": // nanoBTC
+            multiplier = 0.1;
+            break;
+        case "p": // picoBTC (very rare)
+            multiplier = 0.0001;
+            break;
+        default:
+            console.warn(`Unsupported unit '${unit}' in invoice`);
+            return null;
+    }
+
+    const sats = amount * multiplier;
+
+    // Round to nearest satoshi and return
+    return Math.round(sats);
 };

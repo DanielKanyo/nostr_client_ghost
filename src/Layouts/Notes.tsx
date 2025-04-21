@@ -29,7 +29,7 @@ export default function Notes({ notes, usersMetadata, loading, interactionCounts
                 ))}
             {loading && (
                 <Center>
-                    <Loader size={36} my="md" color="var(--mantine-color-dark-0)" type="dots" />
+                    <Loader size={36} my="xs" color="var(--mantine-color-dark-0)" type="dots" />
                 </Center>
             )}
             {hasNotes && !loading && (

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { Group, ActionIcon, Text } from "@mantine/core";
+import { Group, ActionIcon, Text, NumberFormatter } from "@mantine/core";
 import { IconMessageCircle, IconBolt, IconHeart, IconRepeat, IconBookmark } from "@tabler/icons-react";
 
 import { InteractionCounts } from "../../Types/interactionCounts";
@@ -17,7 +17,7 @@ const ACTION_ICONS: {
     countKey?: keyof InteractionCounts;
 }[] = [
     { Icon: IconMessageCircle, label: "comments", countKey: "comments" },
-    { Icon: IconBolt, label: "zap" },
+    { Icon: IconBolt, label: "zaps", countKey: "zapAmount" },
     { Icon: IconHeart, label: "likes", countKey: "likes" },
     { Icon: IconRepeat, label: "reposts", countKey: "reposts" },
     { Icon: IconBookmark, label: "bookmarks" },
@@ -50,7 +50,7 @@ export default function NoteFooter({ noteId, interactionCounts, handleActionIcon
                                 pointerEvents: "none",
                             }}
                         >
-                            {interactions[countKey]}
+                            <NumberFormatter value={interactions[countKey]} thousandSeparator />
                         </Text>
                     )}
                 </ActionIcon>
