@@ -52,6 +52,7 @@ export default function ProfileContent({
                     filterOption,
                     reset ? undefined : until
                 );
+
                 if (fetchedNotes.length > 0) {
                     const metadataMap = await fetchMultipleUserMetadata(pool, [pubkey]);
                     const noteIds = fetchedNotes.map((note) => note.id);
@@ -110,10 +111,6 @@ export default function ProfileContent({
                     interactionStats={interactionStats}
                     loadNotes={loadNotes}
                 />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="reads" p="md">
-                TODO: Reads
             </Tabs.Panel>
 
             <Tabs.Panel value="replies">

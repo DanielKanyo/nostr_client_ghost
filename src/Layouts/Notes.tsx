@@ -14,9 +14,9 @@ interface NotesProps {
     usersMetadata: UserMetadata[];
     loading: boolean;
     interactionStats: { [noteId: string]: InteractionStats };
-    trimmed: boolean;
+    trimmed?: boolean;
     loadNotes: () => void;
-    reloadNotes: () => void;
+    reloadNotes?: () => void;
 }
 
 export default function Notes({ notes, usersMetadata, loading, interactionStats, trimmed, loadNotes, reloadNotes }: NotesProps) {
