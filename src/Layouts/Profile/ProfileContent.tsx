@@ -25,56 +25,112 @@ interface ProfileContentProps {
 export default function ProfileContent({ pubkey, activeTab, followers, following, handleActiveTabChange }: ProfileContentProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
     const relays = useAppSelector((state) => state.relays);
+
     const [notes, setNotes] = useState<NostrEvent[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [replies, setReplies] = useState<NostrEvent[]>([]);
+
+    const [loadingForNotes, setLoadingForNotes] = useState(true);
+    const [loadingForReplies, setLoadingForReplies] = useState(true);
+
+    const [interactionStatsForNotes, setInteractionStatsForNotes] = useState<{ [noteId: string]: InteractionStats }>({});
+    const [interactionStatsForReplies, setInteractionStatsForReplies] = useState<{ [noteId: string]: InteractionStats }>({});
+
+    const [untilForNotes, setUntilForNotes] = useState<number | undefined>(undefined);
+    const [untilForReplies, setUntilForReplies] = useState<number | undefined>(undefined);
+
     const [usersMetadata, setUsersMetadata] = useState<UserMetadata[]>([]);
-    const [interactionStats, setInteractionStats] = useState<{ [noteId: string]: InteractionStats }>({});
-    const [until, setUntil] = useState<number | undefined>(undefined);
+
+    const limit = DEFAULT_NUM_OF_DISPLAYED_ITEMS;
 
     const loadNotes = useCallback(
         async (reset = false) => {
-            setLoading(true);
+            setLoadingForNotes(true);
+
             const pool = new SimplePool();
 
             try {
-                const fetchedNotes = await fetchNotes(
-                    pool,
-                    [pubkey],
-                    DEFAULT_NUM_OF_DISPLAYED_ITEMS,
-                    NoteFilterOptions.All,
-                    reset ? undefined : until
-                );
+                const until = reset ? undefined : untilForNotes;
+                const fetchedNotes = await fetchNotes(pool, [pubkey], limit, NoteFilterOptions.Notes, until);
 
                 if (fetchedNotes.length > 0) {
-                    const metadataMap = await fetchMultipleUserMetadata(pool, [pubkey]);
                     const noteIds = fetchedNotes.map((note) => note.id);
-                    const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
+                    const newInteractionStats = await fetchInteractionStats(pool, noteIds, relays);
 
                     if (reset) {
                         setNotes(fetchedNotes);
-                        setInteractionStats(newInteractionCounts);
+                        setInteractionStatsForNotes(newInteractionStats);
                     } else {
                         setNotes((prev) => [...prev, ...fetchedNotes]);
-                        setInteractionStats((prev) => ({ ...prev, ...newInteractionCounts }));
+                        setInteractionStatsForNotes((prev) => ({ ...prev, ...newInteractionStats }));
                     }
 
-                    setUsersMetadata(Array.from(metadataMap.values()));
-                    setUntil(fetchedNotes[fetchedNotes.length - 1].created_at - 1);
+                    setUntilForNotes(fetchedNotes[fetchedNotes.length - 1].created_at - 1);
                 }
             } catch (error) {
                 console.error("Error loading notes:", error);
             } finally {
                 closePool(pool);
-                setLoading(false);
+                setLoadingForNotes(false);
             }
         },
-        [pubkey, relays, until]
+        [pubkey, relays, untilForNotes]
+    );
+
+    const loadReplies = useCallback(
+        async (reset = false) => {
+            setLoadingForReplies(true);
+
+            const pool = new SimplePool();
+
+            try {
+                const until = reset ? undefined : untilForReplies;
+                const fetchedReplies = await fetchNotes(pool, [pubkey], limit, NoteFilterOptions.Replies, until);
+
+                if (fetchedReplies.length > 0) {
+                    const noteIds = fetchedReplies.map((note) => note.id);
+                    const newInteractionStats = await fetchInteractionStats(pool, noteIds, relays);
+
+                    if (reset) {
+                        setReplies(fetchedReplies);
+                        setInteractionStatsForReplies(newInteractionStats);
+                    } else {
+                        setReplies((prev) => [...prev, ...fetchedReplies]);
+                        setInteractionStatsForReplies((prev) => ({ ...prev, ...newInteractionStats }));
+                    }
+
+                    setUntilForReplies(fetchedReplies[fetchedReplies.length - 1].created_at - 1);
+                }
+            } catch (error) {
+                console.error("Error loading replies:", error);
+            } finally {
+                closePool(pool);
+                setLoadingForReplies(false);
+            }
+        },
+        [pubkey, relays, untilForReplies]
     );
 
     useEffect(() => {
         setNotes([]);
-        setUntil(undefined);
-        loadNotes(true);
+        setReplies([]);
+        setUntilForNotes(undefined);
+        setUntilForReplies(undefined);
+
+        const fetchUsersMetadata = async () => {
+            const pool = new SimplePool();
+
+            try {
+                const [metadataMap] = await Promise.all([fetchMultipleUserMetadata(pool, [pubkey]), loadNotes(true), loadReplies(true)]);
+
+                setUsersMetadata(Array.from(metadataMap.values()));
+            } catch (error) {
+                console.error("Error loading metadata:", error);
+            } finally {
+                closePool(pool);
+            }
+        };
+
+        fetchUsersMetadata();
     }, [pubkey]);
 
     return (
@@ -97,20 +153,20 @@ export default function ProfileContent({ pubkey, activeTab, followers, following
 
             <Tabs.Panel value="notes">
                 <Notes
-                    notes={notes.filter((note) => note.tags.every((tag) => tag[0] !== "e"))}
+                    notes={notes}
                     usersMetadata={usersMetadata}
-                    loading={loading}
-                    interactionStats={interactionStats}
+                    loading={loadingForNotes}
+                    interactionStats={interactionStatsForNotes}
                     loadNotes={loadNotes}
                 />
             </Tabs.Panel>
 
             <Tabs.Panel value="replies">
                 <Notes
-                    notes={notes.filter((note) => note.tags.some((tag) => tag[0] === "e"))}
+                    notes={replies}
                     usersMetadata={usersMetadata}
-                    loading={loading}
-                    interactionStats={interactionStats}
+                    loading={loadingForReplies}
+                    interactionStats={interactionStatsForReplies}
                     loadNotes={loadNotes}
                 />
             </Tabs.Panel>
