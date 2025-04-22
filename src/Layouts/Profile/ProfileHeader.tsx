@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
     Avatar,
     BackgroundImage,
@@ -13,6 +15,7 @@ import {
 } from "@mantine/core";
 import { IconZoomIn } from "@tabler/icons-react";
 
+import { ImageViewer } from "../../Components/ImageViewer";
 import { PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import ProfileActions from "./ProfileActions";
@@ -48,6 +51,7 @@ export default function ProfileHeader({
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const { color } = useAppSelector((state) => state.primaryColor);
+    const [opened, setOpened] = useState(false);
 
     const countStyle = { fontSize: 14, fontWeight: 700 };
     const buttonProps = {
@@ -57,72 +61,81 @@ export default function ProfileHeader({
         radius: "xl" as const,
     };
 
-    const handleShowImage = () => {
-        // TODO: open modal (or different solution) with image
-    };
-
     return (
-        <Box w="100%">
-            <BackgroundImage
-                src={banner ?? ""}
-                h={200}
-                pos="relative"
-                style={{
-                    backgroundColor: theme.colors[color][6],
-                    borderBottomLeftRadius: 30,
-                    borderBottomRightRadius: 30,
-                }}
-            >
-                <div style={{ position: "absolute", bottom: -65, left: 80 }}>
-                    <Avatar
-                        src={picture}
-                        size={160}
-                        radius={160}
-                        color={color}
-                        variant="filled"
-                        style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
-                    />
-                    <Center className="zoom-icon-container" pos="absolute" top={0} w="100%" h="100%" onClick={handleShowImage}>
-                        <IconZoomIn size={36} />
-                    </Center>
-                </div>
-            </BackgroundImage>
-            <ProfileActions ownKey={ownKey} pubkey={pubkey} website={website} />
-            <Group justify="space-between" px="lg" align="flex-end">
-                <Flex direction="column">
-                    <Box w={300}>
-                        <Text ta="left" fz={26} truncate="end">
-                            {displayName ?? "Undefined"}
-                        </Text>
-                        <Text ta="left" c="dimmed" fz={18} lh={1.2} truncate="end">
-                            @{name ?? "Undefined"}
-                        </Text>
-                    </Box>
-                </Flex>
-                <Flex gap="xs">
-                    <Button {...buttonProps} onClick={() => handleActiveTabChange(PROFILE_CONTENT_TABS.FOLLOWERS)}>
-                        <Text style={countStyle}>
-                            <NumberFormatter thousandSeparator value={followers.length} />{" "}
-                        </Text>
-                        <Text ml={6} fz={14} c="dimmed">
-                            Followers
-                        </Text>
-                    </Button>
-                    <Button {...buttonProps} onClick={() => handleActiveTabChange(PROFILE_CONTENT_TABS.FOLLOWING)}>
-                        <Text style={countStyle}>
-                            <NumberFormatter thousandSeparator value={following.length} />{" "}
-                        </Text>
-                        <Text ml={6} fz={14} c="dimmed">
-                            Following
-                        </Text>
-                    </Button>
-                </Flex>
-            </Group>
-            {about && (
-                <Text px="lg" pt="lg" fz={16} lineClamp={4}>
-                    {about}
-                </Text>
-            )}
-        </Box>
+        <>
+            <Box w="100%">
+                <BackgroundImage
+                    src={banner ?? ""}
+                    h={200}
+                    pos="relative"
+                    style={{
+                        backgroundColor: theme.colors[color][6],
+                        borderBottomLeftRadius: 30,
+                        borderBottomRightRadius: 30,
+                    }}
+                >
+                    <div style={{ position: "absolute", bottom: -65, left: 80 }}>
+                        <Avatar
+                            src={picture}
+                            size={160}
+                            radius={160}
+                            color={color}
+                            variant="filled"
+                            style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
+                        />
+                        {picture && (
+                            <Center
+                                className="zoom-icon-container"
+                                pos="absolute"
+                                top={0}
+                                w="100%"
+                                h="100%"
+                                onClick={() => setOpened(true)}
+                            >
+                                <IconZoomIn size={36} />
+                            </Center>
+                        )}
+                    </div>
+                </BackgroundImage>
+                <ProfileActions ownKey={ownKey} pubkey={pubkey} website={website} />
+                <Group justify="space-between" px="lg" align="flex-end">
+                    <Flex direction="column">
+                        <Box w={300}>
+                            <Text ta="left" fz={26} truncate="end">
+                                {displayName ?? "Undefined"}
+                            </Text>
+                            <Text ta="left" c="dimmed" fz={18} lh={1.2} truncate="end">
+                                @{name ?? "Undefined"}
+                            </Text>
+                        </Box>
+                    </Flex>
+                    <Flex gap="xs">
+                        <Button {...buttonProps} onClick={() => handleActiveTabChange(PROFILE_CONTENT_TABS.FOLLOWERS)}>
+                            <Text style={countStyle}>
+                                <NumberFormatter thousandSeparator value={followers.length} />{" "}
+                            </Text>
+                            <Text ml={6} fz={14} c="dimmed">
+                                Followers
+                            </Text>
+                        </Button>
+                        <Button {...buttonProps} onClick={() => handleActiveTabChange(PROFILE_CONTENT_TABS.FOLLOWING)}>
+                            <Text style={countStyle}>
+                                <NumberFormatter thousandSeparator value={following.length} />{" "}
+                            </Text>
+                            <Text ml={6} fz={14} c="dimmed">
+                                Following
+                            </Text>
+                        </Button>
+                    </Flex>
+                </Group>
+                {about && (
+                    <Text px="lg" pt="lg" fz={16} lineClamp={4}>
+                        {about}
+                    </Text>
+                )}
+            </Box>
+
+            <ImageViewer opened={opened} setOpened={setOpened} fullImageSrc={picture} alt="profile-picture" />
+        </>
     );
 }
