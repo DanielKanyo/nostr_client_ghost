@@ -10,7 +10,6 @@ export const DEFAULT_NUM_OF_DISPLAYED_NOTES = 15;
 
 export enum PROFILE_CONTENT_TABS {
     NOTES = "notes",
-    READS = "reads",
     REPLIES = "replies",
     FOLLOWERS = "followers",
     FOLLOWING = "following",

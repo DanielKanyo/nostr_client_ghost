@@ -97,7 +97,6 @@ export default function ProfileContent({
         >
             <Tabs.List grow>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.NOTES}>Notes</Tabs.Tab>
-                <Tabs.Tab value={PROFILE_CONTENT_TABS.READS}>Reads</Tabs.Tab>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.REPLIES}>Replies</Tabs.Tab>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWERS}>Followers</Tabs.Tab>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWING}>Following</Tabs.Tab>

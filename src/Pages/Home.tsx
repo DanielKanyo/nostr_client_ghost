@@ -39,7 +39,7 @@ import {
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, usersMetadata, until, filter, interactionStats, loading } = useAppSelector((state) => state.noteData);
+    const { notes, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
@@ -127,8 +127,10 @@ export default function Home() {
                             notes={notes}
                             usersMetadata={usersMetadata}
                             loading={loading}
-                            loadNotes={loadNotes}
                             interactionStats={interactionStats}
+                            trimmed={trimmed}
+                            loadNotes={loadNotes}
+                            reloadNotes={reloadNotes}
                         />
                     )}
                 </ScrollContainer>

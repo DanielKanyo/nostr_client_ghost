@@ -6,13 +6,16 @@ import { NoteFilterOptions } from "../../Shared/utils";
 import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 
+const NOTE_LIST_MAX_LENGTH = 25;
+
 interface NoteDataState {
     notes: NostrEvent[];
     usersMetadata: UserMetadata[];
     until: number | undefined;
     loading: boolean;
     filter: NoteFilterOptions;
-    interactionStats: { [noteId: string]: InteractionStats }; // Per-note counts
+    interactionStats: { [noteId: string]: InteractionStats };
+    trimmed: boolean;
 }
 
 const initialState: NoteDataState = {
@@ -22,6 +25,7 @@ const initialState: NoteDataState = {
     loading: false,
     filter: NoteFilterOptions.Notes,
     interactionStats: {},
+    trimmed: false,
 };
 
 const noteDataSlice = createSlice({
@@ -32,7 +36,18 @@ const noteDataSlice = createSlice({
             state.notes = action.payload;
         },
         appendNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
-            state.notes = [...state.notes, ...action.payload];
+            const oldNotes = state.notes;
+            const newNotes = action.payload;
+
+            if (oldNotes.length + newNotes.length > NOTE_LIST_MAX_LENGTH) {
+                oldNotes.splice(0, newNotes.length);
+
+                state.trimmed = true;
+            } else {
+                state.trimmed = false;
+            }
+
+            state.notes = [...oldNotes, ...newNotes];
         },
         setUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
             state.usersMetadata = action.payload;
@@ -54,7 +69,10 @@ const noteDataSlice = createSlice({
         },
         resetNotes: (state) => {
             state.notes = [];
+            state.usersMetadata = [];
+            state.interactionStats = {};
             state.until = undefined;
+            state.trimmed = false;
         },
     },
 });
