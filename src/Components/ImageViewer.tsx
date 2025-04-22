@@ -1,4 +1,5 @@
 import { Modal, Image, Card } from "@mantine/core";
+import { IconX } from "@tabler/icons-react";
 
 type ImageViewerProps = {
     opened: boolean;
@@ -9,7 +10,20 @@ type ImageViewerProps = {
 
 export function ImageViewer({ opened, fullImageSrc, alt, setOpened }: ImageViewerProps) {
     return (
-        <Modal opened={opened} onClose={() => setOpened(false)} centered size="auto" withCloseButton radius="lg" overlayProps={{ blur: 3 }}>
+        <Modal
+            opened={opened}
+            onClose={() => setOpened(false)}
+            centered
+            size="auto"
+            withCloseButton
+            radius="lg"
+            overlayProps={{ blur: 3 }}
+            closeButtonProps={{
+                icon: <IconX size={20} />,
+                radius: "xl",
+                size: "lg",
+            }}
+        >
             <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }} shadow="md">
                 <Image
                     src={fullImageSrc}

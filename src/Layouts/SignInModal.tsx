@@ -5,7 +5,7 @@ import { SimplePool } from "nostr-tools";
 
 import { ActionIcon, Alert, Button, Flex, Group, Modal, PasswordInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconExclamationCircle, IconEye, IconEyeClosed, IconLogin2 } from "@tabler/icons-react";
+import { IconExclamationCircle, IconEye, IconEyeClosed, IconLogin2, IconX } from "@tabler/icons-react";
 
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import containedInputClasses from "../Shared/Styles/containedInput.module.css";
@@ -76,7 +76,21 @@ export default function SignInModal({ opened, close }: SignInModalProps) {
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title="Login" centered overlayProps={{ blur: 3 }} padding="lg" radius="lg" size="lg">
+        <Modal
+            opened={opened}
+            onClose={handleClose}
+            title="Login"
+            centered
+            overlayProps={{ blur: 3 }}
+            padding="lg"
+            radius="lg"
+            size="lg"
+            closeButtonProps={{
+                icon: <IconX size={20} />,
+                radius: "xl",
+                size: "lg",
+            }}
+        >
             <Flex direction="column">
                 <PasswordInput
                     radius="md"
