@@ -7,7 +7,7 @@ import { Tabs } from "@mantine/core";
 import { fetchInteractionStats, fetchNotes } from "../../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import classes from "../../Shared/Styles/tabs.module.css";
-import { DEFAULT_NUM_OF_DISPLAYED_NOTES, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
+import { DEFAULT_NUM_OF_DISPLAYED_ITEMS, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
@@ -17,20 +17,12 @@ import UserList from "../UserList";
 interface ProfileContentProps {
     pubkey: string;
     activeTab: string | null;
-    filterOption: NoteFilterOptions;
     handleActiveTabChange: (value: PROFILE_CONTENT_TABS) => void;
     followers: string[];
     following: string[];
 }
 
-export default function ProfileContent({
-    pubkey,
-    activeTab,
-    filterOption,
-    followers,
-    following,
-    handleActiveTabChange,
-}: ProfileContentProps) {
+export default function ProfileContent({ pubkey, activeTab, followers, following, handleActiveTabChange }: ProfileContentProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
     const relays = useAppSelector((state) => state.relays);
     const [notes, setNotes] = useState<NostrEvent[]>([]);
@@ -48,8 +40,8 @@ export default function ProfileContent({
                 const fetchedNotes = await fetchNotes(
                     pool,
                     [pubkey],
-                    DEFAULT_NUM_OF_DISPLAYED_NOTES,
-                    filterOption,
+                    DEFAULT_NUM_OF_DISPLAYED_ITEMS,
+                    NoteFilterOptions.All,
                     reset ? undefined : until
                 );
 
@@ -76,14 +68,14 @@ export default function ProfileContent({
                 setLoading(false);
             }
         },
-        [pubkey, relays, filterOption, until]
+        [pubkey, relays, until]
     );
 
     useEffect(() => {
         setNotes([]);
         setUntil(undefined);
         loadNotes(true);
-    }, [pubkey, filterOption]);
+    }, [pubkey]);
 
     return (
         <Tabs
@@ -105,7 +97,7 @@ export default function ProfileContent({
 
             <Tabs.Panel value="notes">
                 <Notes
-                    notes={notes}
+                    notes={notes.filter((note) => note.tags.every((tag) => tag[0] !== "e"))}
                     usersMetadata={usersMetadata}
                     loading={loading}
                     interactionStats={interactionStats}
@@ -115,7 +107,7 @@ export default function ProfileContent({
 
             <Tabs.Panel value="replies">
                 <Notes
-                    notes={notes}
+                    notes={notes.filter((note) => note.tags.some((tag) => tag[0] === "e"))}
                     usersMetadata={usersMetadata}
                     loading={loading}
                     interactionStats={interactionStats}

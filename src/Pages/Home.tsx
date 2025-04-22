@@ -21,7 +21,7 @@ import { fetchInteractionStats, fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
 import {
     DEFAULT_MAIN_CONTAINER_WIDTH,
-    DEFAULT_NUM_OF_DISPLAYED_NOTES,
+    DEFAULT_NUM_OF_DISPLAYED_ITEMS,
     DEFAULT_SIDE_CONTAINER_WIDTH,
     NoteFilterOptions,
 } from "../Shared/utils";
@@ -56,7 +56,7 @@ export default function Home() {
                 const newNotes = await fetchNotes(
                     pool,
                     [...user.following, user.publicKey],
-                    DEFAULT_NUM_OF_DISPLAYED_NOTES,
+                    DEFAULT_NUM_OF_DISPLAYED_ITEMS,
                     filter,
                     reset ? undefined : until
                 );

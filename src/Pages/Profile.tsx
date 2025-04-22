@@ -13,7 +13,7 @@ import ProfileHeader from "../Layouts/Profile/ProfileHeader";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
 import { closePool, decodeNProfileOrNPub, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
-import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../Shared/utils";
+import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH, PROFILE_CONTENT_TABS } from "../Shared/utils";
 import { useAppSelector } from "../Store/hook";
 import { UserMetadata } from "../Types/userMetadata";
 
@@ -25,7 +25,6 @@ export default function Profile() {
     const [followers, setFollowers] = useState<string[]>([]);
     const [error, setError] = useState("");
     const [activeTab, setActiveTab] = useState<string>(PROFILE_CONTENT_TABS.NOTES);
-    const [filterOption, setFilterOption] = useState<NoteFilterOptions>(NoteFilterOptions.Notes);
 
     const nprofileData = useMemo(() => decodeNProfileOrNPub(key!), [key]);
 
@@ -33,7 +32,6 @@ export default function Profile() {
 
     const handleActiveTabChange = useCallback((tab: PROFILE_CONTENT_TABS) => {
         setActiveTab(tab);
-        setFilterOption(tab === PROFILE_CONTENT_TABS.REPLIES ? NoteFilterOptions.Replies : NoteFilterOptions.Notes);
     }, []);
 
     useEffect(() => {
@@ -107,7 +105,6 @@ export default function Profile() {
                                 activeTab={activeTab}
                                 followers={followers}
                                 following={following}
-                                filterOption={filterOption}
                                 handleActiveTabChange={handleActiveTabChange}
                             />
                         </>
