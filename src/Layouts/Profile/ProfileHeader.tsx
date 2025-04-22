@@ -13,6 +13,7 @@ import {
     useComputedColorScheme,
     useMantineTheme,
 } from "@mantine/core";
+import { useHover } from "@mantine/hooks";
 import { IconZoomIn } from "@tabler/icons-react";
 
 import { ImageViewer } from "../../Components/ImageViewer";
@@ -35,6 +36,20 @@ interface ProfileHeaderProps {
     handleActiveTabChange: (value: PROFILE_CONTENT_TABS) => void;
 }
 
+interface zoomOverlayProps {
+    img: string;
+    className: string;
+    handleImageClick: (value: string) => void;
+}
+
+const ZoomOverlay = ({ img, className, handleImageClick }: zoomOverlayProps) => {
+    return (
+        <Center className={className} pos="absolute" top={0} w="100%" h="100%" onClick={() => handleImageClick(img)}>
+            <IconZoomIn size={32} />
+        </Center>
+    );
+};
+
 export default function ProfileHeader({
     pubkey,
     name,
@@ -51,7 +66,9 @@ export default function ProfileHeader({
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const { color } = useAppSelector((state) => state.primaryColor);
-    const [opened, setOpened] = useState(false);
+    const [opened, setOpened] = useState<boolean>(false);
+    const [imageToOpen, setImageToOpen] = useState<string>("");
+    const { hovered, ref } = useHover();
 
     const countStyle = { fontSize: 14, fontWeight: 700 };
     const buttonProps = {
@@ -61,19 +78,31 @@ export default function ProfileHeader({
         radius: "xl" as const,
     };
 
+    const handleImageClick = (img: string) => {
+        setImageToOpen(img);
+        setOpened(true);
+    };
+
     return (
         <>
             <Box w="100%">
                 <BackgroundImage
                     src={banner ?? ""}
-                    h={200}
+                    h={hovered ? 230 : 200}
                     pos="relative"
                     style={{
                         backgroundColor: theme.colors[color][6],
                         borderBottomLeftRadius: 30,
                         borderBottomRightRadius: 30,
+                        transition: "0.2s",
                     }}
+                    ref={ref}
                 >
+                    {banner && (
+                        <div style={{ position: "absolute", top: 0, width: "100%", height: "100%" }}>
+                            <ZoomOverlay img={banner} className="zoom-icon-container banner" handleImageClick={handleImageClick} />
+                        </div>
+                    )}
                     <div style={{ position: "absolute", bottom: -65, left: 80 }}>
                         <Avatar
                             src={picture}
@@ -84,16 +113,7 @@ export default function ProfileHeader({
                             style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
                         />
                         {picture && (
-                            <Center
-                                className="zoom-icon-container"
-                                pos="absolute"
-                                top={0}
-                                w="100%"
-                                h="100%"
-                                onClick={() => setOpened(true)}
-                            >
-                                <IconZoomIn size={36} />
-                            </Center>
+                            <ZoomOverlay img={picture} className="zoom-icon-container picture" handleImageClick={handleImageClick} />
                         )}
                     </div>
                 </BackgroundImage>
@@ -135,7 +155,7 @@ export default function ProfileHeader({
                 )}
             </Box>
 
-            <ImageViewer opened={opened} setOpened={setOpened} fullImageSrc={picture} alt="profile-picture" />
+            <ImageViewer opened={opened} setOpened={setOpened} fullImageSrc={imageToOpen} alt="picture" />
         </>
     );
 }

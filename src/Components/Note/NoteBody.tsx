@@ -46,7 +46,7 @@ export default function NoteBody({ text, images, videos }: NoteBodyProps) {
     return (
         <>
             {text && (
-                <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
+                <Text style={{ whiteSpace: "pre-line", overflowWrap: "anywhere" }} lineClamp={9} component="div">
                     <TypographyStylesProvider>
                         <div>{replaceNostrTags(text)}</div>
                     </TypographyStylesProvider>
