@@ -6,5 +6,5 @@
     "plugins": ["@trivago/prettier-plugin-sort-imports"],
     "importOrder": ["^react", "^[a-zA-Z]", "^@?\\w", "^[./]"],
     "importOrderSeparation": true,
-    "endOfLine": "crlf"
+    "endOfLine": "lf"
 }
