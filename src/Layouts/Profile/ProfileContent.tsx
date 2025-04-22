@@ -6,7 +6,6 @@ import { Tabs } from "@mantine/core";
 
 import { fetchInteractionStats, fetchNotes } from "../../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
-import classes from "../../Shared/Styles/tabs.module.css";
 import { DEFAULT_NUM_OF_DISPLAYED_ITEMS, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import { InteractionStats } from "../../Types/interactionStats";
@@ -138,17 +137,20 @@ export default function ProfileContent({ pubkey, activeTab, followers, following
             radius="md"
             defaultValue={PROFILE_CONTENT_TABS.NOTES}
             color={color}
-            classNames={classes}
             mt="lg"
             value={activeTab}
             onChange={(e) => handleActiveTabChange(e as PROFILE_CONTENT_TABS)}
             keepMounted={false}
         >
             <Tabs.List grow>
-                <Tabs.Tab value={PROFILE_CONTENT_TABS.NOTES}>Notes</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.NOTES} ml="xs">
+                    Notes
+                </Tabs.Tab>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.REPLIES}>Replies</Tabs.Tab>
                 <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWERS}>Followers</Tabs.Tab>
-                <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWING}>Following</Tabs.Tab>
+                <Tabs.Tab value={PROFILE_CONTENT_TABS.FOLLOWING} mr="xs">
+                    Following
+                </Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="notes">

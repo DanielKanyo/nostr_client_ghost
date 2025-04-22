@@ -3,6 +3,7 @@ import {
     BackgroundImage,
     Box,
     Button,
+    Center,
     Flex,
     Group,
     NumberFormatter,
@@ -10,10 +11,12 @@ import {
     useComputedColorScheme,
     useMantineTheme,
 } from "@mantine/core";
+import { IconZoomIn } from "@tabler/icons-react";
 
 import { PROFILE_CONTENT_TABS } from "../../Shared/utils";
 import { useAppSelector } from "../../Store/hook";
 import ProfileActions from "./ProfileActions";
+import "./style.css";
 
 interface ProfileHeaderProps {
     pubkey: string;
@@ -54,6 +57,10 @@ export default function ProfileHeader({
         radius: "xl" as const,
     };
 
+    const handleShowImage = () => {
+        // TODO: open modal (or different solution) with image
+    };
+
     return (
         <Box w="100%">
             <BackgroundImage
@@ -66,17 +73,19 @@ export default function ProfileHeader({
                     borderBottomRightRadius: 30,
                 }}
             >
-                <Avatar
-                    src={picture}
-                    size={160}
-                    radius={160}
-                    pos="absolute"
-                    bottom={-65}
-                    color={color}
-                    variant="filled"
-                    left={80}
-                    style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
-                />
+                <div style={{ position: "absolute", bottom: -65, left: 80 }}>
+                    <Avatar
+                        src={picture}
+                        size={160}
+                        radius={160}
+                        color={color}
+                        variant="filled"
+                        style={{ outline: `10px solid ${computedColorScheme === "dark" ? theme.colors.dark[7] : "white"}` }}
+                    />
+                    <Center className="zoom-icon-container" pos="absolute" top={0} w="100%" h="100%" onClick={handleShowImage}>
+                        <IconZoomIn size={36} />
+                    </Center>
+                </div>
             </BackgroundImage>
             <ProfileActions ownKey={ownKey} pubkey={pubkey} website={website} />
             <Group justify="space-between" px="lg" align="flex-end">
