@@ -7,7 +7,6 @@ import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import VideoRenderer from "./VideoRenderer";
 
 interface NoteBodyProps {
-    noteId: string;
     text: string;
     images: string[];
     videos: string[];
@@ -43,11 +42,11 @@ const replaceNostrTags = (content: string, replaceWithString: string = "user"): 
     return elements;
 };
 
-export default function NoteBody({ noteId, text, images, videos }: NoteBodyProps) {
+export default function NoteBody({ text, images, videos }: NoteBodyProps) {
     return (
         <>
             {text && (
-                <Text style={{ whiteSpace: "pre-line" }} lineClamp={9} component="div">
+                <Text style={{ whiteSpace: "pre-line", overflowWrap: "anywhere" }} lineClamp={9} component="div">
                     <TypographyStylesProvider>
                         <div>{replaceNostrTags(text)}</div>
                     </TypographyStylesProvider>
@@ -55,7 +54,7 @@ export default function NoteBody({ noteId, text, images, videos }: NoteBodyProps
             )}
             {images.length > 0 && (
                 <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }} mih={250} shadow="md">
-                    <Image src={images[0]} alt={`${noteId}-video`} style={{ width: "100%" }} />
+                    <Image src={images[0]} alt={images[0]} style={{ width: "100%" }} />
                 </Card>
             )}
             {videos.length > 0 && (

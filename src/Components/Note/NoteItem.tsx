@@ -89,7 +89,7 @@ export default function NoteItem({ note, usersMetadata, interactionStats }: Note
                         <Flex>
                             <Stack w="100%" gap="sm" pl="lg">
                                 <NoteHeader displayName={displayName} createdAt={note.created_at} />
-                                <NoteBody noteId={note.id} text={textToDisplay} images={images} videos={videos} />
+                                <NoteBody text={textToDisplay} images={images} videos={videos} />
                             </Stack>
                             <NoteActionMore note={note} usersMetadata={userMetadata} nevent={nevent} />
                         </Flex>

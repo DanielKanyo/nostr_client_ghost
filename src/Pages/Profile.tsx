@@ -102,6 +102,7 @@ export default function Profile() {
                             />
                             <ProfileContent
                                 pubkey={nprofileData!.pubkey}
+                                profile={profile}
                                 activeTab={activeTab}
                                 followers={followers}
                                 following={following}

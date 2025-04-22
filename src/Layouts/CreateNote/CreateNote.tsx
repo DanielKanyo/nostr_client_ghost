@@ -4,7 +4,7 @@ import { SimplePool } from "nostr-tools";
 
 import { Alert, Avatar, Box, Button, Divider, Flex, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconExclamationCircle, IconSend } from "@tabler/icons-react";
+import { IconExclamationCircle, IconSend, IconX } from "@tabler/icons-react";
 
 import { publishNote } from "../../Services/noteService";
 import { closePool } from "../../Services/userService";
@@ -64,6 +64,11 @@ export default function CreateNote({ reloadNotes }: CreateNoteProps) {
                 padding="lg"
                 radius="lg"
                 size="lg"
+                closeButtonProps={{
+                    icon: <IconX size={20} />,
+                    radius: "xl",
+                    size: "lg",
+                }}
             >
                 <Stack>
                     <Flex gap="sm">

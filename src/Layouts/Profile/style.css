@@ -1,0 +1,19 @@
+.zoom-icon-container {
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.zoom-icon-container.picture {
+    border-radius: 160px;
+}
+
+.zoom-icon-container.banner {
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+
+.zoom-icon-container:hover {
+    opacity: 1;
+}
