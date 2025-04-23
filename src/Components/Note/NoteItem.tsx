@@ -9,13 +9,13 @@ import { useHover } from "@mantine/hooks";
 import { EVENT_ROUTE_BASE, PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNEvent } from "../../Services/noteService";
 import { encodeNProfile } from "../../Services/userService";
-import { extractImageUrls, extractVideoUrls } from "../../Shared/utils";
 import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 import NoteActionMore from "./NoteActionMore";
 import NoteBody from "./NoteBody";
 import NoteFooter from "./NoteFooter";
 import NoteHeader from "./NoteHeader";
+import { extractImageUrls, extractVideoUrls } from "./noteUtils";
 
 interface NoteItemProps {
     note: NostrEvent;

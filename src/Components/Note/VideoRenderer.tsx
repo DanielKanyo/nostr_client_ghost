@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { Box } from "@mantine/core";
 
-import { DEFAULT_VOLUME_FOR_VIDEOS } from "../../Shared/utils";
+export const DEFAULT_VOLUME_FOR_VIDEOS = 0.3;
 
 interface VideoRendererProps {
     url: string;

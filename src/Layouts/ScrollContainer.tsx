@@ -6,9 +6,10 @@ import { debounce } from "lodash";
 
 import { ScrollArea } from "@mantine/core";
 
-import { SCROLL_POS_DEBOUNCE_TIME } from "../Shared/utils";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
 import { useAppSelector } from "../Store/hook";
+
+export const SCROLL_POS_DEBOUNCE_TIME = 300;
 
 interface ScrollPosition {
     x: number;

@@ -17,96 +17,11 @@ export enum PROFILE_CONTENT_TABS {
 // Common Nostr relays
 export const RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net/"];
 
-export const extractImageUrls = (content: string): { text: string; images: string[] } => {
-    const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?[^ ]*)?(?=\s|$)/i;
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-    let text = content;
-    const images: string[] = [];
-
-    // Extract image URLs
-    const urlMatches = content.match(urlRegex);
-
-    if (urlMatches) {
-        urlMatches.forEach((url) => {
-            if (url.match(imageExtensions)) {
-                images.push(url);
-                text = text.replace(url, "").trim();
-            }
-        });
-    }
-
-    return { text, images };
-};
-
-export const extractVideoUrls = (content: string): { text: string; videos: string[] } => {
-    // Common video file extensions
-    const videoExtensions = /\.(mp4|mov|avi|mkv|webm|wmv|flv|m4v)(\?[^ ]*)?(?=\s|$)/i;
-    // YouTube URL patterns (including /watch?v=, /live/, and youtu.be/)
-    const youtubeRegex = /(https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|live\/)|youtu\.be\/)[^\s]+)/i;
-    // General URL regex
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-    let text = content;
-    const videos: string[] = [];
-
-    // Extract all URLs
-    const urlMatches = content.match(urlRegex);
-
-    if (urlMatches) {
-        urlMatches.forEach((url) => {
-            // Check if URL is a video file or YouTube link
-            if (url.match(videoExtensions) || url.match(youtubeRegex)) {
-                videos.push(url);
-                text = text.replace(url, "").trim();
-            }
-        });
-    }
-
-    return { text, videos };
-};
-
 export enum NoteFilterOptions {
     Notes = "Notes",
     Replies = "Replies",
     All = "All",
 }
-
-const MONTHS = ["Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
-
-export const formatTimestamp = (timestamp: number): string => {
-    const now = new Date();
-    const date = new Date(timestamp);
-    const diffMs = now.getTime() - date.getTime();
-
-    // Check if less than 1 hour (60 minutes)
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    if (diffMinutes < 60) {
-        return `${diffMinutes}m`;
-    }
-
-    // Check if less than 24 hours
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    if (diffHours < 24) {
-        return `${diffHours}h`;
-    }
-
-    // Check if same year
-    const isSameYear = now.getFullYear() === date.getFullYear();
-    const month = MONTHS[date.getMonth()];
-    const day = date.getDate();
-
-    if (isSameYear) {
-        return `${month} ${day}`;
-    } else {
-        const year = date.getFullYear();
-        return `${year}, ${month} ${day}`;
-    }
-};
-
-export const SCROLL_POS_DEBOUNCE_TIME = 300;
-
-export const DEFAULT_VOLUME_FOR_VIDEOS = 0.3;
 
 export const convertPrivateKeyToPrivateKeyBytes = (privateKey: string): Uint8Array => {
     let privateKeyBytes: Uint8Array;

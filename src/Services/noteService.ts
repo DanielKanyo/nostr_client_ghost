@@ -74,6 +74,7 @@ export const publishNote = async (pool: SimplePool, content: string, privateKey:
 };
 
 export const encodeNEvent = (id: string) => nip19.neventEncode({ id, relays: RELAYS });
+
 export const decodeNEvent = (nprofile: string): { id: string; relays?: string[] } => {
     const decoded = nip19.decode(nprofile);
 
