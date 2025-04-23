@@ -128,6 +128,12 @@ export const selectedUserSlice = createSlice({
             state.followersFetchCount = action.payload.followersFetchCount;
             state.initFollowersProfilesLoaded = action.payload.initFollowersProfilesLoaded;
         },
+        addSelectedUserFollowingProfile: (state, action: PayloadAction<UserMetadata>) => {
+            state.followingProfiles.push(action.payload);
+        },
+        removeSelectedUserFollowingProfile: (state, action: PayloadAction<string>) => {
+            state.followingProfiles = state.followingProfiles.filter((p) => p.pubkey !== action.payload);
+        },
         resetSelectedUser: () => {
             return initSelectedUser;
         },
@@ -150,6 +156,8 @@ export const {
     updateSelectedUserFollowersData,
     appendSelectedUserFollowersData,
 
+    addSelectedUserFollowingProfile,
+    removeSelectedUserFollowingProfile,
     resetSelectedUser,
 } = selectedUserSlice.actions;
 export default selectedUserSlice.reducer;

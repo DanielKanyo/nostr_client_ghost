@@ -9,16 +9,25 @@ import { updateFollowList, closePool } from "../Services/userService";
 import { resetNotes } from "../Store/Features/noteDataSlice";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
 import { UserState, updateUserFollowing } from "../Store/Features/userSlice";
-import { useAppDispatch } from "../Store/hook";
+import { useAppDispatch, useAppSelector } from "../Store/hook";
 
 interface FollowOrUnfollowButtonProps {
     loggedInUser: UserState;
     pubkey: string;
     color: string;
+    handleFollowUser: (value: string) => void;
+    handleUnfollowUser: (value: string) => void;
 }
 
-export default function FollowOrUnfollowButton({ loggedInUser, pubkey, color }: FollowOrUnfollowButtonProps) {
+export default function FollowOrUnfollowButton({
+    loggedInUser,
+    pubkey,
+    color,
+    handleFollowUser,
+    handleUnfollowUser,
+}: FollowOrUnfollowButtonProps) {
     const [loading, setLoading] = useState(false);
+    const selectedUser = useAppSelector((state) => state.selectedUser);
     const dispatch = useAppDispatch();
 
     if (loggedInUser.publicKey === pubkey) {
@@ -37,10 +46,13 @@ export default function FollowOrUnfollowButton({ loggedInUser, pubkey, color }: 
 
             await updateFollowList(pool, loggedInUser.privateKey!, newFollowing);
 
-            // TODO: Notify somehow selected user about new following
             dispatch(resetNotes());
             dispatch(updateScrollPosition(0));
             dispatch(updateUserFollowing(newFollowing));
+
+            if (loggedInUser.publicKey === selectedUser.pubkey) {
+                handleFollowUser(pubkey);
+            }
         } catch (error) {
             console.error("Something went wrong...", error);
         } finally {
@@ -61,8 +73,11 @@ export default function FollowOrUnfollowButton({ loggedInUser, pubkey, color }: 
 
             await updateFollowList(pool, loggedInUser.privateKey!, newFollowing);
 
-            // TODO: Notify somehow selected user about new following
             dispatch(updateUserFollowing(newFollowing));
+
+            if (loggedInUser.publicKey === selectedUser.pubkey) {
+                handleUnfollowUser(pubkey);
+            }
         } catch (error) {
             console.error("Something went wrong...", error);
         } finally {

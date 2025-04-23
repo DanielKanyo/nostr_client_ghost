@@ -101,8 +101,8 @@ export default function Profile() {
                                 picture={su.profile.picture}
                                 banner={su.profile.banner}
                                 website={su.profile.website}
-                                followers={su.followersPubkeys}
-                                following={su.followingPubkeys}
+                                followers={isOwnProfile ? storedUser.followers : su.followersPubkeys}
+                                following={isOwnProfile ? storedUser.following : su.followingPubkeys}
                                 ownKey={isOwnProfile}
                                 handleActiveTabChange={handleActiveTabChange}
                             />

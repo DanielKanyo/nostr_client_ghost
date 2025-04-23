@@ -14,9 +14,11 @@ interface UserItemProps {
     name: string | undefined;
     displayName: string | undefined;
     picture: string | undefined;
+    handleFollowUser: (value: string) => void;
+    handleUnfollowUser: (value: string) => void;
 }
 
-export default function UserItem({ pubkey, name, picture, displayName }: UserItemProps) {
+export default function UserItem({ pubkey, name, picture, displayName, handleFollowUser, handleUnfollowUser }: UserItemProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const { color } = useAppSelector((state) => state.primaryColor);
@@ -61,7 +63,13 @@ export default function UserItem({ pubkey, name, picture, displayName }: UserIte
                         </Box>
                     </Flex>
                 </Group>
-                <FollowOrUnfollowButton loggedInUser={loggedInUser} pubkey={pubkey} color={color} />
+                <FollowOrUnfollowButton
+                    loggedInUser={loggedInUser}
+                    pubkey={pubkey}
+                    color={color}
+                    handleFollowUser={handleFollowUser}
+                    handleUnfollowUser={handleUnfollowUser}
+                />
             </Flex>
             <Divider />
         </>
