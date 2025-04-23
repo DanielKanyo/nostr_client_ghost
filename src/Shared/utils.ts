@@ -5,7 +5,7 @@ import { hexToBytes } from "@noble/hashes/utils";
 export const DEFAULT_MAIN_CONTAINER_WIDTH = 680;
 export const DEFAULT_SIDE_CONTAINER_WIDTH = 320;
 export const HIDE_ALERT_TIMEOUT_IN_MS = 6000;
-export const DEFAULT_NUM_OF_DISPLAYED_ITEMS = 15;
+export const DEFAULT_NUM_OF_DISPLAYED_ITEMS = 1;
 
 export enum PROFILE_CONTENT_TABS {
     NOTES = "notes",

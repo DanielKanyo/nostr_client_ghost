@@ -1,12 +1,15 @@
 import { JSX } from "react";
 import { Link } from "react-router-dom";
 
+import { NostrEvent } from "nostr-tools";
+
 import { Card, Image, Text, TypographyStylesProvider } from "@mantine/core";
 
 import { PROFILE_ROUTE_BASE } from "../../Routes/routes";
 import VideoRenderer from "./VideoRenderer";
 
 interface NoteBodyProps {
+    reply: NostrEvent | undefined;
     text: string;
     images: string[];
     videos: string[];
@@ -42,9 +45,12 @@ const replaceNostrTags = (content: string, replaceWithString: string = "user"): 
     return elements;
 };
 
-export default function NoteBody({ text, images, videos }: NoteBodyProps) {
+export default function NoteBody({ reply, text, images, videos }: NoteBodyProps) {
+    console.log(reply);
+
     return (
         <>
+            {reply && <Text fz={14}>reply to @{reply.pubkey.slice(0, 20)}...</Text>}
             {text && (
                 <Text style={{ whiteSpace: "pre-line", overflowWrap: "anywhere" }} lineClamp={9} component="div">
                     <TypographyStylesProvider>

@@ -17,8 +17,10 @@ import MainContainer from "../Layouts/MainContainer";
 import Notes from "../Layouts/Notes";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
+import { fetchEventByIds } from "../Services/eventSerive";
 import { fetchInteractionStats, fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
+import { mapReplyEvents } from "../Shared/eventUtils";
 import {
     DEFAULT_MAIN_CONTAINER_WIDTH,
     DEFAULT_NUM_OF_DISPLAYED_ITEMS,
@@ -33,13 +35,14 @@ import {
     setInteractionStats,
     setLoading,
     setNoteData,
+    setReplies,
     setUntil,
     setUsersMetadata,
 } from "../Store/Features/noteDataSlice";
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector((state) => state.noteData);
+    const { notes, replies, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
@@ -62,6 +65,14 @@ export default function Home() {
                 );
 
                 if (newNotes.length > 0) {
+                    // TODO
+                    const replyDetails = mapReplyEvents(newNotes);
+                    const eventIds = replyDetails.map((r) => r.replyToEventId);
+
+                    const replyEvents = await fetchEventByIds(pool, eventIds);
+
+                    console.log(replyEvents, newNotes);
+
                     const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
                     const noteIds = newNotes.map((note) => note.id);
                     const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
@@ -71,6 +82,8 @@ export default function Home() {
 
                     dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
                     dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
+                    // TODO: handle append as well
+                    dispatch(setReplies(replyEvents));
                     dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
                     dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
@@ -125,6 +138,7 @@ export default function Home() {
                     ) : (
                         <Notes
                             notes={notes}
+                            replies={replies}
                             usersMetadata={usersMetadata}
                             loading={loading}
                             interactionStats={interactionStats}

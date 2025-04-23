@@ -10,6 +10,7 @@ const NOTE_LIST_MAX_LENGTH = 25;
 
 interface NoteDataState {
     notes: NostrEvent[];
+    replies: NostrEvent[];
     usersMetadata: UserMetadata[];
     until: number | undefined;
     loading: boolean;
@@ -20,10 +21,11 @@ interface NoteDataState {
 
 const initialState: NoteDataState = {
     notes: [],
+    replies: [],
     usersMetadata: [],
     until: undefined,
     loading: false,
-    filter: NoteFilterOptions.Notes,
+    filter: NoteFilterOptions.All,
     interactionStats: {},
     trimmed: false,
 };
@@ -34,6 +36,9 @@ const noteDataSlice = createSlice({
     reducers: {
         setNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
             state.notes = action.payload;
+        },
+        setReplies: (state, action: PayloadAction<NostrEvent[]>) => {
+            state.replies = action.payload;
         },
         appendNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
             const oldNotes = state.notes;
@@ -69,6 +74,7 @@ const noteDataSlice = createSlice({
         },
         resetNotes: (state) => {
             state.notes = [];
+            state.replies = [];
             state.usersMetadata = [];
             state.interactionStats = {};
             state.until = undefined;
@@ -79,6 +85,7 @@ const noteDataSlice = createSlice({
 
 export const {
     setNoteData,
+    setReplies,
     appendNoteData,
     setUsersMetadata,
     setUntil,
