@@ -4,6 +4,7 @@ import noteDataReducer from "./Features/noteDataSlice";
 import primaryColorReducer from "./Features/primaryColorSlice";
 import relaysReducer from "./Features/relaysSlice";
 import scrollPositionReducer from "./Features/scrollPositionSlice";
+import selectedUserReducer from "./Features/selectedUserSlice";
 import userReducer from "./Features/userSlice";
 
 const store = configureStore({
@@ -13,6 +14,7 @@ const store = configureStore({
         noteData: noteDataReducer,
         scrollPosition: scrollPositionReducer,
         relays: relaysReducer,
+        selectedUser: selectedUserReducer,
     },
 });
 

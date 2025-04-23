@@ -1,0 +1,155 @@
+import { NostrEvent } from "nostr-tools";
+
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
+import { InteractionStats } from "../../Types/interactionStats";
+import { UserMetadata } from "../../Types/userMetadata";
+
+type SelectedUserStateBasic = {
+    pubkey: string;
+    profile: UserMetadata | null;
+    followingPubkeys: string[];
+    followersPubkeys: string[];
+};
+
+type SelectedUserStateNoteData = {
+    notes: NostrEvent[];
+    interactionStatsForNotes: { [noteId: string]: InteractionStats };
+    untilForNotes: number | undefined;
+    initNotesLoaded?: boolean;
+};
+
+type SelectedUserStateReplyData = {
+    replies: NostrEvent[];
+    interactionStatsForReplies: { [noteId: string]: InteractionStats };
+    untilForReplies: number | undefined;
+    initRepliesLoaded?: boolean;
+};
+
+type SelectedUserStateFollowingData = {
+    followingProfiles: UserMetadata[];
+    followingFetchCount: number;
+    initFollowingProfilesLoaded?: boolean;
+};
+
+type SelectedUserStateFollowersData = {
+    followersProfiles: UserMetadata[];
+    followersFetchCount: number;
+    initFollowersProfilesLoaded?: boolean;
+};
+
+interface SelectedUserState
+    extends SelectedUserStateBasic,
+        SelectedUserStateNoteData,
+        SelectedUserStateReplyData,
+        SelectedUserStateFollowingData,
+        SelectedUserStateFollowersData {}
+
+const initSelectedUser: SelectedUserState = {
+    pubkey: "",
+    profile: null,
+    followingPubkeys: [],
+    followersPubkeys: [],
+
+    notes: [],
+    interactionStatsForNotes: {},
+    untilForNotes: undefined,
+    initNotesLoaded: false,
+
+    replies: [],
+    interactionStatsForReplies: {},
+    untilForReplies: undefined,
+    initRepliesLoaded: false,
+
+    followingProfiles: [],
+    followingFetchCount: 0,
+    initFollowingProfilesLoaded: false,
+
+    followersProfiles: [],
+    followersFetchCount: 0,
+    initFollowersProfilesLoaded: false,
+};
+
+export const selectedUserSlice = createSlice({
+    name: "selectedUser",
+    initialState: initSelectedUser,
+    reducers: {
+        updateSelectedUserBasic: (state, action: PayloadAction<SelectedUserStateBasic>) => {
+            state.pubkey = action.payload.pubkey;
+            state.profile = action.payload.profile;
+            state.followersPubkeys = action.payload.followersPubkeys;
+            state.followingPubkeys = action.payload.followingPubkeys;
+        },
+        updateSelectedUserNoteData: (state, action: PayloadAction<SelectedUserStateNoteData>) => {
+            state.notes = action.payload.notes;
+            state.interactionStatsForNotes = action.payload.interactionStatsForNotes;
+            state.untilForNotes = action.payload.untilForNotes;
+            state.initNotesLoaded = action.payload.initNotesLoaded;
+        },
+        appendSelectedUserNoteData: (state, action: PayloadAction<SelectedUserStateNoteData>) => {
+            state.notes = [...state.notes, ...action.payload.notes];
+            state.interactionStatsForNotes = { ...state.interactionStatsForNotes, ...action.payload.interactionStatsForNotes };
+            state.untilForNotes = action.payload.untilForNotes;
+        },
+        updateInitNotesLoaded: (state, action: PayloadAction<boolean>) => {
+            state.initNotesLoaded = action.payload;
+        },
+        updateSelectedUserReplyData: (state, action: PayloadAction<SelectedUserStateReplyData>) => {
+            state.replies = action.payload.replies;
+            state.interactionStatsForReplies = action.payload.interactionStatsForReplies;
+            state.untilForReplies = action.payload.untilForReplies;
+        },
+        appendSelectedUserReplyData: (state, action: PayloadAction<SelectedUserStateReplyData>) => {
+            state.replies = [...state.notes, ...action.payload.replies];
+            state.interactionStatsForReplies = { ...state.interactionStatsForReplies, ...action.payload.interactionStatsForReplies };
+            state.untilForReplies = action.payload.untilForReplies;
+            state.initRepliesLoaded = action.payload.initRepliesLoaded;
+        },
+        updateInitRepliesLoaded: (state, action: PayloadAction<boolean>) => {
+            state.initRepliesLoaded = action.payload;
+        },
+        updateSelectedUserFollowingData: (state, action: PayloadAction<SelectedUserStateFollowingData>) => {
+            state.followingProfiles = action.payload.followingProfiles;
+            state.followingFetchCount = action.payload.followingFetchCount;
+            state.initFollowingProfilesLoaded = action.payload.initFollowingProfilesLoaded;
+        },
+        appendSelectedUserFollowingData: (state, action: PayloadAction<SelectedUserStateFollowingData>) => {
+            state.followingProfiles = [...state.followingProfiles, ...action.payload.followingProfiles];
+            state.followingFetchCount = action.payload.followingFetchCount;
+            state.initFollowingProfilesLoaded = action.payload.initFollowingProfilesLoaded;
+        },
+        updateSelectedUserFollowersData: (state, action: PayloadAction<SelectedUserStateFollowersData>) => {
+            state.followersProfiles = action.payload.followersProfiles;
+            state.followersFetchCount = action.payload.followersFetchCount;
+            state.initFollowersProfilesLoaded = action.payload.initFollowersProfilesLoaded;
+        },
+        appendSelectedUserFollowersData: (state, action: PayloadAction<SelectedUserStateFollowersData>) => {
+            state.followersProfiles = [...state.followersProfiles, ...action.payload.followersProfiles];
+            state.followersFetchCount = action.payload.followersFetchCount;
+            state.initFollowersProfilesLoaded = action.payload.initFollowersProfilesLoaded;
+        },
+        resetSelectedUser: () => {
+            return initSelectedUser;
+        },
+    },
+});
+
+export const {
+    updateSelectedUserBasic,
+
+    updateSelectedUserNoteData,
+    appendSelectedUserNoteData,
+    updateSelectedUserReplyData,
+    appendSelectedUserReplyData,
+    updateInitNotesLoaded,
+    updateInitRepliesLoaded,
+
+    updateSelectedUserFollowingData,
+    appendSelectedUserFollowingData,
+
+    updateSelectedUserFollowersData,
+    appendSelectedUserFollowersData,
+
+    resetSelectedUser,
+} = selectedUserSlice.actions;
+export default selectedUserSlice.reducer;

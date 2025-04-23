@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { SimplePool } from "nostr-tools";
@@ -14,19 +15,19 @@ import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
 import { closePool, decodeNProfileOrNPub, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH, PROFILE_CONTENT_TABS } from "../Shared/utils";
+import { resetSelectedUser, updateSelectedUserBasic } from "../Store/Features/selectedUserSlice";
 import { useAppSelector } from "../Store/hook";
-import { UserMetadata } from "../Types/userMetadata";
 
 export default function Profile() {
-    const { key } = useParams<{ key: string }>();
+    const { profileKey } = useParams<{ profileKey: string }>();
     const storedUser = useAppSelector((state) => state.user);
-    const [profile, setProfile] = useState<UserMetadata | null>(null);
-    const [following, setFollowing] = useState<string[]>([]);
-    const [followers, setFollowers] = useState<string[]>([]);
-    const [error, setError] = useState("");
+    const su = useAppSelector((state) => state.selectedUser);
+    const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<string>(PROFILE_CONTENT_TABS.NOTES);
+    const dispatch = useDispatch();
 
-    const nprofileData = useMemo(() => decodeNProfileOrNPub(key!), [key]);
+    const nprofileData = useMemo(() => decodeNProfileOrNPub(profileKey!), [profileKey]);
 
     const isOwnProfile = nprofileData?.pubkey === storedUser.publicKey;
 
@@ -34,78 +35,82 @@ export default function Profile() {
         setActiveTab(tab);
     }, []);
 
-    useEffect(() => {
-        // Reset states on profile switch
-        setProfile(null);
-        setFollowers([]);
-        setFollowing([]);
-        setError("");
-        handleActiveTabChange(PROFILE_CONTENT_TABS.NOTES);
-    }, [key, handleActiveTabChange]);
-
-    useEffect(() => {
-        if (!nprofileData) return;
+    const loadUser = useCallback(async () => {
+        setLoading(true);
 
         if (isOwnProfile) {
-            setProfile(storedUser.profile);
-            setFollowers(storedUser.followers);
-            setFollowing(storedUser.following);
+            dispatch(
+                updateSelectedUserBasic({
+                    pubkey: storedUser.publicKey,
+                    profile: storedUser.profile,
+                    followersPubkeys: storedUser.followers,
+                    followingPubkeys: storedUser.following,
+                })
+            );
+
+            setLoading(false);
             return;
         }
 
-        const fetchProfile = async () => {
-            const pool = new SimplePool();
+        const pool = new SimplePool();
 
-            try {
-                // TODO: handle relays
-                // const relays = nprofileData.relays?.length
-                //     ? nprofileData.relays
-                //     : ["wss://nos.lol", "wss://relay.damus.io"];
+        try {
+            // TODO: handle relays stored in nprofileData
+            const pubkey = nprofileData!.pubkey;
+            const [profile, followingPubkeys, followersPubkeys] = await Promise.all([
+                fetchUserMetadata(pool, pubkey),
+                getFollowing(pool, pubkey),
+                getFollowers(pool, pubkey),
+            ]);
 
-                const [metadata, followingList, followersList] = await Promise.all([
-                    fetchUserMetadata(pool, nprofileData.pubkey),
-                    getFollowing(pool, nprofileData.pubkey),
-                    getFollowers(pool, nprofileData.pubkey),
-                ]);
+            dispatch(
+                updateSelectedUserBasic({
+                    pubkey,
+                    profile,
+                    followersPubkeys,
+                    followingPubkeys,
+                })
+            );
+        } catch (error) {
+            setError("Fetching user details failed! Please try again later...");
+        } finally {
+            closePool(pool);
+            setLoading(false);
+        }
+    }, [dispatch, profileKey]);
 
-                setProfile(metadata ?? null);
-                setFollowing(followingList);
-                setFollowers(followersList);
-            } catch {
-                setError("Fetching user details failed! Please try again later...");
-            } finally {
-                closePool(pool);
-            }
-        };
-
-        fetchProfile();
-    }, [nprofileData, isOwnProfile, storedUser]);
+    useEffect(() => {
+        if (su.pubkey !== nprofileData!.pubkey) {
+            dispatch(resetSelectedUser());
+            setActiveTab(PROFILE_CONTENT_TABS.NOTES);
+            loadUser();
+        }
+    }, [profileKey]);
 
     return (
         <Content>
             <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
                 <ScrollContainer>
-                    {profile ? (
+                    {!loading && su.profile ? (
                         <>
                             <ProfileHeader
-                                pubkey={nprofileData!.pubkey}
-                                name={profile.name}
-                                displayName={profile.display_name}
-                                about={profile.about}
-                                picture={profile.picture}
-                                banner={profile.banner}
-                                website={profile.website}
-                                followers={followers}
-                                following={following}
+                                pubkey={su.pubkey}
+                                name={su.profile.name}
+                                displayName={su.profile.display_name}
+                                about={su.profile.about}
+                                picture={su.profile.picture}
+                                banner={su.profile.banner}
+                                website={su.profile.website}
+                                followers={su.followersPubkeys}
+                                following={su.followingPubkeys}
                                 ownKey={isOwnProfile}
                                 handleActiveTabChange={handleActiveTabChange}
                             />
                             <ProfileContent
-                                pubkey={nprofileData!.pubkey}
-                                profile={profile}
+                                activeUserPubkey={su.pubkey}
                                 activeTab={activeTab}
-                                followers={followers}
-                                following={following}
+                                followers={su.followersPubkeys}
+                                following={su.followingPubkeys}
                                 handleActiveTabChange={handleActiveTabChange}
                             />
                         </>

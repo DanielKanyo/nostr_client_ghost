@@ -37,6 +37,7 @@ export default function FollowOrUnfollowButton({ loggedInUser, pubkey, color }: 
 
             await updateFollowList(pool, loggedInUser.privateKey!, newFollowing);
 
+            // TODO: Notify somehow selected user about new following
             dispatch(resetNotes());
             dispatch(updateScrollPosition(0));
             dispatch(updateUserFollowing(newFollowing));
@@ -60,6 +61,7 @@ export default function FollowOrUnfollowButton({ loggedInUser, pubkey, color }: 
 
             await updateFollowList(pool, loggedInUser.privateKey!, newFollowing);
 
+            // TODO: Notify somehow selected user about new following
             dispatch(updateUserFollowing(newFollowing));
         } catch (error) {
             console.error("Something went wrong...", error);

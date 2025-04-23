@@ -1,138 +1,231 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
-import { NostrEvent, SimplePool } from "nostr-tools";
+import { SimplePool } from "nostr-tools";
 
 import { Tabs } from "@mantine/core";
 
 import { fetchInteractionStats, fetchNotes } from "../../Services/noteService";
-import { closePool } from "../../Services/userService";
+import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import { DEFAULT_NUM_OF_DISPLAYED_ITEMS, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
+import {
+    appendSelectedUserFollowersData,
+    appendSelectedUserFollowingData,
+    appendSelectedUserNoteData,
+    appendSelectedUserReplyData,
+    updateInitNotesLoaded,
+    updateInitRepliesLoaded,
+    updateSelectedUserFollowersData,
+    updateSelectedUserFollowingData,
+    updateSelectedUserNoteData,
+    updateSelectedUserReplyData,
+} from "../../Store/Features/selectedUserSlice";
 import { useAppSelector } from "../../Store/hook";
-import { InteractionStats } from "../../Types/interactionStats";
-import { UserMetadata } from "../../Types/userMetadata";
 import Notes from "../Notes";
 import UserList from "../UserList";
 
 interface ProfileContentProps {
-    pubkey: string;
-    profile: UserMetadata | null;
+    activeUserPubkey: string;
     activeTab: string | null;
     handleActiveTabChange: (value: PROFILE_CONTENT_TABS) => void;
     followers: string[];
     following: string[];
 }
 
-export default function ProfileContent({ pubkey, profile, activeTab, followers, following, handleActiveTabChange }: ProfileContentProps) {
+export default function ProfileContent({ activeUserPubkey, activeTab, followers, following, handleActiveTabChange }: ProfileContentProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
+    const su = useAppSelector((state) => state.selectedUser);
     const relays = useAppSelector((state) => state.relays);
-    const location = useLocation();
+    const dispatch = useDispatch();
 
-    const [notes, setNotes] = useState<NostrEvent[]>([]);
-    const [replies, setReplies] = useState<NostrEvent[]>([]);
-
-    const [loadingForNotes, setLoadingForNotes] = useState(true);
-    const [loadingForReplies, setLoadingForReplies] = useState(true);
-
-    const [interactionStatsForNotes, setInteractionStatsForNotes] = useState<{ [noteId: string]: InteractionStats }>({});
-    const [interactionStatsForReplies, setInteractionStatsForReplies] = useState<{ [noteId: string]: InteractionStats }>({});
-
-    const [untilForNotes, setUntilForNotes] = useState<number | undefined>(undefined);
-    const [untilForReplies, setUntilForReplies] = useState<number | undefined>(undefined);
+    const [loadingForNotes, setLoadingForNotes] = useState(false);
+    const [loadingForReplies, setLoadingForReplies] = useState(false);
+    const [loadingForFollowing, setLoadingForFollowing] = useState(false);
+    const [loadingForFollowers, setLoadingForFollowers] = useState(false);
 
     const limit = DEFAULT_NUM_OF_DISPLAYED_ITEMS;
 
     const loadNotes = useCallback(
-        async (reset = false, isMounted = true) => {
+        async (reset = false) => {
             setLoadingForNotes(true);
 
             const pool = new SimplePool();
 
             try {
-                const until = reset ? undefined : untilForNotes;
-                const fetchedNotes = await fetchNotes(pool, [pubkey], limit, NoteFilterOptions.Notes, until);
+                const until = reset ? undefined : su.untilForNotes;
+                const notes = await fetchNotes(pool, [activeUserPubkey], limit, NoteFilterOptions.Notes, until);
 
-                if (fetchedNotes.length > 0 && isMounted) {
-                    const noteIds = fetchedNotes.map((note) => note.id);
+                if (notes.length > 0) {
+                    const noteIds = notes.map((note) => note.id);
                     const newInteractionStats = await fetchInteractionStats(pool, noteIds, relays);
+                    const newUntil = notes[notes.length - 1].created_at - 1;
 
-                    if (isMounted) {
-                        if (reset) {
-                            setNotes(fetchedNotes);
-                            setInteractionStatsForNotes(newInteractionStats);
-                        } else {
-                            setNotes((prev) => [...prev, ...fetchedNotes]);
-                            setInteractionStatsForNotes((prev) => ({ ...prev, ...newInteractionStats }));
-                        }
-
-                        setUntilForNotes(fetchedNotes[fetchedNotes.length - 1].created_at - 1);
+                    if (reset) {
+                        dispatch(
+                            updateSelectedUserNoteData({
+                                notes,
+                                interactionStatsForNotes: newInteractionStats,
+                                untilForNotes: newUntil,
+                                initNotesLoaded: true,
+                            })
+                        );
+                    } else {
+                        dispatch(
+                            appendSelectedUserNoteData({
+                                notes: notes,
+                                interactionStatsForNotes: newInteractionStats,
+                                untilForNotes: newUntil,
+                            })
+                        );
                     }
+                } else {
+                    dispatch(updateInitNotesLoaded(true));
                 }
             } catch (error) {
                 console.error("Error loading notes:", error);
             } finally {
                 closePool(pool);
-                if (isMounted) setLoadingForNotes(false);
+                setLoadingForNotes(false);
             }
         },
-        [pubkey, relays, untilForNotes, location.pathname]
+        [activeUserPubkey, su.untilForNotes]
     );
 
     const loadReplies = useCallback(
-        async (reset = false, isMounted: boolean) => {
+        async (reset = false) => {
             setLoadingForReplies(true);
 
             const pool = new SimplePool();
 
             try {
-                const until = reset ? undefined : untilForReplies;
-                const fetchedReplies = await fetchNotes(pool, [pubkey], limit, NoteFilterOptions.Replies, until);
+                const until = reset ? undefined : su.untilForReplies;
+                const replies = await fetchNotes(pool, [activeUserPubkey], limit, NoteFilterOptions.Replies, until);
 
-                if (fetchedReplies.length > 0 && isMounted) {
-                    const noteIds = fetchedReplies.map((note) => note.id);
+                if (replies.length > 0) {
+                    const noteIds = replies.map((note) => note.id);
                     const newInteractionStats = await fetchInteractionStats(pool, noteIds, relays);
+                    const newUntil = replies[replies.length - 1].created_at - 1;
 
-                    if (isMounted) {
-                        if (reset) {
-                            setReplies(fetchedReplies);
-                            setInteractionStatsForReplies(newInteractionStats);
-                        } else {
-                            setReplies((prev) => [...prev, ...fetchedReplies]);
-                            setInteractionStatsForReplies((prev) => ({ ...prev, ...newInteractionStats }));
-                        }
-
-                        setUntilForReplies(fetchedReplies[fetchedReplies.length - 1].created_at - 1);
+                    if (reset) {
+                        dispatch(
+                            updateSelectedUserReplyData({
+                                replies,
+                                interactionStatsForReplies: newInteractionStats,
+                                untilForReplies: newUntil,
+                                initRepliesLoaded: true,
+                            })
+                        );
+                    } else {
+                        dispatch(
+                            appendSelectedUserReplyData({
+                                replies,
+                                interactionStatsForReplies: newInteractionStats,
+                                untilForReplies: newUntil,
+                            })
+                        );
                     }
+                } else {
+                    dispatch(updateInitRepliesLoaded(true));
                 }
             } catch (error) {
                 console.error("Error loading replies:", error);
             } finally {
                 closePool(pool);
-                if (isMounted) setLoadingForReplies(false);
+                setLoadingForReplies(false);
             }
         },
-        [pubkey, relays, untilForReplies, location.pathname]
+        [activeUserPubkey, su.untilForReplies]
+    );
+
+    const loadFollowingProfiles = useCallback(
+        async (reset = false) => {
+            setLoadingForFollowing(true);
+
+            const pool = new SimplePool();
+
+            try {
+                const { followingPubkeys, followingFetchCount } = su;
+                const batchPubkeys = followingPubkeys.slice(followingFetchCount, followingFetchCount + limit);
+
+                const metadataMap = await fetchMultipleUserMetadata(pool, batchPubkeys);
+                const newFollowingFetchCount = followingFetchCount + batchPubkeys.length;
+
+                if (reset) {
+                    dispatch(
+                        updateSelectedUserFollowingData({
+                            followingProfiles: Array.from(metadataMap.values()),
+                            followingFetchCount: newFollowingFetchCount,
+                            initFollowingProfilesLoaded: true,
+                        })
+                    );
+                } else {
+                    dispatch(
+                        appendSelectedUserFollowingData({
+                            followingProfiles: Array.from(metadataMap.values()),
+                            followingFetchCount: newFollowingFetchCount,
+                        })
+                    );
+                }
+            } catch (error) {
+                console.error("Error loading followings:", error);
+            } finally {
+                closePool(pool);
+                setLoadingForFollowing(false);
+            }
+        },
+        [activeUserPubkey, su.followingPubkeys, su.followingFetchCount]
+    );
+
+    const loadFollowersProfiles = useCallback(
+        async (reset = false) => {
+            setLoadingForFollowers(true);
+
+            const pool = new SimplePool();
+
+            try {
+                const { followersPubkeys, followersFetchCount } = su;
+                const batchPubkeys = followersPubkeys.slice(followersFetchCount, followersFetchCount + limit);
+
+                const metadataMap = await fetchMultipleUserMetadata(pool, batchPubkeys);
+                const newFollowersFetchCount = followersFetchCount + batchPubkeys.length;
+
+                if (reset) {
+                    dispatch(
+                        updateSelectedUserFollowersData({
+                            followersProfiles: Array.from(metadataMap.values()),
+                            followersFetchCount: newFollowersFetchCount,
+                            initFollowersProfilesLoaded: true,
+                        })
+                    );
+                } else {
+                    dispatch(
+                        appendSelectedUserFollowersData({
+                            followersProfiles: Array.from(metadataMap.values()),
+                            followersFetchCount: newFollowersFetchCount,
+                        })
+                    );
+                }
+            } catch (error) {
+                console.error("Error loading followers:", error);
+            } finally {
+                closePool(pool);
+                setLoadingForFollowers(false);
+            }
+        },
+        [activeUserPubkey, su.followersPubkeys, su.followersFetchCount]
     );
 
     useEffect(() => {
-        let isMounted = true;
+        const loadNoteData = async () => await loadNotes(true);
+        const loadReplieData = async () => await loadReplies(true);
+        const loadFollowingData = async () => await loadFollowingProfiles(true);
+        const loadFollowersData = async () => await loadFollowersProfiles(true);
 
-        setNotes([]);
-        setReplies([]);
-        setUntilForNotes(undefined);
-        setUntilForReplies(undefined);
-
-        const loadAll = async () => {
-            await loadNotes(true, isMounted);
-            await loadReplies(true, isMounted);
-        };
-
-        loadAll();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [pubkey, location.pathname]);
+        if (!su.initNotesLoaded && activeTab === PROFILE_CONTENT_TABS.NOTES) loadNoteData();
+        if (!su.initRepliesLoaded && activeTab === PROFILE_CONTENT_TABS.REPLIES) loadReplieData();
+        if (!su.initFollowingProfilesLoaded && activeTab === PROFILE_CONTENT_TABS.FOLLOWING) loadFollowingData();
+        if (!su.initFollowersProfilesLoaded && activeTab === PROFILE_CONTENT_TABS.FOLLOWERS) loadFollowersData();
+    }, [activeUserPubkey, activeTab]);
 
     return (
         <Tabs
@@ -157,30 +250,40 @@ export default function ProfileContent({ pubkey, profile, activeTab, followers, 
 
             <Tabs.Panel value="notes">
                 <Notes
-                    notes={notes}
-                    usersMetadata={profile ? [profile] : []}
+                    notes={su.notes}
+                    usersMetadata={[su.profile!]}
                     loading={loadingForNotes}
-                    interactionStats={interactionStatsForNotes}
+                    interactionStats={su.interactionStatsForNotes}
                     loadNotes={loadNotes}
                 />
             </Tabs.Panel>
 
             <Tabs.Panel value="replies">
                 <Notes
-                    notes={replies}
-                    usersMetadata={profile ? [profile] : []}
+                    notes={su.replies}
+                    usersMetadata={[su.profile!]}
                     loading={loadingForReplies}
-                    interactionStats={interactionStatsForReplies}
-                    loadNotes={loadNotes}
+                    interactionStats={su.interactionStatsForReplies}
+                    loadNotes={loadReplies}
                 />
             </Tabs.Panel>
 
             <Tabs.Panel value="followers">
-                <UserList pubkeys={followers} />
+                <UserList
+                    profiles={su.followersProfiles}
+                    loading={loadingForFollowers}
+                    pubkeys={followers}
+                    loadUsers={loadFollowersProfiles}
+                />
             </Tabs.Panel>
 
             <Tabs.Panel value="following">
-                <UserList pubkeys={following} />
+                <UserList
+                    profiles={su.followingProfiles}
+                    loading={loadingForFollowing}
+                    pubkeys={following}
+                    loadUsers={loadFollowingProfiles}
+                />
             </Tabs.Panel>
         </Tabs>
     );
