@@ -6,7 +6,6 @@ import { debounce } from "lodash";
 
 import { ScrollArea } from "@mantine/core";
 
-import { ROUTES } from "../Routes/routes";
 import { SCROLL_POS_DEBOUNCE_TIME } from "../Shared/utils";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
 import { useAppSelector } from "../Store/hook";
@@ -26,33 +25,37 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
     const scrollPosition = useAppSelector((state) => state.scrollPosition);
     const dispatch = useDispatch();
 
+    const getPathnameFirstSegment = useCallback(() => {
+        return `/${location.pathname.split("/")[1]}`;
+    }, [location.pathname]);
+
     const debouncedSetScrollPosition = useCallback(
-        debounce((position: ScrollPosition) => {
-            dispatch(updateScrollPosition(position.y));
+        debounce((location: string, position: ScrollPosition) => {
+            dispatch(updateScrollPosition({ key: location, value: position.y }));
         }, SCROLL_POS_DEBOUNCE_TIME),
         []
     );
 
     const handleScrollPositionChange = useCallback(
         ({ x, y }: ScrollPosition) => {
-            if (location.pathname === ROUTES.HOME) {
-                debouncedSetScrollPosition({ x, y });
-            }
+            debouncedSetScrollPosition(getPathnameFirstSegment(), { x, y });
         },
         [debouncedSetScrollPosition]
     );
 
     const restoreScrollPosition = useCallback(() => {
-        if (viewportRef.current && scrollPosition) {
+        const firstSegment = getPathnameFirstSegment();
+
+        if (viewportRef.current && scrollPosition[firstSegment]) {
             viewportRef.current.scrollTo({
-                top: scrollPosition,
+                top: scrollPosition[firstSegment],
             });
         }
-    }, [scrollPosition]);
+    }, []);
 
     useEffect(() => {
         restoreScrollPosition();
-    }, [restoreScrollPosition]);
+    }, [location.pathname]);
 
     return (
         <div style={{ flex: 1, overflow: "hidden" }}>

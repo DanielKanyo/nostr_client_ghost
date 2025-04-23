@@ -5,6 +5,7 @@ import { SimplePool } from "nostr-tools";
 import { Tooltip, ActionIcon } from "@mantine/core";
 import { IconUserMinus, IconUserPlus } from "@tabler/icons-react";
 
+import { ROUTES } from "../Routes/routes";
 import { updateFollowList, closePool } from "../Services/userService";
 import { resetNotes } from "../Store/Features/noteDataSlice";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
@@ -15,8 +16,8 @@ interface FollowOrUnfollowButtonProps {
     loggedInUser: UserState;
     pubkey: string;
     color: string;
-    handleFollowUser: (value: string) => void;
-    handleUnfollowUser: (value: string) => void;
+    handleFollowUser?: (value: string) => void;
+    handleUnfollowUser?: (value: string) => void;
 }
 
 export default function FollowOrUnfollowButton({
@@ -47,10 +48,10 @@ export default function FollowOrUnfollowButton({
             await updateFollowList(pool, loggedInUser.privateKey!, newFollowing);
 
             dispatch(resetNotes());
-            dispatch(updateScrollPosition(0));
+            dispatch(updateScrollPosition({ key: ROUTES.HOME, value: 0 }));
             dispatch(updateUserFollowing(newFollowing));
 
-            if (loggedInUser.publicKey === selectedUser.pubkey) {
+            if (handleFollowUser && loggedInUser.publicKey === selectedUser.pubkey) {
                 handleFollowUser(pubkey);
             }
         } catch (error) {
@@ -75,7 +76,7 @@ export default function FollowOrUnfollowButton({
 
             dispatch(updateUserFollowing(newFollowing));
 
-            if (loggedInUser.publicKey === selectedUser.pubkey) {
+            if (handleUnfollowUser && loggedInUser.publicKey === selectedUser.pubkey) {
                 handleUnfollowUser(pubkey);
             }
         } catch (error) {
