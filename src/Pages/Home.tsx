@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
 
 import isEqual from "lodash/isEqual";
-import { NostrEvent, SimplePool } from "nostr-tools";
+import { SimplePool } from "nostr-tools";
 
 import { Divider, Flex } from "@mantine/core";
 import { IconNoteOff } from "@tabler/icons-react";
@@ -17,10 +17,9 @@ import MainContainer from "../Layouts/MainContainer";
 import Notes from "../Layouts/Notes";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
-import { fetchEventByIds } from "../Services/eventSerive";
+import { collectReplyEventsAndPubkeys } from "../Services/eventSerive";
 import { fetchInteractionStats, fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
-import { mapReplyEvents } from "../Shared/eventUtils";
 import {
     DEFAULT_MAIN_CONTAINER_WIDTH,
     DEFAULT_NUM_OF_DISPLAYED_ITEMS,
@@ -30,43 +29,26 @@ import {
 import {
     appendInteractionStats,
     appendNoteData,
-    appendReplyData,
+    appendReplyDetails,
     resetNotes,
     setFilter,
     setInteractionStats,
     setLoading,
     setNoteData,
-    setReplies,
+    setReplyDetails,
     setUntil,
     setUsersMetadata,
 } from "../Store/Features/noteDataSlice";
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, replies, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector((state) => state.noteData);
+    const { notes, replyDetails, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector(
+        (state) => state.noteData
+    );
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
     const dispatch = useDispatch();
-
-    const collectReplyEventsAndPubkeys = useCallback(
-        async (pool: SimplePool, notes: NostrEvent[]): Promise<{ replyEvents: NostrEvent[]; pubkeys: string[] }> => {
-            const replyDetails = mapReplyEvents(notes);
-            const eventIds = replyDetails.map((r) => r.replyToEventId);
-            let replyEvents: NostrEvent[] = [];
-
-            try {
-                replyEvents = await fetchEventByIds(pool, eventIds);
-            } catch (error) {
-                console.log("Error loading reply events:", error);
-            }
-
-            const pubkeys = replyEvents.map((re) => re.pubkey);
-
-            return { replyEvents, pubkeys };
-        },
-        []
-    );
 
     const loadNotes = useCallback(
         async (reset: boolean = false) => {
@@ -95,7 +77,7 @@ export default function Home() {
 
                     dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
                     dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
-                    dispatch(reset ? setReplies(replyData.replyEvents) : appendReplyData(replyData.replyEvents));
+                    dispatch(reset ? setReplyDetails(replyData.replyEvents) : appendReplyDetails(replyData.replyEvents));
                     dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
                     dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
@@ -150,7 +132,7 @@ export default function Home() {
                     ) : (
                         <Notes
                             notes={notes}
-                            replies={replies}
+                            replyDetails={replyDetails}
                             usersMetadata={usersMetadata}
                             loading={loading}
                             interactionStats={interactionStats}

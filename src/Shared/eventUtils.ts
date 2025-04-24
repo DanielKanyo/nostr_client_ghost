@@ -38,11 +38,11 @@ export const mapReplyEvents = (events: NostrEvent[]): ReplyEvent[] => {
     return replyEvents;
 };
 
-export const findReplyForNote = (note: NostrEvent, replies: NostrEvent[]): NostrEvent | undefined => {
+export const findReplyDetailForNote = (note: NostrEvent, replyDetails: NostrEvent[]): NostrEvent | undefined => {
     const replyTag = note.tags.find((tag) => tag[0] === "e" && tag[3] === "reply");
     const replyId = replyTag?.[1];
 
-    if (!replyId || !replies) return undefined;
+    if (!replyId || !replyDetails) return undefined;
 
-    return replies.find((reply) => reply.id === replyId);
+    return replyDetails.find((reply) => reply.id === replyId);
 };

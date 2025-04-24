@@ -10,7 +10,7 @@ const NOTE_LIST_MAX_LENGTH = 50;
 
 interface NoteDataState {
     notes: NostrEvent[];
-    replies: NostrEvent[];
+    replyDetails: NostrEvent[];
     usersMetadata: UserMetadata[];
     until: number | undefined;
     loading: boolean;
@@ -21,7 +21,7 @@ interface NoteDataState {
 
 const initialState: NoteDataState = {
     notes: [],
-    replies: [],
+    replyDetails: [],
     usersMetadata: [],
     until: undefined,
     loading: false,
@@ -37,8 +37,8 @@ const noteDataSlice = createSlice({
         setNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
             state.notes = action.payload;
         },
-        setReplies: (state, action: PayloadAction<NostrEvent[]>) => {
-            state.replies = action.payload;
+        setReplyDetails: (state, action: PayloadAction<NostrEvent[]>) => {
+            state.replyDetails = action.payload;
         },
         appendNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
             const oldNotes = state.notes;
@@ -54,15 +54,15 @@ const noteDataSlice = createSlice({
 
             state.notes = [...oldNotes, ...newNotes];
         },
-        appendReplyData: (state, action: PayloadAction<NostrEvent[]>) => {
-            const oldReplies = state.replies;
-            const newReplies = action.payload;
+        appendReplyDetails: (state, action: PayloadAction<NostrEvent[]>) => {
+            const oldReplyDetails = state.replyDetails;
+            const newReplyDetails = action.payload;
 
-            if (oldReplies.length + newReplies.length > NOTE_LIST_MAX_LENGTH) {
-                oldReplies.splice(0, newReplies.length);
+            if (oldReplyDetails.length + newReplyDetails.length > NOTE_LIST_MAX_LENGTH) {
+                oldReplyDetails.splice(0, newReplyDetails.length);
             }
 
-            state.notes = [...oldReplies, ...newReplies];
+            state.notes = [...oldReplyDetails, ...newReplyDetails];
         },
         setUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
             state.usersMetadata = action.payload;
@@ -84,7 +84,7 @@ const noteDataSlice = createSlice({
         },
         resetNotes: (state) => {
             state.notes = [];
-            state.replies = [];
+            state.replyDetails = [];
             state.usersMetadata = [];
             state.interactionStats = {};
             state.until = undefined;
@@ -95,9 +95,9 @@ const noteDataSlice = createSlice({
 
 export const {
     setNoteData,
-    setReplies,
+    setReplyDetails,
     appendNoteData,
-    appendReplyData,
+    appendReplyDetails,
     setUsersMetadata,
     setUntil,
     setLoading,

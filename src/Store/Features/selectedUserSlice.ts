@@ -21,9 +21,11 @@ type SelectedUserStateNoteData = {
 
 type SelectedUserStateReplyData = {
     replies: NostrEvent[];
+    replyDetails: NostrEvent[];
     interactionStatsForReplies: { [noteId: string]: InteractionStats };
     untilForReplies: number | undefined;
     initRepliesLoaded?: boolean;
+    replyDetailsUsersMetadata: UserMetadata[];
 };
 
 type SelectedUserStateFollowingData = {
@@ -57,9 +59,11 @@ const initSelectedUser: SelectedUserState = {
     initNotesLoaded: false,
 
     replies: [],
+    replyDetails: [],
     interactionStatsForReplies: {},
     untilForReplies: undefined,
     initRepliesLoaded: false,
+    replyDetailsUsersMetadata: [],
 
     followingProfiles: [],
     followingFetchCount: 0,
@@ -96,14 +100,18 @@ export const selectedUserSlice = createSlice({
         },
         updateSelectedUserReplyData: (state, action: PayloadAction<SelectedUserStateReplyData>) => {
             state.replies = action.payload.replies;
+            state.replyDetails = action.payload.replyDetails;
             state.interactionStatsForReplies = action.payload.interactionStatsForReplies;
             state.untilForReplies = action.payload.untilForReplies;
+            state.replyDetailsUsersMetadata = action.payload.replyDetailsUsersMetadata;
         },
         appendSelectedUserReplyData: (state, action: PayloadAction<SelectedUserStateReplyData>) => {
-            state.replies = [...state.notes, ...action.payload.replies];
+            state.replies = [...state.replies, ...action.payload.replies];
+            state.replyDetails = [...state.replies, ...action.payload.replyDetails];
             state.interactionStatsForReplies = { ...state.interactionStatsForReplies, ...action.payload.interactionStatsForReplies };
             state.untilForReplies = action.payload.untilForReplies;
             state.initRepliesLoaded = action.payload.initRepliesLoaded;
+            state.replyDetailsUsersMetadata = [...state.replyDetailsUsersMetadata, ...action.payload.replyDetailsUsersMetadata];
         },
         updateInitRepliesLoaded: (state, action: PayloadAction<boolean>) => {
             state.initRepliesLoaded = action.payload;

@@ -7,14 +7,14 @@ import { IconDots, IconNoteOff, IconReload } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
-import { findReplyForNote } from "../Shared/eventUtils";
+import { findReplyDetailForNote } from "../Shared/eventUtils";
 import { useAppSelector } from "../Store/hook";
 import { InteractionStats } from "../Types/interactionStats";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface NotesProps {
     notes: NostrEvent[];
-    replies: NostrEvent[];
+    replyDetails: NostrEvent[];
     usersMetadata: UserMetadata[];
     loading: boolean;
     interactionStats: { [noteId: string]: InteractionStats };
@@ -23,16 +23,25 @@ interface NotesProps {
     reloadNotes?: () => void;
 }
 
-export default function Notes({ notes, replies, usersMetadata, loading, interactionStats, trimmed, loadNotes, reloadNotes }: NotesProps) {
+export default function Notes({
+    notes,
+    replyDetails,
+    usersMetadata,
+    loading,
+    interactionStats,
+    trimmed,
+    loadNotes,
+    reloadNotes,
+}: NotesProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
     const hasNotes = notes.length > 0;
 
-    const notesWithReplies = useMemo(() => {
+    const notesWithReplyDetails = useMemo(() => {
         return notes.map((note) => ({
             note,
-            reply: findReplyForNote(note, replies),
+            replyDetail: findReplyDetailForNote(note, replyDetails),
         }));
-    }, [notes, replies]);
+    }, [notes, replyDetails]);
 
     if (!hasNotes && !loading) {
         return <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />;
@@ -59,8 +68,14 @@ export default function Notes({ notes, replies, usersMetadata, loading, interact
                 </>
             )}
 
-            {notesWithReplies.map(({ note, reply }) => (
-                <NoteItem key={note.id} note={note} reply={reply} usersMetadata={usersMetadata} interactionStats={interactionStats} />
+            {notesWithReplyDetails.map(({ note, replyDetail }) => (
+                <NoteItem
+                    key={note.id}
+                    note={note}
+                    replyDetail={replyDetail}
+                    usersMetadata={usersMetadata}
+                    interactionStats={interactionStats}
+                />
             ))}
 
             {loading && (

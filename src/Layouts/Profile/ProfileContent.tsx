@@ -5,6 +5,7 @@ import { SimplePool } from "nostr-tools";
 
 import { Tabs } from "@mantine/core";
 
+import { collectReplyEventsAndPubkeys } from "../../Services/eventSerive";
 import { fetchInteractionStats, fetchNotes } from "../../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../../Services/userService";
 import { DEFAULT_NUM_OF_DISPLAYED_ITEMS, NoteFilterOptions, PROFILE_CONTENT_TABS } from "../../Shared/utils";
@@ -102,6 +103,8 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                 const replies = await fetchNotes(pool, [activeUserPubkey], limit, NoteFilterOptions.Replies, until);
 
                 if (replies.length > 0) {
+                    const replyData = await collectReplyEventsAndPubkeys(pool, replies);
+                    const metadataMap = await fetchMultipleUserMetadata(pool, replyData.pubkeys);
                     const noteIds = replies.map((note) => note.id);
                     const newInteractionStats = await fetchInteractionStats(pool, noteIds, relays);
                     const newUntil = replies[replies.length - 1].created_at - 1;
@@ -110,17 +113,21 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                         dispatch(
                             updateSelectedUserReplyData({
                                 replies,
+                                replyDetails: replyData.replyEvents,
                                 interactionStatsForReplies: newInteractionStats,
                                 untilForReplies: newUntil,
                                 initRepliesLoaded: true,
+                                replyDetailsUsersMetadata: Array.from(metadataMap.values()),
                             })
                         );
                     } else {
                         dispatch(
                             appendSelectedUserReplyData({
                                 replies,
+                                replyDetails: replyData.replyEvents,
                                 interactionStatsForReplies: newInteractionStats,
                                 untilForReplies: newUntil,
+                                replyDetailsUsersMetadata: Array.from(metadataMap.values()),
                             })
                         );
                     }
@@ -255,19 +262,18 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     loading={loadingForNotes}
                     interactionStats={su.interactionStatsForNotes}
                     loadNotes={loadNotes}
-                    replies={[]}
+                    replyDetails={[]}
                 />
             </Tabs.Panel>
 
             <Tabs.Panel value="replies">
                 <Notes
                     notes={su.replies}
-                    usersMetadata={[su.profile!]}
+                    usersMetadata={[su.profile!, ...su.replyDetailsUsersMetadata]}
                     loading={loadingForReplies}
                     interactionStats={su.interactionStatsForReplies}
                     loadNotes={loadReplies}
-                    // TODO: fetch replies
-                    replies={[]}
+                    replyDetails={su.replyDetails}
                 />
             </Tabs.Panel>
 

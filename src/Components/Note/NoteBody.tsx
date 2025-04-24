@@ -15,11 +15,11 @@ interface NoteBodyProps {
     text: string;
     images: string[];
     videos: string[];
-    reply: NostrEvent | undefined;
+    replyDetail: NostrEvent | undefined;
     replyTo: UserMetadata | undefined;
 }
 
-export default function NoteBody({ text, images, videos, reply, replyTo }: NoteBodyProps) {
+export default function NoteBody({ text, images, videos, replyDetail, replyTo }: NoteBodyProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
 
     const replacedNostrTags = useMemo((): JSX.Element[] => {
@@ -53,19 +53,19 @@ export default function NoteBody({ text, images, videos, reply, replyTo }: NoteB
     }, [text]);
 
     const replyToText = useMemo(() => {
-        if (!reply) {
+        if (!replyDetail || !replyTo) {
             return null;
         }
 
-        const name = replyTo!.display_name || replyTo!.name || `${reply!.pubkey.slice(0, 20)}...`;
-        const to = `${PROFILE_ROUTE_BASE}/${encodeNProfile(reply!.pubkey)}`;
+        const name = replyTo!.display_name || replyTo!.name || `${replyDetail!.pubkey.slice(0, 20)}...`;
+        const to = `${PROFILE_ROUTE_BASE}/${encodeNProfile(replyDetail!.pubkey)}`;
 
         return (
             <Link to={to} style={{ color: `var(--mantine-color-${color}-3)`, textDecoration: "none" }}>
                 @{name}
             </Link>
         );
-    }, [reply, replyTo]);
+    }, [replyDetail, replyTo]);
 
     return (
         <>
