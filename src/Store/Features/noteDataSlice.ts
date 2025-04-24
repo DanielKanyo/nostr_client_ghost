@@ -12,6 +12,7 @@ interface NoteDataState {
     notes: NostrEvent[];
     replyDetails: NostrEvent[];
     usersMetadata: UserMetadata[];
+    replyDetailsUsersMetadata: UserMetadata[];
     until: number | undefined;
     loading: boolean;
     filter: NoteFilterOptions;
@@ -23,6 +24,7 @@ const initialState: NoteDataState = {
     notes: [],
     replyDetails: [],
     usersMetadata: [],
+    replyDetailsUsersMetadata: [],
     until: undefined,
     loading: false,
     filter: NoteFilterOptions.All,
@@ -62,10 +64,16 @@ const noteDataSlice = createSlice({
                 oldReplyDetails.splice(0, newReplyDetails.length);
             }
 
-            state.notes = [...oldReplyDetails, ...newReplyDetails];
+            state.replyDetails = [...oldReplyDetails, ...newReplyDetails];
         },
         setUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
             state.usersMetadata = action.payload;
+        },
+        setReplyDetailsUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
+            state.replyDetailsUsersMetadata = action.payload;
+        },
+        appendReplyDetailsUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
+            state.replyDetailsUsersMetadata = [state.replyDetailsUsersMetadata, ...action.payload];
         },
         setUntil: (state, action: PayloadAction<number | undefined>) => {
             state.until = action.payload;
@@ -86,6 +94,7 @@ const noteDataSlice = createSlice({
             state.notes = [];
             state.replyDetails = [];
             state.usersMetadata = [];
+            state.replyDetailsUsersMetadata = [];
             state.interactionStats = {};
             state.until = undefined;
             state.trimmed = false;
@@ -98,6 +107,8 @@ export const {
     setReplyDetails,
     appendNoteData,
     appendReplyDetails,
+    setReplyDetailsUsersMetadata,
+    appendReplyDetailsUsersMetadata,
     setUsersMetadata,
     setUntil,
     setLoading,

@@ -30,19 +30,21 @@ import {
     appendInteractionStats,
     appendNoteData,
     appendReplyDetails,
+    appendReplyDetailsUsersMetadata,
     resetNotes,
     setFilter,
     setInteractionStats,
     setLoading,
     setNoteData,
     setReplyDetails,
+    setReplyDetailsUsersMetadata,
     setUntil,
     setUsersMetadata,
 } from "../Store/Features/noteDataSlice";
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, replyDetails, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector(
+    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector(
         (state) => state.noteData
     );
     const user = useAppSelector((state) => state.user);
@@ -68,16 +70,20 @@ export default function Home() {
 
                 if (newNotes.length > 0) {
                     const replyData = await collectReplyEventsAndPubkeys(pool, newNotes);
-                    const metadataMap = await fetchMultipleUserMetadata(pool, [...user.following, ...replyData.pubkeys]);
+                    const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
+                    const replyDetailsUsersMetadataMap = await fetchMultipleUserMetadata(pool, replyData.pubkeys);
                     const noteIds = newNotes.map((note) => note.id);
                     const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
 
                     const combinedMetadata = new Map(metadataMap);
                     combinedMetadata.set(user.publicKey, user.profile!);
 
+                    const rdumd = Array.from(replyDetailsUsersMetadataMap.values());
+
                     dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
                     dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
                     dispatch(reset ? setReplyDetails(replyData.replyEvents) : appendReplyDetails(replyData.replyEvents));
+                    dispatch (reset ? setReplyDetailsUsersMetadata(rdumd) : appendReplyDetailsUsersMetadata(rdumd))
                     dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
                     dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
@@ -133,7 +139,7 @@ export default function Home() {
                         <Notes
                             notes={notes}
                             replyDetails={replyDetails}
-                            usersMetadata={usersMetadata}
+                            usersMetadata={[...usersMetadata, ...replyDetailsUsersMetadata]}
                             loading={loading}
                             interactionStats={interactionStats}
                             trimmed={trimmed}
