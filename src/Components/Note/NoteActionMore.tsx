@@ -7,8 +7,8 @@ import { IconBlockquote, IconDots, IconKey, IconLink, IconUserOff } from "@table
 
 import { EVENT_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNPub } from "../../Services/userService";
-import { UserMetadata } from "../../Types/userMetadata";
 import { useAppSelector } from "../../Store/hook";
+import { UserMetadata } from "../../Types/userMetadata";
 
 interface NoteActionMorePorps {
     note: NostrEvent;

@@ -44,8 +44,9 @@ import {
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, loading } =
-        useAppSelector((state) => state.noteData);
+    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, loading } = useAppSelector(
+        (state) => state.noteData
+    );
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);

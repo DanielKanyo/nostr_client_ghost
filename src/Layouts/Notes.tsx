@@ -20,14 +20,7 @@ interface NotesProps {
     loadNotes: () => void;
 }
 
-export default function Notes({
-    notes,
-    replyDetails,
-    usersMetadata,
-    loading,
-    interactionStats,
-    loadNotes,
-}: NotesProps) {
+export default function Notes({ notes, replyDetails, usersMetadata, loading, interactionStats, loadNotes }: NotesProps) {
     const hasNotes = notes.length > 0;
 
     const notesWithReplyDetails = useMemo(() => {
