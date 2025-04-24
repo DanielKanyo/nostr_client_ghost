@@ -30,6 +30,7 @@ import {
 import {
     appendInteractionStats,
     appendNoteData,
+    appendReplyData,
     resetNotes,
     setFilter,
     setInteractionStats,
@@ -95,8 +96,7 @@ export default function Home() {
 
                     dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
                     dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
-                    // TODO: handle append as well
-                    dispatch(setReplies(replyData.replyEvents));
+                    dispatch(reset ? setReplies(replyData.replyEvents) : appendReplyData(replyData.replyEvents));
                     dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
                     dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));

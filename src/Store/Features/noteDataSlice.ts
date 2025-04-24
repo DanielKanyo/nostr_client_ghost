@@ -54,6 +54,16 @@ const noteDataSlice = createSlice({
 
             state.notes = [...oldNotes, ...newNotes];
         },
+        appendReplyData: (state, action: PayloadAction<NostrEvent[]>) => {
+            const oldReplies = state.replies;
+            const newReplies = action.payload;
+
+            if (oldReplies.length + newReplies.length > NOTE_LIST_MAX_LENGTH) {
+                oldReplies.splice(0, newReplies.length);
+            }
+
+            state.notes = [...oldReplies, ...newReplies];
+        },
         setUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
             state.usersMetadata = action.payload;
         },
@@ -87,6 +97,7 @@ export const {
     setNoteData,
     setReplies,
     appendNoteData,
+    appendReplyData,
     setUsersMetadata,
     setUntil,
     setLoading,
