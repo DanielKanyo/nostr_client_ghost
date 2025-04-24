@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { NostrEvent } from "nostr-tools";
 
 import { Button, Center, Container, Loader } from "@mantine/core";
@@ -7,7 +5,6 @@ import { IconDots, IconNoteOff } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
-import { findReplyDetailForNote } from "../Shared/eventUtils";
 import { InteractionStats } from "../Types/interactionStats";
 import { UserMetadata } from "../Types/userMetadata";
 
@@ -23,24 +20,17 @@ interface NotesProps {
 export default function Notes({ notes, replyDetails, usersMetadata, loading, interactionStats, loadNotes }: NotesProps) {
     const hasNotes = notes.length > 0;
 
-    const notesWithReplyDetails = useMemo(() => {
-        return notes.map((note) => ({
-            note,
-            replyDetail: findReplyDetailForNote(note, replyDetails),
-        }));
-    }, [notes, replyDetails]);
-
     if (!hasNotes && !loading) {
         return <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />;
     }
 
     return (
         <>
-            {notesWithReplyDetails.map(({ note, replyDetail }) => (
+            {notes.map((note) => (
                 <NoteItem
                     key={note.id}
                     note={note}
-                    replyDetail={replyDetail}
+                    replyDetails={replyDetails}
                     usersMetadata={usersMetadata}
                     interactionStats={interactionStats}
                 />

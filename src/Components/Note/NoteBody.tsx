@@ -19,6 +19,8 @@ interface NoteBodyProps {
     replyTo: UserMetadata | undefined;
 }
 
+const CUT_NAME_AFTER = 18;
+
 export default function NoteBody({ text, images, videos, replyDetail, replyTo }: NoteBodyProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
 
@@ -57,12 +59,12 @@ export default function NoteBody({ text, images, videos, replyDetail, replyTo }:
             return null;
         }
 
-        const name = replyTo!.display_name || replyTo!.name || `${replyDetail!.pubkey.slice(0, 20)}...`;
+        const name = replyTo!.display_name || replyTo!.name || `${replyDetail!.pubkey}...`;
         const to = `${PROFILE_ROUTE_BASE}/${encodeNProfile(replyDetail!.pubkey)}`;
 
         return (
             <Link to={to} style={{ color: `var(--mantine-color-${color}-3)`, textDecoration: "none" }}>
-                @{name}
+                @{name.length > CUT_NAME_AFTER ? `${name.slice(0, CUT_NAME_AFTER)}...` : name}
             </Link>
         );
     }, [replyDetail, replyTo]);

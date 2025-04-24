@@ -51,7 +51,7 @@ const noteDataSlice = createSlice({
             state.replyDetailsUsersMetadata = action.payload;
         },
         appendReplyDetailsUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
-            state.replyDetailsUsersMetadata = [state.replyDetailsUsersMetadata, ...action.payload];
+            state.replyDetailsUsersMetadata = [...state.replyDetailsUsersMetadata, ...action.payload];
         },
         setUntil: (state, action: PayloadAction<number | undefined>) => {
             state.until = action.payload;
