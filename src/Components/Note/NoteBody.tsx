@@ -19,7 +19,7 @@ interface NoteBodyProps {
     replyTo: UserMetadata | undefined;
 }
 
-const CUT_NAME_AFTER = 18;
+const CUT_NAME_AFTER = 40;
 
 export default function NoteBody({ text, images, videos, replyDetail, replyTo }: NoteBodyProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
