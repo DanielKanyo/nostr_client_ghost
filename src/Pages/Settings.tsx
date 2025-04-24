@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Container, Divider, Flex, NavLink, Text } from "@mantine/core";
-import { IconAntenna, IconBrush, IconChevronRight, IconKey, IconUserCog } from "@tabler/icons-react";
+import { IconAntenna, IconBrush, IconChevronRight, IconKey, IconUserCog, IconUserOff } from "@tabler/icons-react";
 
 import pkg from "../../package.json";
 import PageTitle from "../Components/PageTitle";
@@ -13,9 +13,10 @@ import { DEFAULT_MAIN_CONTAINER_WIDTH, DEFAULT_SIDE_CONTAINER_WIDTH } from "../S
 
 const settingsItems = [
     { icon: IconKey, label: "Key Management", to: ROUTES.SETTINGS_KEY_MANAGEMENT },
-    { icon: IconBrush, label: "Appearance", to: ROUTES.SETTINGS_APPEARANCE },
     { icon: IconUserCog, label: "Profile", to: ROUTES.SETTINGS_PROFILE },
+    { icon: IconUserOff, label: "Muted Accounts", to: ROUTES.SETTINGS_MUTEDED_ACCOUNTS },
     { icon: IconAntenna, label: "Network", to: ROUTES.SETTINGS_NETWORK },
+    { icon: IconBrush, label: "Appearance", to: ROUTES.SETTINGS_APPEARANCE },
 ];
 
 export default function Settings() {

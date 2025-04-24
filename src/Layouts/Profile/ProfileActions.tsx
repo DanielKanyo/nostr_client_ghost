@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { ActionIcon, Center, CopyButton, Group, Menu, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconKey, IconLink, IconMail, IconQrcode, IconUserCancel, IconUserEdit, IconWorldWww, IconX } from "@tabler/icons-react";
+import { IconDots, IconKey, IconLink, IconMail, IconQrcode, IconUserEdit, IconUserOff, IconWorldWww, IconX } from "@tabler/icons-react";
 
 import FollowOrUnfollowButton from "../../Components/FollowOrUnfollowButton";
 import PublicKeyInput from "../../Components/PublicKeyInput";
@@ -58,7 +58,7 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
                             )}
                         </CopyButton>
                         {!ownKey && (
-                            <Menu.Item fz="md" leftSection={<IconUserCancel size={18} />} color="red">
+                            <Menu.Item fz="md" leftSection={<IconUserOff size={18} />} color="red">
                                 Mute User
                             </Menu.Item>
                         )}

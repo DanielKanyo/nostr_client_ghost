@@ -12,5 +12,6 @@ export const ROUTES = {
     SETTINGS_APPEARANCE: "/settings/appearance",
     SETTINGS_PROFILE: "/settings/profile",
     SETTINGS_NETWORK: "/settings/network",
+    SETTINGS_MUTEDED_ACCOUNTS: "/settings/muted-accounts",
     EVENT: `${EVENT_ROUTE_BASE}/:nevent`,
 };

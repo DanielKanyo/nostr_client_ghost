@@ -3,11 +3,12 @@ import { useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
 
 import { ActionIcon, CopyButton, Menu } from "@mantine/core";
-import { IconBlockquote, IconDots, IconKey, IconLink, IconUserCancel } from "@tabler/icons-react";
+import { IconBlockquote, IconDots, IconKey, IconLink, IconUserOff } from "@tabler/icons-react";
 
 import { EVENT_ROUTE_BASE } from "../../Routes/routes";
 import { encodeNPub } from "../../Services/userService";
 import { UserMetadata } from "../../Types/userMetadata";
+import { useAppSelector } from "../../Store/hook";
 
 interface NoteActionMorePorps {
     note: NostrEvent;
@@ -17,6 +18,9 @@ interface NoteActionMorePorps {
 
 export default function NoteActionMore({ note, nevent }: NoteActionMorePorps) {
     const npub = useMemo(() => encodeNPub(note.pubkey), [note.pubkey]);
+    const storedUser = useAppSelector((state) => state.user);
+
+    const ownKey = storedUser.publicKey === note.pubkey;
 
     return (
         <Menu shadow="lg" position="bottom-end" radius="md" width={250} withArrow>
@@ -57,9 +61,11 @@ export default function NoteActionMore({ note, nevent }: NoteActionMorePorps) {
                     )}
                 </CopyButton>
                 {/* TODO */}
-                <Menu.Item fz="md" leftSection={<IconUserCancel size={18} />} color="red">
-                    Mute User
-                </Menu.Item>
+                {!ownKey && (
+                    <Menu.Item fz="md" leftSection={<IconUserOff size={18} />} color="red">
+                        Mute User
+                    </Menu.Item>
+                )}
             </Menu.Dropdown>
         </Menu>
     );
