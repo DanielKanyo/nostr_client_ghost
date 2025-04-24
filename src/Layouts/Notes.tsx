@@ -40,8 +40,6 @@ export default function Notes({ notes, replies, usersMetadata, loading, interact
 
     return (
         <>
-            {!hasNotes && !loading && <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />}
-
             {trimmed && !loading && (
                 <>
                     <Center>

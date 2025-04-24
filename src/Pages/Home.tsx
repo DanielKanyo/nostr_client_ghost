@@ -85,7 +85,6 @@ export default function Home() {
                 );
 
                 if (newNotes.length > 0) {
-                    // TODO
                     const replyData = await collectReplyEventsAndPubkeys(pool, newNotes);
                     const metadataMap = await fetchMultipleUserMetadata(pool, [...user.following, ...replyData.pubkeys]);
                     const noteIds = newNotes.map((note) => note.id);
