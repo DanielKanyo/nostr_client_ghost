@@ -14,8 +14,8 @@ interface UserItemProps {
     name: string | undefined;
     displayName: string | undefined;
     picture: string | undefined;
-    handleFollowUser: (value: string) => void;
-    handleUnfollowUser: (value: string) => void;
+    handleFollowUser?: (value: string) => void;
+    handleUnfollowUser?: (value: string) => void;
 }
 
 export default function UserItem({ pubkey, name, picture, displayName, handleFollowUser, handleUnfollowUser }: UserItemProps) {
@@ -63,13 +63,15 @@ export default function UserItem({ pubkey, name, picture, displayName, handleFol
                         </Box>
                     </Flex>
                 </Group>
-                <FollowOrUnfollowButton
-                    loggedInUser={loggedInUser}
-                    pubkey={pubkey}
-                    color={color}
-                    handleFollowUser={handleFollowUser}
-                    handleUnfollowUser={handleUnfollowUser}
-                />
+                {handleFollowUser && handleUnfollowUser && (
+                    <FollowOrUnfollowButton
+                        loggedInUser={loggedInUser}
+                        pubkey={pubkey}
+                        color={color}
+                        handleFollowUser={handleFollowUser}
+                        handleUnfollowUser={handleUnfollowUser}
+                    />
+                )}
             </Flex>
             <Divider />
         </>
