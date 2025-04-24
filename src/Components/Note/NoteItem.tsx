@@ -15,15 +15,16 @@ import NoteActionMore from "./NoteActionMore";
 import NoteBody from "./NoteBody";
 import NoteFooter from "./NoteFooter";
 import NoteHeader from "./NoteHeader";
-import { extractImageUrls, extractVideoUrls } from "./noteUtils";
+import { extractImageUrls, extractVideoUrls } from "./attachmentUtils";
 
 interface NoteItemProps {
     note: NostrEvent;
+    reply: NostrEvent | undefined;
     usersMetadata: UserMetadata[];
     interactionStats: { [noteId: string]: InteractionStats };
 }
 
-export default function NoteItem({ note, usersMetadata, interactionStats }: NoteItemProps) {
+export default function NoteItem({ note, reply, usersMetadata, interactionStats }: NoteItemProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const nevent = encodeNEvent(note.id);
@@ -38,6 +39,7 @@ export default function NoteItem({ note, usersMetadata, interactionStats }: Note
     }, [computedColorScheme, theme.colors]);
 
     const userMetadata = useMemo(() => usersMetadata.find((u) => u.pubkey === note.pubkey), [usersMetadata, note.pubkey]);
+    const replyToMetadata = useMemo(() => usersMetadata.find((u) => u.pubkey === reply?.pubkey), [usersMetadata, reply]);
 
     const displayName = useMemo(() => {
         return userMetadata?.display_name || userMetadata?.name || `${note.pubkey.slice(0, 8)}...`;
@@ -89,7 +91,7 @@ export default function NoteItem({ note, usersMetadata, interactionStats }: Note
                         <Flex>
                             <Stack w="100%" gap="sm" pl="lg">
                                 <NoteHeader displayName={displayName} createdAt={note.created_at} />
-                                <NoteBody text={textToDisplay} images={images} videos={videos} />
+                                <NoteBody text={textToDisplay} images={images} videos={videos} reply={reply} replyTo={replyToMetadata} />
                             </Stack>
                             <NoteActionMore note={note} usersMetadata={userMetadata} nevent={nevent} />
                         </Flex>

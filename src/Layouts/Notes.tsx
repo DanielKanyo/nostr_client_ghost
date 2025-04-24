@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { NostrEvent } from "nostr-tools";
 
 import { Button, Center, Container, Divider, Loader } from "@mantine/core";
@@ -5,12 +7,14 @@ import { IconDots, IconNoteOff, IconReload } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
+import { findReplyForNote } from "../Shared/eventUtils";
 import { useAppSelector } from "../Store/hook";
 import { InteractionStats } from "../Types/interactionStats";
 import { UserMetadata } from "../Types/userMetadata";
 
 interface NotesProps {
     notes: NostrEvent[];
+    replies: NostrEvent[];
     usersMetadata: UserMetadata[];
     loading: boolean;
     interactionStats: { [noteId: string]: InteractionStats };
@@ -19,14 +23,23 @@ interface NotesProps {
     reloadNotes?: () => void;
 }
 
-export default function Notes({ notes, usersMetadata, loading, interactionStats, trimmed, loadNotes, reloadNotes }: NotesProps) {
+export default function Notes({ notes, replies, usersMetadata, loading, interactionStats, trimmed, loadNotes, reloadNotes }: NotesProps) {
     const { color } = useAppSelector((state) => state.primaryColor);
     const hasNotes = notes.length > 0;
 
+    const notesWithReplies = useMemo(() => {
+        return notes.map((note) => ({
+            note,
+            reply: findReplyForNote(note, replies),
+        }));
+    }, [notes, replies]);
+
+    if (!hasNotes && !loading) {
+        return <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />;
+    }
+
     return (
         <>
-            {!hasNotes && !loading && <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />}
-
             {trimmed && !loading && (
                 <>
                     <Center>
@@ -46,10 +59,10 @@ export default function Notes({ notes, usersMetadata, loading, interactionStats,
                 </>
             )}
 
-            {hasNotes &&
-                notes.map((note: NostrEvent) => (
-                    <NoteItem key={note.id} note={note} usersMetadata={usersMetadata} interactionStats={interactionStats} />
-                ))}
+            {notesWithReplies.map(({ note, reply }) => (
+                <NoteItem key={note.id} note={note} reply={reply} usersMetadata={usersMetadata} interactionStats={interactionStats} />
+            ))}
+
             {loading && (
                 <Center>
                     <Loader size={36} my="xs" color="var(--mantine-color-dark-0)" type="dots" />
