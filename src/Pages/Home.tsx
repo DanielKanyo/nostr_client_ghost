@@ -52,25 +52,25 @@ export default function Home() {
     const dispatch = useDispatch();
 
     const loadAndStoreNotes = useCallback(
-        async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
+        async (pool: SimplePool, notes: NostrEvent[], reset: boolean): Promise<void> => {
             const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
-            const noteIds = newNotes.map((note) => note.id);
+            const noteIds = notes.map((note) => note.id);
             const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
 
             const combinedMetadata = new Map(metadataMap);
             combinedMetadata.set(user.publicKey, user.profile!);
 
             dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
-            dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
+            dispatch(reset ? setNoteData(notes) : appendNoteData(notes));
             dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
-            dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
+            dispatch(setUntil(notes[notes.length - 1].created_at - 1));
         },
         [user.following, user.publicKey, user.profile, relays]
     );
 
-    const loadAndStoreReplyDetails = useCallback(async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
-        const replyData = await collectReplyEventsAndPubkeys(pool, newNotes);
+    const loadAndStoreReplyDetails = useCallback(async (pool: SimplePool, notes: NostrEvent[], reset: boolean): Promise<void> => {
+        const replyData = await collectReplyEventsAndPubkeys(pool, notes);
         const usersMetadataMap = await fetchMultipleUserMetadata(pool, replyData.pubkeys);
         const usersMetadata = Array.from(usersMetadataMap.values());
 
