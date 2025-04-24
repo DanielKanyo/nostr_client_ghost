@@ -42,7 +42,7 @@ export const findReplyForNote = (note: NostrEvent, replies: NostrEvent[]): Nostr
     const replyTag = note.tags.find((tag) => tag[0] === "e" && tag[3] === "reply");
     const replyId = replyTag?.[1];
 
-    if (!replyId) return undefined;
+    if (!replyId || !replies) return undefined;
 
     return replies.find((reply) => reply.id === replyId);
 };

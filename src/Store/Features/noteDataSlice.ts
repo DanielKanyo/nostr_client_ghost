@@ -6,7 +6,7 @@ import { NoteFilterOptions } from "../../Shared/utils";
 import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 
-const NOTE_LIST_MAX_LENGTH = 25;
+const NOTE_LIST_MAX_LENGTH = 50;
 
 interface NoteDataState {
     notes: NostrEvent[];

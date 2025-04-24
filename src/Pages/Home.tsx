@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
 
 import isEqual from "lodash/isEqual";
-import { SimplePool } from "nostr-tools";
+import { NostrEvent, SimplePool } from "nostr-tools";
 
 import { Divider, Flex } from "@mantine/core";
 import { IconNoteOff } from "@tabler/icons-react";
@@ -48,6 +48,25 @@ export default function Home() {
     const previousFollowing = useRef(user.following);
     const dispatch = useDispatch();
 
+    const collectReplyEventsAndPubkeys = useCallback(
+        async (pool: SimplePool, notes: NostrEvent[]): Promise<{ replyEvents: NostrEvent[]; pubkeys: string[] }> => {
+            const replyDetails = mapReplyEvents(notes);
+            const eventIds = replyDetails.map((r) => r.replyToEventId);
+            let replyEvents: NostrEvent[] = [];
+
+            try {
+                replyEvents = await fetchEventByIds(pool, eventIds);
+            } catch (error) {
+                console.log("Error loading reply events:", error);
+            }
+
+            const pubkeys = replyEvents.map((re) => re.pubkey);
+
+            return { replyEvents, pubkeys };
+        },
+        []
+    );
+
     const loadNotes = useCallback(
         async (reset: boolean = false) => {
             if (loading) return;
@@ -66,14 +85,8 @@ export default function Home() {
 
                 if (newNotes.length > 0) {
                     // TODO
-                    const replyDetails = mapReplyEvents(newNotes);
-                    const eventIds = replyDetails.map((r) => r.replyToEventId);
-
-                    const replyEvents = await fetchEventByIds(pool, eventIds);
-
-                    console.log(replyEvents, newNotes);
-
-                    const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
+                    const replyData = await collectReplyEventsAndPubkeys(pool, newNotes);
+                    const metadataMap = await fetchMultipleUserMetadata(pool, [...user.following, ...replyData.pubkeys]);
                     const noteIds = newNotes.map((note) => note.id);
                     const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
 
@@ -83,7 +96,7 @@ export default function Home() {
                     dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
                     dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
                     // TODO: handle append as well
-                    dispatch(setReplies(replyEvents));
+                    dispatch(setReplies(replyData.replyEvents));
                     dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
                     dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));

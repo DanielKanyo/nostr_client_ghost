@@ -39,6 +39,7 @@ export default function NoteItem({ note, reply, usersMetadata, interactionStats 
     }, [computedColorScheme, theme.colors]);
 
     const userMetadata = useMemo(() => usersMetadata.find((u) => u.pubkey === note.pubkey), [usersMetadata, note.pubkey]);
+    const replyToMetadata = useMemo(() => usersMetadata.find((u) => u.pubkey === reply?.pubkey), [usersMetadata, reply]);
 
     const displayName = useMemo(() => {
         return userMetadata?.display_name || userMetadata?.name || `${note.pubkey.slice(0, 8)}...`;
@@ -74,8 +75,6 @@ export default function NoteItem({ note, reply, usersMetadata, interactionStats 
         console.log("Action btn clicked");
     };
 
-    console.log(reply);
-
     return (
         <>
             <Container
@@ -92,7 +91,7 @@ export default function NoteItem({ note, reply, usersMetadata, interactionStats 
                         <Flex>
                             <Stack w="100%" gap="sm" pl="lg">
                                 <NoteHeader displayName={displayName} createdAt={note.created_at} />
-                                <NoteBody text={textToDisplay} images={images} videos={videos} reply={reply} />
+                                <NoteBody text={textToDisplay} images={images} videos={videos} reply={reply} replyTo={replyToMetadata} />
                             </Stack>
                             <NoteActionMore note={note} usersMetadata={userMetadata} nevent={nevent} />
                         </Flex>

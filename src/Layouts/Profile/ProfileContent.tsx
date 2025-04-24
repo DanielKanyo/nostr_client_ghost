@@ -255,6 +255,7 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     loading={loadingForNotes}
                     interactionStats={su.interactionStatsForNotes}
                     loadNotes={loadNotes}
+                    replies={[]}
                 />
             </Tabs.Panel>
 
@@ -265,6 +266,8 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     loading={loadingForReplies}
                     interactionStats={su.interactionStatsForReplies}
                     loadNotes={loadReplies}
+                    // TODO: fetch replies
+                    replies={[]}
                 />
             </Tabs.Panel>
 
