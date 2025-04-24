@@ -44,7 +44,7 @@ import {
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, trimmed, loading } =
+    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, loading } =
         useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
@@ -152,9 +152,7 @@ export default function Home() {
                             usersMetadata={[...usersMetadata, ...replyDetailsUsersMetadata]}
                             loading={loading}
                             interactionStats={interactionStats}
-                            trimmed={trimmed}
                             loadNotes={loadNotes}
-                            reloadNotes={reloadNotes}
                         />
                     )}
                 </ScrollContainer>

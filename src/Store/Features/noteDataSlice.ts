@@ -6,8 +6,6 @@ import { NoteFilterOptions } from "../../Shared/utils";
 import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 
-const NOTE_LIST_MAX_LENGTH = 50;
-
 interface NoteDataState {
     notes: NostrEvent[];
     replyDetails: NostrEvent[];
@@ -17,7 +15,6 @@ interface NoteDataState {
     loading: boolean;
     filter: NoteFilterOptions;
     interactionStats: { [noteId: string]: InteractionStats };
-    trimmed: boolean;
 }
 
 const initialState: NoteDataState = {
@@ -29,7 +26,6 @@ const initialState: NoteDataState = {
     loading: false,
     filter: NoteFilterOptions.All,
     interactionStats: {},
-    trimmed: false,
 };
 
 const noteDataSlice = createSlice({
@@ -43,28 +39,10 @@ const noteDataSlice = createSlice({
             state.replyDetails = action.payload;
         },
         appendNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
-            const oldNotes = state.notes;
-            const newNotes = action.payload;
-
-            if (oldNotes.length + newNotes.length > NOTE_LIST_MAX_LENGTH) {
-                oldNotes.splice(0, newNotes.length);
-
-                state.trimmed = true;
-            } else {
-                state.trimmed = false;
-            }
-
-            state.notes = [...oldNotes, ...newNotes];
+            state.notes = [...state.notes, ...action.payload];
         },
         appendReplyDetails: (state, action: PayloadAction<NostrEvent[]>) => {
-            const oldReplyDetails = state.replyDetails;
-            const newReplyDetails = action.payload;
-
-            if (oldReplyDetails.length + newReplyDetails.length > NOTE_LIST_MAX_LENGTH) {
-                oldReplyDetails.splice(0, newReplyDetails.length);
-            }
-
-            state.replyDetails = [...oldReplyDetails, ...newReplyDetails];
+            state.replyDetails = [...state.replyDetails, ...action.payload];
         },
         setUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
             state.usersMetadata = action.payload;
@@ -97,7 +75,6 @@ const noteDataSlice = createSlice({
             state.replyDetailsUsersMetadata = [];
             state.interactionStats = {};
             state.until = undefined;
-            state.trimmed = false;
         },
     },
 });

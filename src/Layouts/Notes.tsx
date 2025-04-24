@@ -2,13 +2,12 @@ import { useMemo } from "react";
 
 import { NostrEvent } from "nostr-tools";
 
-import { Button, Center, Container, Divider, Loader } from "@mantine/core";
-import { IconDots, IconNoteOff, IconReload } from "@tabler/icons-react";
+import { Button, Center, Container, Loader } from "@mantine/core";
+import { IconDots, IconNoteOff } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
 import { findReplyDetailForNote } from "../Shared/eventUtils";
-import { useAppSelector } from "../Store/hook";
 import { InteractionStats } from "../Types/interactionStats";
 import { UserMetadata } from "../Types/userMetadata";
 
@@ -18,9 +17,7 @@ interface NotesProps {
     usersMetadata: UserMetadata[];
     loading: boolean;
     interactionStats: { [noteId: string]: InteractionStats };
-    trimmed?: boolean;
     loadNotes: () => void;
-    reloadNotes?: () => void;
 }
 
 export default function Notes({
@@ -29,11 +26,8 @@ export default function Notes({
     usersMetadata,
     loading,
     interactionStats,
-    trimmed,
     loadNotes,
-    reloadNotes,
 }: NotesProps) {
-    const { color } = useAppSelector((state) => state.primaryColor);
     const hasNotes = notes.length > 0;
 
     const notesWithReplyDetails = useMemo(() => {
@@ -49,25 +43,6 @@ export default function Notes({
 
     return (
         <>
-            {trimmed && !loading && (
-                <>
-                    <Center>
-                        <Button
-                            color={color}
-                            variant="filled"
-                            m="xs"
-                            radius="xl"
-                            leftSection={<IconReload size={22} />}
-                            size="md"
-                            onClick={reloadNotes}
-                        >
-                            Reload
-                        </Button>
-                    </Center>
-                    <Divider />
-                </>
-            )}
-
             {notesWithReplyDetails.map(({ note, replyDetail }) => (
                 <NoteItem
                     key={note.id}
