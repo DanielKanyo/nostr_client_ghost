@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
 
 import isEqual from "lodash/isEqual";
-import { SimplePool } from "nostr-tools";
+import { NostrEvent, SimplePool } from "nostr-tools";
 
 import { Divider, Flex } from "@mantine/core";
 import { IconNoteOff } from "@tabler/icons-react";
@@ -44,13 +44,39 @@ import {
 import { useAppSelector } from "../Store/hook";
 
 export default function Home() {
-    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, trimmed, loading } = useAppSelector(
-        (state) => state.noteData
-    );
+    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, trimmed, loading } =
+        useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
     const dispatch = useDispatch();
+
+    const loadAndStoreNotes = useCallback(
+        async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
+            const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
+            const noteIds = newNotes.map((note) => note.id);
+            const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
+
+            const combinedMetadata = new Map(metadataMap);
+            combinedMetadata.set(user.publicKey, user.profile!);
+
+            dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
+            dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
+            dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
+
+            dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
+        },
+        [user.following, user.publicKey, user.profile, relays]
+    );
+
+    const loadAndStoreReplyDetails = useCallback(async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
+        const replyData = await collectReplyEventsAndPubkeys(pool, newNotes);
+        const usersMetadataMap = await fetchMultipleUserMetadata(pool, replyData.pubkeys);
+        const usersMetadata = Array.from(usersMetadataMap.values());
+
+        dispatch(reset ? setReplyDetails(replyData.replyEvents) : appendReplyDetails(replyData.replyEvents));
+        dispatch(reset ? setReplyDetailsUsersMetadata(usersMetadata) : appendReplyDetailsUsersMetadata(usersMetadata));
+    }, []);
 
     const loadNotes = useCallback(
         async (reset: boolean = false) => {
@@ -69,24 +95,8 @@ export default function Home() {
                 );
 
                 if (newNotes.length > 0) {
-                    const replyData = await collectReplyEventsAndPubkeys(pool, newNotes);
-                    const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
-                    const replyDetailsUsersMetadataMap = await fetchMultipleUserMetadata(pool, replyData.pubkeys);
-                    const noteIds = newNotes.map((note) => note.id);
-                    const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
-
-                    const combinedMetadata = new Map(metadataMap);
-                    combinedMetadata.set(user.publicKey, user.profile!);
-
-                    const rdumd = Array.from(replyDetailsUsersMetadataMap.values());
-
-                    dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
-                    dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
-                    dispatch(reset ? setReplyDetails(replyData.replyEvents) : appendReplyDetails(replyData.replyEvents));
-                    dispatch (reset ? setReplyDetailsUsersMetadata(rdumd) : appendReplyDetailsUsersMetadata(rdumd))
-                    dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
-
-                    dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
+                    await loadAndStoreReplyDetails(pool, newNotes, reset);
+                    await loadAndStoreNotes(pool, newNotes, reset);
                 }
             } catch (error) {
                 console.error("Error loading notes:", error);
@@ -95,7 +105,7 @@ export default function Home() {
                 dispatch(setLoading(false));
             }
         },
-        [user.following, user.publicKey, filter, until, relays, user.profile, dispatch, loading]
+        [user.following, user.publicKey, filter, until, relays, user.profile, loading, dispatch]
     );
 
     useEffect(() => {
