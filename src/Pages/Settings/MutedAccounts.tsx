@@ -21,6 +21,7 @@ export default function MutedAccounts() {
     const mutedAccounts = useAppSelector((state) => state.mutedAccounts);
     const [loading, setLoading] = useState(false);
     const [usersMetadata, setUsersMetadata] = useState<Map<string, UserMetadata>>(new Map());
+    const [initLoadDone, setInitLoadDone] = useState<boolean>(false);
 
     useEffect(() => {
         if (mutedAccounts.length === 0) {
@@ -40,11 +41,12 @@ export default function MutedAccounts() {
                 console.error("Failed to fetch muted user metadata:", error);
             } finally {
                 closePool(pool);
+                setInitLoadDone(true);
                 setLoading(false);
             }
         };
 
-        loadUsersMetadata();
+        if (!initLoadDone) loadUsersMetadata();
     }, [mutedAccounts]);
 
     const renderedUsers = useMemo(() => {
