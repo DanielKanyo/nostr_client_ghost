@@ -108,6 +108,7 @@ export default function Home() {
                     await loadAndStoreNotes(pool, newNotes, reset);
                 }
             } catch (error) {
+                // TODO: Error handling
                 console.error("Error loading notes:", error);
             } finally {
                 closePool(pool);

@@ -83,6 +83,7 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     dispatch(updateInitNotesLoaded(true));
                 }
             } catch (error) {
+                // TODO: Error handling
                 console.error("Error loading notes:", error);
             } finally {
                 closePool(pool);
@@ -135,6 +136,7 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     dispatch(updateInitRepliesLoaded(true));
                 }
             } catch (error) {
+                // TODO: Error handling
                 console.error("Error loading replies:", error);
             } finally {
                 closePool(pool);
@@ -174,6 +176,7 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     );
                 }
             } catch (error) {
+                // TODO: Error handling
                 console.error("Error loading followings:", error);
             } finally {
                 closePool(pool);
@@ -213,6 +216,7 @@ export default function ProfileContent({ activeUserPubkey, activeTab, followers,
                     );
                 }
             } catch (error) {
+                // TODO: Error handling
                 console.error("Error loading followers:", error);
             } finally {
                 closePool(pool);

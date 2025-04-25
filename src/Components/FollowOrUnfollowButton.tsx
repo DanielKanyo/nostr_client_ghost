@@ -55,6 +55,7 @@ export default function FollowOrUnfollowButton({
                 handleFollowUser(pubkey);
             }
         } catch (error) {
+            // TODO: Error handling
             console.error("Something went wrong...", error);
         } finally {
             closePool(pool);
@@ -80,6 +81,7 @@ export default function FollowOrUnfollowButton({
                 handleUnfollowUser(pubkey);
             }
         } catch (error) {
+            // TODO: Error handling
             console.error("Something went wrong...", error);
         } finally {
             closePool(pool);

@@ -42,7 +42,7 @@ export const collectReplyEventsAndPubkeys = async (
     try {
         replyEvents = await fetchEventByIds(pool, eventIds);
     } catch (error) {
-        console.log("Error loading reply events:", error);
+        console.error("Error loading reply events:", error);
     }
 
     const pubkeys = replyEvents.map((re) => re.pubkey);
