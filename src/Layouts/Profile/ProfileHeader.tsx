@@ -88,7 +88,7 @@ export default function ProfileHeader({
             <Box w="100%">
                 <BackgroundImage
                     src={banner ?? ""}
-                    h={hovered ? 230 : 200}
+                    h={banner && hovered ? 220 : 200}
                     pos="relative"
                     style={{
                         backgroundColor: theme.colors[color][6],

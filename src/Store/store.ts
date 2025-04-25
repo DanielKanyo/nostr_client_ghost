@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
+import mutedAccountsReducer from "./Features/mutedAccountsSlice";
 import noteDataReducer from "./Features/noteDataSlice";
 import primaryColorReducer from "./Features/primaryColorSlice";
 import relaysReducer from "./Features/relaysSlice";
@@ -15,6 +16,7 @@ const store = configureStore({
         scrollPosition: scrollPositionReducer,
         relays: relaysReducer,
         selectedUser: selectedUserReducer,
+        mutedAccounts: mutedAccountsReducer,
     },
 });
 

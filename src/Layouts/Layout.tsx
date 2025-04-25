@@ -9,6 +9,7 @@ import { Box, Flex, useMantineTheme } from "@mantine/core";
 import PageLoader from "../Components/PageLoader";
 import { authenticateUser, closePool, fetchUserMetadata, getFollowers, getFollowing } from "../Services/userService";
 import { DEFAULT_SIDE_CONTAINER_WIDTH } from "../Shared/utils";
+import { updateMutedAccounts } from "../Store/Features/mutedAccountsSlice";
 import { updatePrimaryColor } from "../Store/Features/primaryColorSlice";
 import { setRelays } from "../Store/Features/relaysSlice";
 import { updateUser, updateUserLoading } from "../Store/Features/userSlice";
@@ -35,9 +36,16 @@ export default function Layout() {
         }
     };
 
+    const handleMutedAccountsInLocalStorage = (mutedAccounts: string | null) => {
+        if (mutedAccounts) {
+            dispatch(updateMutedAccounts(JSON.parse(mutedAccounts)));
+        }
+    };
+
     useEffect(() => {
         handlePrimaryColorInLocalStorage(localStorage.getItem("nostrPrimaryColor"));
         handleRelaysInLocalStorage(localStorage.getItem("nostrRelays"));
+        handleMutedAccountsInLocalStorage(localStorage.getItem("nostrMutedAccounts"));
     }, [dispatch]);
 
     useEffect(() => {

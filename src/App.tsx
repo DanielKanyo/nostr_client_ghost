@@ -11,6 +11,7 @@ import Profile from "./Pages/Profile";
 import Settings from "./Pages/Settings";
 import AppearanceSettings from "./Pages/Settings/AppearanceSettings";
 import KeyManagement from "./Pages/Settings/KeyManagement";
+import MutedAccounts from "./Pages/Settings/MutedAccounts";
 import Network from "./Pages/Settings/Network";
 import ProfileSettings from "./Pages/Settings/ProfileSettings";
 import { ROUTES } from "./Routes/routes";
@@ -31,6 +32,7 @@ export default function App() {
                         <Route path={ROUTES.SETTINGS_APPEARANCE} element={<AppearanceSettings />} />
                         <Route path={ROUTES.SETTINGS_PROFILE} element={<ProfileSettings />} />
                         <Route path={ROUTES.SETTINGS_NETWORK} element={<Network />} />
+                        <Route path={ROUTES.SETTINGS_MUTEDED_ACCOUNTS} element={<MutedAccounts />} />
                         <Route path={ROUTES.PROFILE} element={<Profile />} />
                         <Route path={ROUTES.BOOKMARKS} element={<Bookmarks />} />
                         <Route path={ROUTES.EVENT} element={<Event />} />

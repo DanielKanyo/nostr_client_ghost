@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { NostrEvent } from "nostr-tools";
 
 import { Button, Center, Container, Divider, Loader } from "@mantine/core";
@@ -7,7 +5,6 @@ import { IconDots, IconNoteOff, IconReload } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
 import NoteItem from "../Components/Note/NoteItem";
-import { findReplyDetailForNote } from "../Shared/eventUtils";
 import { useAppSelector } from "../Store/hook";
 import { InteractionStats } from "../Types/interactionStats";
 import { UserMetadata } from "../Types/userMetadata";
@@ -18,30 +15,14 @@ interface NotesProps {
     usersMetadata: UserMetadata[];
     loading: boolean;
     interactionStats: { [noteId: string]: InteractionStats };
-    trimmed?: boolean;
     loadNotes: () => void;
     reloadNotes?: () => void;
 }
 
-export default function Notes({
-    notes,
-    replyDetails,
-    usersMetadata,
-    loading,
-    interactionStats,
-    trimmed,
-    loadNotes,
-    reloadNotes,
-}: NotesProps) {
+export default function Notes({ notes, replyDetails, usersMetadata, loading, interactionStats, loadNotes, reloadNotes }: NotesProps) {
+    const { displayStartIndex } = useAppSelector((state) => state.noteData);
     const { color } = useAppSelector((state) => state.primaryColor);
     const hasNotes = notes.length > 0;
-
-    const notesWithReplyDetails = useMemo(() => {
-        return notes.map((note) => ({
-            note,
-            replyDetail: findReplyDetailForNote(note, replyDetails),
-        }));
-    }, [notes, replyDetails]);
 
     if (!hasNotes && !loading) {
         return <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />;
@@ -49,7 +30,7 @@ export default function Notes({
 
     return (
         <>
-            {trimmed && !loading && (
+            {displayStartIndex > 0 && reloadNotes && (
                 <>
                     <Center>
                         <Button
@@ -59,7 +40,7 @@ export default function Notes({
                             radius="xl"
                             leftSection={<IconReload size={22} />}
                             size="md"
-                            onClick={reloadNotes}
+                            onClick={() => reloadNotes()}
                         >
                             Reload
                         </Button>
@@ -68,11 +49,11 @@ export default function Notes({
                 </>
             )}
 
-            {notesWithReplyDetails.map(({ note, replyDetail }) => (
+            {notes.map((note) => (
                 <NoteItem
                     key={note.id}
                     note={note}
-                    replyDetail={replyDetail}
+                    replyDetails={replyDetails}
                     usersMetadata={usersMetadata}
                     interactionStats={interactionStats}
                 />

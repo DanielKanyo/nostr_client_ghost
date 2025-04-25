@@ -6,8 +6,6 @@ import { NoteFilterOptions } from "../../Shared/utils";
 import { InteractionStats } from "../../Types/interactionStats";
 import { UserMetadata } from "../../Types/userMetadata";
 
-const NOTE_LIST_MAX_LENGTH = 50;
-
 interface NoteDataState {
     notes: NostrEvent[];
     replyDetails: NostrEvent[];
@@ -17,7 +15,7 @@ interface NoteDataState {
     loading: boolean;
     filter: NoteFilterOptions;
     interactionStats: { [noteId: string]: InteractionStats };
-    trimmed: boolean;
+    displayStartIndex: number;
 }
 
 const initialState: NoteDataState = {
@@ -29,7 +27,7 @@ const initialState: NoteDataState = {
     loading: false,
     filter: NoteFilterOptions.All,
     interactionStats: {},
-    trimmed: false,
+    displayStartIndex: 0,
 };
 
 const noteDataSlice = createSlice({
@@ -43,28 +41,10 @@ const noteDataSlice = createSlice({
             state.replyDetails = action.payload;
         },
         appendNoteData: (state, action: PayloadAction<NostrEvent[]>) => {
-            const oldNotes = state.notes;
-            const newNotes = action.payload;
-
-            if (oldNotes.length + newNotes.length > NOTE_LIST_MAX_LENGTH) {
-                oldNotes.splice(0, newNotes.length);
-
-                state.trimmed = true;
-            } else {
-                state.trimmed = false;
-            }
-
-            state.notes = [...oldNotes, ...newNotes];
+            state.notes = [...state.notes, ...action.payload];
         },
         appendReplyDetails: (state, action: PayloadAction<NostrEvent[]>) => {
-            const oldReplyDetails = state.replyDetails;
-            const newReplyDetails = action.payload;
-
-            if (oldReplyDetails.length + newReplyDetails.length > NOTE_LIST_MAX_LENGTH) {
-                oldReplyDetails.splice(0, newReplyDetails.length);
-            }
-
-            state.replyDetails = [...oldReplyDetails, ...newReplyDetails];
+            state.replyDetails = [...state.replyDetails, ...action.payload];
         },
         setUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
             state.usersMetadata = action.payload;
@@ -73,7 +53,7 @@ const noteDataSlice = createSlice({
             state.replyDetailsUsersMetadata = action.payload;
         },
         appendReplyDetailsUsersMetadata: (state, action: PayloadAction<UserMetadata[]>) => {
-            state.replyDetailsUsersMetadata = [state.replyDetailsUsersMetadata, ...action.payload];
+            state.replyDetailsUsersMetadata = [...state.replyDetailsUsersMetadata, ...action.payload];
         },
         setUntil: (state, action: PayloadAction<number | undefined>) => {
             state.until = action.payload;
@@ -90,6 +70,9 @@ const noteDataSlice = createSlice({
         appendInteractionStats: (state, action: PayloadAction<{ [noteId: string]: InteractionStats }>) => {
             state.interactionStats = { ...state.interactionStats, ...action.payload };
         },
+        setDisplayStartIndex: (state, action) => {
+            state.displayStartIndex = action.payload;
+        },
         resetNotes: (state) => {
             state.notes = [];
             state.replyDetails = [];
@@ -97,7 +80,7 @@ const noteDataSlice = createSlice({
             state.replyDetailsUsersMetadata = [];
             state.interactionStats = {};
             state.until = undefined;
-            state.trimmed = false;
+            state.displayStartIndex = 0;
         },
     },
 });
@@ -115,6 +98,7 @@ export const {
     setFilter,
     setInteractionStats,
     appendInteractionStats,
+    setDisplayStartIndex,
     resetNotes,
 } = noteDataSlice.actions;
 export default noteDataSlice.reducer;

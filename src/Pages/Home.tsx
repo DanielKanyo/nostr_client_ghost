@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 
 import isEqual from "lodash/isEqual";
@@ -32,6 +32,7 @@ import {
     appendReplyDetails,
     appendReplyDetailsUsersMetadata,
     resetNotes,
+    setDisplayStartIndex,
     setFilter,
     setInteractionStats,
     setLoading,
@@ -43,8 +44,10 @@ import {
 } from "../Store/Features/noteDataSlice";
 import { useAppSelector } from "../Store/hook";
 
+const DISPLAY_NOTE_LIMIT = 35;
+
 export default function Home() {
-    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, trimmed, loading } =
+    const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, displayStartIndex, loading } =
         useAppSelector((state) => state.noteData);
     const user = useAppSelector((state) => state.user);
     const relays = useAppSelector((state) => state.relays);
@@ -52,21 +55,27 @@ export default function Home() {
     const dispatch = useDispatch();
 
     const loadAndStoreNotes = useCallback(
-        async (pool: SimplePool, notes: NostrEvent[], reset: boolean): Promise<void> => {
+        async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
             const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
-            const noteIds = notes.map((note) => note.id);
+            const noteIds = newNotes.map((note) => note.id);
             const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
 
             const combinedMetadata = new Map(metadataMap);
             combinedMetadata.set(user.publicKey, user.profile!);
 
             dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
-            dispatch(reset ? setNoteData(notes) : appendNoteData(notes));
+            dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
             dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
 
-            dispatch(setUntil(notes[notes.length - 1].created_at - 1));
+            if (reset) {
+                dispatch(setDisplayStartIndex(0));
+            } else if (notes.length > newNotes.length) {
+                dispatch(setDisplayStartIndex(displayStartIndex + newNotes.length));
+            }
+
+            dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
         },
-        [user.following, user.publicKey, user.profile, relays]
+        [user.following, user.publicKey, user.profile, relays, notes.length, displayStartIndex]
     );
 
     const loadAndStoreReplyDetails = useCallback(async (pool: SimplePool, notes: NostrEvent[], reset: boolean): Promise<void> => {
@@ -99,6 +108,7 @@ export default function Home() {
                     await loadAndStoreNotes(pool, newNotes, reset);
                 }
             } catch (error) {
+                // TODO: Error handling
                 console.error("Error loading notes:", error);
             } finally {
                 closePool(pool);
@@ -136,6 +146,11 @@ export default function Home() {
         loadNotes(true);
     }, [dispatch, loadNotes]);
 
+    const visibleNotes = useMemo(
+        () => notes.slice(displayStartIndex, displayStartIndex + DISPLAY_NOTE_LIMIT),
+        [notes.length, displayStartIndex]
+    );
+
     return (
         <Content>
             <MainContainer width={DEFAULT_MAIN_CONTAINER_WIDTH}>
@@ -147,12 +162,11 @@ export default function Home() {
                         <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />
                     ) : (
                         <Notes
-                            notes={notes}
+                            notes={visibleNotes}
                             replyDetails={replyDetails}
                             usersMetadata={[...usersMetadata, ...replyDetailsUsersMetadata]}
                             loading={loading}
                             interactionStats={interactionStats}
-                            trimmed={trimmed}
                             loadNotes={loadNotes}
                             reloadNotes={reloadNotes}
                         />

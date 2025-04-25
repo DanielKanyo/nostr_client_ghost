@@ -8,17 +8,27 @@ import { PROFILE_ROUTE_BASE } from "../Routes/routes";
 import { encodeNProfile, encodeNPub } from "../Services/userService";
 import { useAppSelector } from "../Store/hook";
 import FollowOrUnfollowButton from "./FollowOrUnfollowButton";
+import MuteOrUnmuteButton from "./MuteOrUnmuteButton";
 
 interface UserItemProps {
     pubkey: string;
     name: string | undefined;
     displayName: string | undefined;
     picture: string | undefined;
-    handleFollowUser: (value: string) => void;
-    handleUnfollowUser: (value: string) => void;
+    withMuteAndUnmuteControl?: boolean;
+    handleFollowUser?: (value: string) => void;
+    handleUnfollowUser?: (value: string) => void;
 }
 
-export default function UserItem({ pubkey, name, picture, displayName, handleFollowUser, handleUnfollowUser }: UserItemProps) {
+export default function UserItem({
+    pubkey,
+    name,
+    picture,
+    displayName,
+    withMuteAndUnmuteControl,
+    handleFollowUser,
+    handleUnfollowUser,
+}: UserItemProps) {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme("light");
     const { color } = useAppSelector((state) => state.primaryColor);
@@ -63,13 +73,16 @@ export default function UserItem({ pubkey, name, picture, displayName, handleFol
                         </Box>
                     </Flex>
                 </Group>
-                <FollowOrUnfollowButton
-                    loggedInUser={loggedInUser}
-                    pubkey={pubkey}
-                    color={color}
-                    handleFollowUser={handleFollowUser}
-                    handleUnfollowUser={handleUnfollowUser}
-                />
+                {handleFollowUser && handleUnfollowUser && (
+                    <FollowOrUnfollowButton
+                        loggedInUser={loggedInUser}
+                        pubkey={pubkey}
+                        color={color}
+                        handleFollowUser={handleFollowUser}
+                        handleUnfollowUser={handleUnfollowUser}
+                    />
+                )}
+                {withMuteAndUnmuteControl && <MuteOrUnmuteButton pubkey={pubkey} />}
             </Flex>
             <Divider />
         </>

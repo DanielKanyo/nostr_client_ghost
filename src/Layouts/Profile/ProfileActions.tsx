@@ -1,15 +1,17 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { ActionIcon, Center, CopyButton, Group, Menu, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDots, IconKey, IconLink, IconMail, IconQrcode, IconUserCancel, IconUserEdit, IconWorldWww, IconX } from "@tabler/icons-react";
+import { IconDots, IconKey, IconLink, IconMail, IconQrcode, IconUserEdit, IconUserOff, IconWorldWww, IconX } from "@tabler/icons-react";
 
 import FollowOrUnfollowButton from "../../Components/FollowOrUnfollowButton";
 import PublicKeyInput from "../../Components/PublicKeyInput";
 import QRCode from "../../Components/QrCode";
 import { PROFILE_ROUTE_BASE, ROUTES } from "../../Routes/routes";
 import { encodeNProfile, encodeNPub } from "../../Services/userService";
+import { updateMutedAccounts } from "../../Store/Features/mutedAccountsSlice";
 import { useAppSelector } from "../../Store/hook";
 
 interface ProfileActionsProps {
@@ -19,10 +21,12 @@ interface ProfileActionsProps {
 }
 
 export default function ProfileActions({ ownKey, pubkey, website }: ProfileActionsProps) {
+    const dispatch = useDispatch();
     const [qrModalOpened, { open: openQrModal, close: closeQrModal }] = useDisclosure(false);
     const npub = useMemo(() => encodeNPub(pubkey), [pubkey]);
     const user = useAppSelector((state) => state.user);
     const { color } = useAppSelector((state) => state.primaryColor);
+    const mutedAccounts = useAppSelector((state) => state.mutedAccounts);
 
     const iconProps = {
         variant: "light" as const,
@@ -30,6 +34,25 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
         size: "xl" as const,
         radius: "xl" as const,
     };
+
+    const isMuted = useMemo(() => mutedAccounts.includes(pubkey), [mutedAccounts, pubkey]);
+
+    const updateLocalStorage = (updated: string[]) => {
+        localStorage.setItem("nostrMutedAccounts", JSON.stringify(updated));
+    };
+
+    const handleMuteToggle = useCallback(() => {
+        let updated: string[];
+
+        if (isMuted) {
+            updated = mutedAccounts.filter((pk) => pk !== pubkey);
+        } else {
+            updated = [...mutedAccounts, pubkey];
+        }
+
+        dispatch(updateMutedAccounts(updated));
+        updateLocalStorage(updated);
+    }, [isMuted, mutedAccounts, pubkey, dispatch]);
 
     return (
         <>
@@ -57,9 +80,10 @@ export default function ProfileActions({ ownKey, pubkey, website }: ProfileActio
                                 </Menu.Item>
                             )}
                         </CopyButton>
+                        {/* TODO */}
                         {!ownKey && (
-                            <Menu.Item fz="md" leftSection={<IconUserCancel size={18} />} color="red">
-                                Mute User
+                            <Menu.Item fz="md" leftSection={<IconUserOff size={18} />} color="red" onClick={handleMuteToggle}>
+                                {isMuted ? "Unmute User" : "Mute User"}
                             </Menu.Item>
                         )}
                     </Menu.Dropdown>
