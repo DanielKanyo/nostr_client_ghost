@@ -9,7 +9,7 @@ import { theme } from "./Config/Theme/theme.ts";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <MantineProvider theme={theme}>
+        <MantineProvider theme={theme} defaultColorScheme="dark">
             <App />
         </MantineProvider>
     </React.StrictMode>

@@ -9,6 +9,7 @@ import { ROUTES } from "../Routes/routes";
 import { updateFollowList, closePool } from "../Services/userService";
 import { resetNotes } from "../Store/Features/noteDataSlice";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
+import { addSelectedUserFollowingPubkey, removeSelectedUserFollowingPubkey } from "../Store/Features/selectedUserSlice";
 import { UserState, updateUserFollowing } from "../Store/Features/userSlice";
 import { useAppDispatch, useAppSelector } from "../Store/hook";
 
@@ -53,6 +54,7 @@ export default function FollowOrUnfollowButton({
 
             if (handleFollowUser && loggedInUser.publicKey === selectedUser.pubkey) {
                 handleFollowUser(pubkey);
+                dispatch(addSelectedUserFollowingPubkey(pubkey));
             }
         } catch (error) {
             // TODO: Error handling
@@ -79,6 +81,7 @@ export default function FollowOrUnfollowButton({
 
             if (handleUnfollowUser && loggedInUser.publicKey === selectedUser.pubkey) {
                 handleUnfollowUser(pubkey);
+                dispatch(removeSelectedUserFollowingPubkey(pubkey));
             }
         } catch (error) {
             // TODO: Error handling
