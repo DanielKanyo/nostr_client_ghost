@@ -28,6 +28,7 @@ export default function KeyManagement() {
     const npub = useMemo(() => encodeNPub(user.publicKey), [user.publicKey]);
 
     const handleLogout = () => {
+        // TODO: remove everything, reset everything in store
         localStorage.removeItem("nostrPrivateKey");
         localStorage.removeItem("nostrPublicKey");
 

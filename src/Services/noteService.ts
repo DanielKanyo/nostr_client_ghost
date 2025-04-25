@@ -92,9 +92,17 @@ export const fetchInteractionStats = async (
 ): Promise<{ [noteId: string]: InteractionStats }> => {
     const interactionStats: { [noteId: string]: InteractionStats } = {};
 
-    // Initialize stats for each note
     noteIds.forEach((noteId) => {
-        interactionStats[noteId] = { likes: 0, reposts: 0, comments: 0, zapAmount: 0 };
+        interactionStats[noteId] = {
+            likes: 0,
+            likePubkeys: [],
+            reposts: 0,
+            repostPubkeys: [],
+            comments: 0,
+            commentPubkeys: [],
+            zapAmount: 0,
+            zapPubkeys: [],
+        };
     });
 
     try {
@@ -114,19 +122,24 @@ export const fetchInteractionStats = async (
 
         events.forEach((event: NostrEvent) => {
             const noteId = event.tags.find((tag) => tag[0] === "e")?.[1];
+            const pubkey = event.pubkey;
+
             if (!noteId || !interactionStats[noteId]) return;
 
             switch (event.kind) {
                 case 7:
                     if (event.content === "+") {
                         interactionStats[noteId].likes += 1;
+                        interactionStats[noteId].likePubkeys.push(pubkey);
                     }
                     break;
                 case 6:
                     interactionStats[noteId].reposts += 1;
+                    interactionStats[noteId].repostPubkeys.push(pubkey);
                     break;
                 case 1:
                     interactionStats[noteId].comments += 1;
+                    interactionStats[noteId].commentPubkeys.push(pubkey);
                     break;
                 case 9735:
                     try {
@@ -139,6 +152,8 @@ export const fetchInteractionStats = async (
 
                         if (sats !== null) {
                             interactionStats[noteId].zapAmount += sats;
+                            // TODO: FIgure out
+                            interactionStats[noteId].zapPubkeys.push(pubkey);
                         }
                     } catch (e) {
                         console.warn("Failed to parse zap amount:", e);

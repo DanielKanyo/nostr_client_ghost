@@ -58,14 +58,14 @@ export default function Home() {
         async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
             const metadataMap = await fetchMultipleUserMetadata(pool, user.following);
             const noteIds = newNotes.map((note) => note.id);
-            const newInteractionCounts = await fetchInteractionStats(pool, noteIds, relays);
+            const newInteractionStats = await fetchInteractionStats(pool, noteIds, relays);
 
             const combinedMetadata = new Map(metadataMap);
             combinedMetadata.set(user.publicKey, user.profile!);
 
             dispatch(setUsersMetadata(Array.from(combinedMetadata.values())));
             dispatch(reset ? setNoteData(newNotes) : appendNoteData(newNotes));
-            dispatch(reset ? setInteractionStats(newInteractionCounts) : appendInteractionStats(newInteractionCounts));
+            dispatch(reset ? setInteractionStats(newInteractionStats) : appendInteractionStats(newInteractionStats));
 
             if (reset) {
                 dispatch(setDisplayStartIndex(0));
