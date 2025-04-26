@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -7,6 +7,8 @@ import { SimplePool } from "nostr-tools";
 import { Alert, Center, Loader } from "@mantine/core";
 import { IconExclamationCircle } from "@tabler/icons-react";
 
+import PopularNotes from "../Components/Note/PopularNotes";
+import Search from "../Components/Search/Search";
 import Content from "../Layouts/Content";
 import MainContainer from "../Layouts/MainContainer";
 import ProfileContent from "../Layouts/Profile/ProfileContent";
@@ -135,7 +137,10 @@ export default function Profile() {
                     )}
                 </ScrollContainer>
             </MainContainer>
-            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>Side Box</SideContainer>
+            <SideContainer width={DEFAULT_SIDE_CONTAINER_WIDTH}>
+                <Search />
+                <PopularNotes notes={su.notes} interactionStats={su.interactionStatsForNotes} />
+            </SideContainer>
         </Content>
     );
 }
