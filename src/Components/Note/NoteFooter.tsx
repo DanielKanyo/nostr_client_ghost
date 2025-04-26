@@ -37,7 +37,7 @@ export default function NoteFooter({ noteId, interactionStats, handleActionIconC
 
     return (
         <Group justify="space-between" pl="sm" mt="sm">
-            <ActionIcon aria-label="comments" {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
+            <ActionIcon aria-label="comments" color="gray" {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
                 <IconMessageCircle size={18} color="gray" />
                 {interactionsStats.comments > 0 && (
                     <Text fz={12} c="dimmed" style={badgeStyle}>
@@ -46,7 +46,13 @@ export default function NoteFooter({ noteId, interactionStats, handleActionIconC
                 )}
             </ActionIcon>
 
-            <ActionIcon aria-label="zap-amount" {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
+            <ActionIcon
+                aria-label="zap-amount"
+                color="gray"
+                {...actionProps}
+                onClick={handleActionIconClick}
+                style={{ overflow: "visible" }}
+            >
                 <IconBolt size={18} color="gray" />
                 {interactionsStats.zapAmount > 0 && (
                     <Text fz={12} c="dimmed" style={badgeStyle}>
@@ -70,7 +76,7 @@ export default function NoteFooter({ noteId, interactionStats, handleActionIconC
                 )}
             </ActionIcon>
 
-            <ActionIcon aria-label="reposts" {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
+            <ActionIcon aria-label="reposts" color="gray" {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
                 <IconRepeat size={18} color="gray" />
                 {interactionsStats.reposts > 0 && (
                     <Text fz={12} c="dimmed" style={badgeStyle}>
@@ -79,7 +85,13 @@ export default function NoteFooter({ noteId, interactionStats, handleActionIconC
                 )}
             </ActionIcon>
 
-            <ActionIcon aria-label="bookmarks" {...actionProps} onClick={handleActionIconClick} style={{ overflow: "visible" }}>
+            <ActionIcon
+                aria-label="bookmarks"
+                color="gray"
+                {...actionProps}
+                onClick={handleActionIconClick}
+                style={{ overflow: "visible" }}
+            >
                 <IconBookmark size={18} color="gray" />
             </ActionIcon>
         </Group>

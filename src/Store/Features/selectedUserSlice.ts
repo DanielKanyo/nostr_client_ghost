@@ -107,7 +107,7 @@ export const selectedUserSlice = createSlice({
         },
         appendSelectedUserReplyData: (state, action: PayloadAction<SelectedUserStateReplyData>) => {
             state.replies = [...state.replies, ...action.payload.replies];
-            state.replyDetails = [...state.replies, ...action.payload.replyDetails];
+            state.replyDetails = [...state.replyDetails, ...action.payload.replyDetails];
             state.interactionStatsForReplies = { ...state.interactionStatsForReplies, ...action.payload.interactionStatsForReplies };
             state.untilForReplies = action.payload.untilForReplies;
             state.initRepliesLoaded = action.payload.initRepliesLoaded;
@@ -157,25 +157,30 @@ export const selectedUserSlice = createSlice({
 });
 
 export const {
+    // Basic
     updateSelectedUserBasic,
+    resetSelectedUser,
 
+    // Notes
     updateSelectedUserNoteData,
     appendSelectedUserNoteData,
+    updateInitNotesLoaded,
+
+    // Replies
     updateSelectedUserReplyData,
     appendSelectedUserReplyData,
-    updateInitNotesLoaded,
     updateInitRepliesLoaded,
 
+    // Following
     updateSelectedUserFollowingData,
     appendSelectedUserFollowingData,
-
-    updateSelectedUserFollowersData,
-    appendSelectedUserFollowersData,
-
     addSelectedUserFollowingProfile,
     removeSelectedUserFollowingProfile,
-    removeSelectedUserFollowingPubkey,
     addSelectedUserFollowingPubkey,
-    resetSelectedUser,
+    removeSelectedUserFollowingPubkey,
+
+    // Followers
+    updateSelectedUserFollowersData,
+    appendSelectedUserFollowersData,
 } = selectedUserSlice.actions;
 export default selectedUserSlice.reducer;

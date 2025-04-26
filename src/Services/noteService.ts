@@ -96,12 +96,16 @@ export const fetchInteractionStats = async (
         interactionStats[noteId] = {
             likes: 0,
             likePubkeys: [],
+            likeDetails: [],
             reposts: 0,
             repostPubkeys: [],
+            repostDetails: [],
             comments: 0,
             commentPubkeys: [],
+            commentDetails: [],
             zapAmount: 0,
             zapPubkeys: [],
+            zapDetails: [],
         };
     });
 
@@ -131,32 +135,42 @@ export const fetchInteractionStats = async (
                     if (event.content === "+") {
                         interactionStats[noteId].likes += 1;
                         interactionStats[noteId].likePubkeys.push(pubkey);
+                        interactionStats[noteId].likeDetails.push(event);
                     }
                     break;
                 case 6:
                     interactionStats[noteId].reposts += 1;
                     interactionStats[noteId].repostPubkeys.push(pubkey);
+                    interactionStats[noteId].repostDetails.push(event);
                     break;
                 case 1:
                     interactionStats[noteId].comments += 1;
                     interactionStats[noteId].commentPubkeys.push(pubkey);
+                    interactionStats[noteId].commentDetails.push(event);
                     break;
                 case 9735:
                     try {
                         const bolt11Tag = event.tags.find((tag) => tag[0] === "bolt11");
+                        const descriptionTag = event.tags.find((tag) => tag[0] === "description");
 
-                        if (!bolt11Tag) return;
+                        if (!bolt11Tag || !descriptionTag) return;
 
                         const bolt11 = bolt11Tag[1];
                         const sats = decodeLightningInvoice(bolt11);
 
-                        if (sats !== null) {
+                        // Parse the description JSON
+                        const descriptionJson = descriptionTag[1];
+                        const description = JSON.parse(descriptionJson);
+
+                        const senderPubkey = description.pubkey;
+
+                        if (sats !== null && senderPubkey) {
                             interactionStats[noteId].zapAmount += sats;
-                            // TODO: FIgure out
-                            interactionStats[noteId].zapPubkeys.push(pubkey);
+                            interactionStats[noteId].zapPubkeys.push(senderPubkey);
+                            interactionStats[noteId].zapDetails.push(event);
                         }
                     } catch (e) {
-                        console.warn("Failed to parse zap amount:", e);
+                        console.warn("Failed to parse zap amount or zap sender:", e);
                     }
                     break;
             }
