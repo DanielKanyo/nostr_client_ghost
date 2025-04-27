@@ -10,7 +10,7 @@ import { IconArrowUp } from "@tabler/icons-react";
 import { updateScrollPosition } from "../Store/Features/scrollPositionSlice";
 import { useAppSelector } from "../Store/hook";
 
-export const SCROLL_POS_DEBOUNCE_TIME = 300;
+export const SCROLL_POS_DEBOUNCE_TIME = 130;
 
 interface ScrollPosition {
     x: number;
