@@ -18,8 +18,8 @@ export default function Event() {
     const { nevent } = useParams<{ nevent: string }>();
     const decodedEvent = decodeNEvent(nevent!);
 
-    const [event, setEvent] = useState<NostrEvent | null>(null);
-    const [interactions, setInteractions] = useState<InteractionStats | null>(null);
+    const [_event, setEvent] = useState<NostrEvent | null>(null);
+    const [_interactions, setInteractions] = useState<InteractionStats | null>(null);
 
     const fetchEventData = useCallback(async () => {
         // TODO

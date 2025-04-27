@@ -44,7 +44,7 @@ import {
 } from "../Store/Features/noteDataSlice";
 import { useAppSelector } from "../Store/hook";
 
-const DISPLAY_NOTE_LIMIT = 35;
+const DISPLAY_NOTE_LIMIT = 50;
 
 export default function Home() {
     const { notes, replyDetails, replyDetailsUsersMetadata, usersMetadata, until, filter, interactionStats, displayStartIndex, loading } =
@@ -53,6 +53,11 @@ export default function Home() {
     const relays = useAppSelector((state) => state.relays);
     const previousFollowing = useRef(user.following);
     const dispatch = useDispatch();
+
+    const visibleNotes = useMemo(
+        () => notes.slice(displayStartIndex, displayStartIndex + DISPLAY_NOTE_LIMIT),
+        [notes.length, displayStartIndex]
+    );
 
     const loadAndStoreNotes = useCallback(
         async (pool: SimplePool, newNotes: NostrEvent[], reset: boolean): Promise<void> => {
@@ -69,13 +74,13 @@ export default function Home() {
 
             if (reset) {
                 dispatch(setDisplayStartIndex(0));
-            } else if (notes.length > newNotes.length) {
-                dispatch(setDisplayStartIndex(displayStartIndex + newNotes.length));
+            } else if (visibleNotes.length + newNotes.length > DISPLAY_NOTE_LIMIT) {
+                dispatch(setDisplayStartIndex(notes.length + newNotes.length));
             }
 
             dispatch(setUntil(newNotes[newNotes.length - 1].created_at - 1));
         },
-        [user.following, user.publicKey, user.profile, relays, notes.length, displayStartIndex]
+        [user.following, user.publicKey, user.profile, relays, notes.length, displayStartIndex, visibleNotes.length]
     );
 
     const loadAndStoreReplyDetails = useCallback(async (pool: SimplePool, notes: NostrEvent[], reset: boolean): Promise<void> => {
@@ -145,11 +150,6 @@ export default function Home() {
         dispatch(resetNotes());
         loadNotes(true);
     }, [dispatch, loadNotes]);
-
-    const visibleNotes = useMemo(
-        () => notes.slice(displayStartIndex, displayStartIndex + DISPLAY_NOTE_LIMIT),
-        [notes.length, displayStartIndex]
-    );
 
     return (
         <Content>
