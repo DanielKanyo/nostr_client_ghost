@@ -38,9 +38,7 @@ export default function PopularNotes({ notes, interactionStats }: PopularNotesPr
         <>
             {popularNotes.length > 0 && (
                 <Box py="md" ml="md">
-                    <Text mb="md">
-                        Popular Notes
-                    </Text>
+                    <Text mb="md">Popular Notes</Text>
                     <Stack ml="sm" gap="lg">
                         {popularNotes.map((pn) => (
                             <div key={pn.id}>

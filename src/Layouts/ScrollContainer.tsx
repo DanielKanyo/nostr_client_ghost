@@ -84,7 +84,7 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
                                 color="gray"
                                 aria-label="scroll-up"
                                 style={transitionStyles}
-                                radius="md"
+                                radius="xl"
                                 onClick={scrollToTop}
                             >
                                 <IconArrowUp size={16} />

@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
+
 import { NostrEvent } from "nostr-tools";
 
-import { Button, Center, Container, Divider, Loader } from "@mantine/core";
+import { Button, Center, Divider, Loader } from "@mantine/core";
 import { IconDots, IconNoteOff, IconReload } from "@tabler/icons-react";
 
 import Empty from "../Components/Empty";
@@ -20,9 +22,17 @@ interface NotesProps {
 }
 
 export default function Notes({ notes, replyDetails, usersMetadata, loading, interactionStats, loadNotes, reloadNotes }: NotesProps) {
-    const { displayStartIndex } = useAppSelector((state) => state.noteData);
     const { color } = useAppSelector((state) => state.primaryColor);
+    const [showRefreshButton, setShowRefreshButton] = useState(false);
     const hasNotes = notes.length > 0;
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowRefreshButton(true);
+        }, 60000);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     if (!hasNotes && !loading) {
         return <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />;
@@ -30,7 +40,7 @@ export default function Notes({ notes, replyDetails, usersMetadata, loading, int
 
     return (
         <>
-            {displayStartIndex > 0 && reloadNotes && (
+            {reloadNotes && showRefreshButton && (
                 <>
                     <Center>
                         <Button
@@ -42,7 +52,7 @@ export default function Notes({ notes, replyDetails, usersMetadata, loading, int
                             size="md"
                             onClick={() => reloadNotes()}
                         >
-                            Reload
+                            Refresh
                         </Button>
                     </Center>
                     <Divider />
@@ -65,19 +75,11 @@ export default function Notes({ notes, replyDetails, usersMetadata, loading, int
                 </Center>
             )}
             {hasNotes && !loading && (
-                <Container m="xs" p={0}>
-                    <Button
-                        variant="subtle"
-                        color="gray"
-                        radius="md"
-                        onClick={() => loadNotes()}
-                        loading={loading}
-                        loaderProps={{ type: "dots" }}
-                        fullWidth
-                    >
+                <Center m="xs" p={0}>
+                    <Button variant="subtle" color="gray" radius="xl" onClick={() => loadNotes()} w={100}>
                         <IconDots />
                     </Button>
-                </Container>
+                </Center>
             )}
         </>
     );

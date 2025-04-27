@@ -15,7 +15,6 @@ interface NoteDataState {
     loading: boolean;
     filter: NoteFilterOptions;
     interactionStats: { [noteId: string]: InteractionStats };
-    displayStartIndex: number;
 }
 
 const initialState: NoteDataState = {
@@ -27,7 +26,6 @@ const initialState: NoteDataState = {
     loading: false,
     filter: NoteFilterOptions.All,
     interactionStats: {},
-    displayStartIndex: 0,
 };
 
 const noteDataSlice = createSlice({
@@ -70,9 +68,6 @@ const noteDataSlice = createSlice({
         appendInteractionStats: (state, action: PayloadAction<{ [noteId: string]: InteractionStats }>) => {
             state.interactionStats = { ...state.interactionStats, ...action.payload };
         },
-        setDisplayStartIndex: (state, action) => {
-            state.displayStartIndex = action.payload;
-        },
         resetNotes: (state) => {
             state.notes = [];
             state.replyDetails = [];
@@ -80,7 +75,6 @@ const noteDataSlice = createSlice({
             state.replyDetailsUsersMetadata = [];
             state.interactionStats = {};
             state.until = undefined;
-            state.displayStartIndex = 0;
         },
     },
 });
@@ -98,7 +92,6 @@ export const {
     setFilter,
     setInteractionStats,
     appendInteractionStats,
-    setDisplayStartIndex,
     resetNotes,
 } = noteDataSlice.actions;
 export default noteDataSlice.reducer;

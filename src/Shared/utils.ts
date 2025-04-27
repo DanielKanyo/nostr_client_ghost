@@ -83,3 +83,5 @@ export const formatTimestamp = (timestamp: number): string => {
         return `${year}, ${month} ${day}`;
     }
 };
+
+export const DISPLAY_NOTE_LIMIT = 50;
