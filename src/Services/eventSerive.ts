@@ -1,7 +1,9 @@
 import { Filter, NostrEvent, SimplePool } from "nostr-tools";
 
-import { mapReplyEvents } from "../Shared/eventUtils";
+import { parseTags } from "../Shared/eventUtils";
 import { RELAYS } from "../Shared/utils";
+import { UserMetadata } from "../Types/userMetadata";
+import { fetchMultipleUserMetadata } from "./userService";
 
 export const fetchEventByIds = async (pool: SimplePool, eventIds: string[]): Promise<NostrEvent[]> => {
     if (!eventIds.length) {
@@ -31,21 +33,24 @@ export const fetchEventByIds = async (pool: SimplePool, eventIds: string[]): Pro
     }
 };
 
-export const collectReplyEventsAndPubkeys = async (
+export const collectReferenceEventsAndUsersMetadata = async (
     pool: SimplePool,
     notes: NostrEvent[]
-): Promise<{ replyEvents: NostrEvent[]; pubkeys: string[] }> => {
-    const replyDetails = mapReplyEvents(notes);
-    const eventIds = replyDetails.map((r) => r.replyToEventId);
-    let replyEvents: NostrEvent[] = [];
+): Promise<{ referenceEvents: NostrEvent[]; referenceUsersMetadata: UserMetadata[] }> => {
+    const parsedTags = notes.map((note) => parseTags(note));
+    const eventIds = parsedTags.flatMap((item) => (item.replies.length ? item.replies : [...item.roots, ...item.replies]));
+    const pubkeys = parsedTags.flatMap((item) => item.pubkeys);
+
+    let referenceEvents: NostrEvent[] = [];
+    let referenceUsersMetadata = new Map<string, UserMetadata>();
 
     try {
-        replyEvents = await fetchEventByIds(pool, eventIds);
+        referenceEvents = await fetchEventByIds(pool, eventIds);
+        referenceUsersMetadata = await fetchMultipleUserMetadata(pool, pubkeys);
     } catch (error) {
+        // TODO: Handle errors
         console.error("Error loading reply events:", error);
     }
 
-    const pubkeys = replyEvents.map((re) => re.pubkey);
-
-    return { replyEvents, pubkeys };
+    return { referenceEvents, referenceUsersMetadata: Array.from(referenceUsersMetadata.values()) };
 };

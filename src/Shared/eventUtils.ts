@@ -9,6 +9,16 @@ export type ReplyEvent = {
     originalEventId: string;
 };
 
+export type ReplyEvent2 = {
+    eventId: string;
+    replyToEventId: string;
+    replyToPubkey: string;
+    content: string;
+    createdAt: number;
+    originalEventId: string;
+    marker?: string; // <- add this optional field
+};
+
 export const mapReplyEvents = (events: NostrEvent[]): ReplyEvent[] => {
     const replyEvents: ReplyEvent[] = [];
 
@@ -38,11 +48,65 @@ export const mapReplyEvents = (events: NostrEvent[]): ReplyEvent[] => {
     return replyEvents;
 };
 
+type ParsedTags = {
+    roots: string[];
+    replies: string[];
+    mentions: string[];
+    pubkeys: string[];
+    hashtags: string[];
+    urls: string[];
+};
+
+export const parseTags = (note: NostrEvent) => {
+    const result: ParsedTags = {
+        roots: [],
+        replies: [],
+        mentions: [],
+        pubkeys: [],
+        hashtags: [],
+        urls: [],
+    };
+
+    for (const tag of note.tags) {
+        const [type, value, _relay, marker] = tag;
+
+        if (type === "e") {
+            if (marker === "root") {
+                result.roots.push(value);
+            } else if (marker === "reply") {
+                result.replies.push(value);
+            } else {
+                result.mentions.push(value);
+            }
+        }
+
+        if (type === "p") {
+            result.pubkeys.push(value);
+        }
+
+        if (type === "t") {
+            result.hashtags.push(value);
+        }
+
+        if (type === "r" || type === "u") {
+            result.urls.push(value);
+        }
+    }
+
+    return result;
+};
+
 export const findReplyDetailForNote = (note: NostrEvent, replyDetails: NostrEvent[]): NostrEvent | undefined => {
-    const replyTag = note.tags.find((tag) => tag[0] === "e" && tag[3] === "reply");
-    const replyId = replyTag?.[1];
+    if (!replyDetails.length) return undefined;
 
-    if (!replyId || !replyDetails) return undefined;
+    const parsedTags = parseTags(note);
+    let id = parsedTags.replies.length ? parsedTags.replies[0] : null;
 
-    return replyDetails.find((reply) => reply.id === replyId);
+    if (!id) {
+        id = parsedTags.roots.length ? parsedTags.roots[0] : null;
+    }
+
+    if (!id) return undefined;
+
+    return replyDetails.find((reply) => reply.id === id);
 };
