@@ -17,7 +17,7 @@ import MainContainer from "../Layouts/MainContainer";
 import Notes from "../Layouts/Notes";
 import ScrollContainer from "../Layouts/ScrollContainer";
 import SideContainer from "../Layouts/SideContainer";
-import { collectReplyEventsAndPubkeys } from "../Services/eventSerive";
+import { collectReferenceEventsAndUsersMetadata } from "../Services/eventSerive";
 import { fetchInteractionStats, fetchNotes } from "../Services/noteService";
 import { closePool, fetchMultipleUserMetadata } from "../Services/userService";
 import {
@@ -72,12 +72,11 @@ export default function Home() {
     );
 
     const loadAndStoreReplyDetails = useCallback(async (pool: SimplePool, notes: NostrEvent[], reset: boolean): Promise<void> => {
-        const replyData = await collectReplyEventsAndPubkeys(pool, notes);
-        const usersMetadataMap = await fetchMultipleUserMetadata(pool, replyData.pubkeys);
-        const usersMetadata = Array.from(usersMetadataMap.values());
+        const referenceEventsAndUsersMetadata = await collectReferenceEventsAndUsersMetadata(pool, notes);
+        const { referenceEvents, referenceUsersMetadata } = referenceEventsAndUsersMetadata;
 
-        dispatch(reset ? setReplyDetails(replyData.replyEvents) : appendReplyDetails(replyData.replyEvents));
-        dispatch(reset ? setReplyDetailsUsersMetadata(usersMetadata) : appendReplyDetailsUsersMetadata(usersMetadata));
+        dispatch(reset ? setReplyDetails(referenceEvents) : appendReplyDetails(referenceEvents));
+        dispatch(reset ? setReplyDetailsUsersMetadata(referenceUsersMetadata) : appendReplyDetailsUsersMetadata(referenceUsersMetadata));
     }, []);
 
     const loadNotes = useCallback(

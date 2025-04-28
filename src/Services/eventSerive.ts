@@ -1,7 +1,9 @@
 import { Filter, NostrEvent, SimplePool } from "nostr-tools";
 
-import { mapReferencedEvents } from "../Shared/eventUtils";
+import { parseTags } from "../Shared/eventUtils";
 import { RELAYS } from "../Shared/utils";
+import { UserMetadata } from "../Types/userMetadata";
+import { fetchMultipleUserMetadata } from "./userService";
 
 export const fetchEventByIds = async (pool: SimplePool, eventIds: string[]): Promise<NostrEvent[]> => {
     if (!eventIds.length) {
@@ -31,22 +33,24 @@ export const fetchEventByIds = async (pool: SimplePool, eventIds: string[]): Pro
     }
 };
 
-export const collectReplyEventsAndPubkeys = async (
+export const collectReferenceEventsAndUsersMetadata = async (
     pool: SimplePool,
     notes: NostrEvent[]
-): Promise<{ replyEvents: NostrEvent[]; pubkeys: string[] }> => {
-    const referencedEvents = mapReferencedEvents(notes);
+): Promise<{ referenceEvents: NostrEvent[]; referenceUsersMetadata: UserMetadata[] }> => {
+    const parsedTags = notes.map((note) => parseTags(note));
+    const eventIds = parsedTags.flatMap((item) => (item.replies.length ? item.replies : [...item.roots, ...item.replies]));
+    const pubkeys = parsedTags.flatMap((item) => item.pubkeys);
 
-    const eventIds = referencedEvents.map((r) => r.replyToEventId);
-    let referencedEventDetails: NostrEvent[] = [];
+    let referenceEvents: NostrEvent[] = [];
+    let referenceUsersMetadata = new Map<string, UserMetadata>();
 
     try {
-        referencedEventDetails = await fetchEventByIds(pool, eventIds);
+        referenceEvents = await fetchEventByIds(pool, eventIds);
+        referenceUsersMetadata = await fetchMultipleUserMetadata(pool, pubkeys);
     } catch (error) {
+        // TODO: Handle errors
         console.error("Error loading reply events:", error);
     }
 
-    const pubkeys = referencedEventDetails.map((re) => re.pubkey);
-
-    return { replyEvents: referencedEventDetails, pubkeys };
+    return { referenceEvents, referenceUsersMetadata: Array.from(referenceUsersMetadata.values()) };
 };

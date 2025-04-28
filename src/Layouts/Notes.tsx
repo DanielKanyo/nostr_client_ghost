@@ -32,15 +32,23 @@ export default function Notes({ notes, replyDetails, usersMetadata, loading, int
         }, 60000);
 
         return () => clearTimeout(timer);
-    }, []);
+    }, [showRefreshButton]);
 
     if (!hasNotes && !loading) {
         return <Empty icon={<IconNoteOff size={30} />} text="No notes to display..." />;
     }
 
+    const handleReloadNotes = () => {
+        setShowRefreshButton(false);
+
+        if (reloadNotes) {
+            reloadNotes();
+        }
+    };
+
     return (
         <>
-            {reloadNotes && showRefreshButton && (
+            {showRefreshButton && (
                 <>
                     <Center>
                         <Button
@@ -50,7 +58,7 @@ export default function Notes({ notes, replyDetails, usersMetadata, loading, int
                             radius="xl"
                             leftSection={<IconReload size={22} />}
                             size="md"
-                            onClick={() => reloadNotes()}
+                            onClick={() => handleReloadNotes()}
                         >
                             Refresh
                         </Button>
@@ -76,7 +84,7 @@ export default function Notes({ notes, replyDetails, usersMetadata, loading, int
             )}
             {hasNotes && !loading && (
                 <Center m="xs" p={0}>
-                    <Button variant="subtle" color="gray" radius="xl" onClick={() => loadNotes()} w={100}>
+                    <Button variant="subtle" color="gray" radius="md" onClick={() => loadNotes()} fullWidth>
                         <IconDots />
                     </Button>
                 </Center>
