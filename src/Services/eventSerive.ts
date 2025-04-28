@@ -1,6 +1,6 @@
 import { Filter, NostrEvent, SimplePool } from "nostr-tools";
 
-import { mapReplyEvents } from "../Shared/eventUtils";
+import { mapReferencedEvents } from "../Shared/eventUtils";
 import { RELAYS } from "../Shared/utils";
 
 export const fetchEventByIds = async (pool: SimplePool, eventIds: string[]): Promise<NostrEvent[]> => {
@@ -35,17 +35,18 @@ export const collectReplyEventsAndPubkeys = async (
     pool: SimplePool,
     notes: NostrEvent[]
 ): Promise<{ replyEvents: NostrEvent[]; pubkeys: string[] }> => {
-    const replyDetails = mapReplyEvents(notes);
-    const eventIds = replyDetails.map((r) => r.replyToEventId);
-    let replyEvents: NostrEvent[] = [];
+    const referencedEvents = mapReferencedEvents(notes);
+
+    const eventIds = referencedEvents.map((r) => r.replyToEventId);
+    let referencedEventDetails: NostrEvent[] = [];
 
     try {
-        replyEvents = await fetchEventByIds(pool, eventIds);
+        referencedEventDetails = await fetchEventByIds(pool, eventIds);
     } catch (error) {
         console.error("Error loading reply events:", error);
     }
 
-    const pubkeys = replyEvents.map((re) => re.pubkey);
+    const pubkeys = referencedEventDetails.map((re) => re.pubkey);
 
-    return { replyEvents, pubkeys };
+    return { replyEvents: referencedEventDetails, pubkeys };
 };
