@@ -76,9 +76,6 @@ export default function NoteItem({ note, replyDetails, usersMetadata, interactio
         console.log("Action btn clicked");
     };
 
-    // TODO
-    // const { roots, replies, mentions, pubkeys, hashtags, urls } = useParsedTags(note);
-
     return (
         <>
             <Container
